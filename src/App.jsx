@@ -16,6 +16,7 @@ import { Checkout } from './components/Checkout';
 import { DarkModeToggle } from './components/DarkModeToggle';
 import { LiveSupport } from './components/LiveSupport';
 import { SocialProof } from './components/SocialProof';
+import { DistanceSellingContract, RefundPolicy, PrivacyPolicy } from './components/LegalPages';
 import { BackToTop } from './components/BackToTop';
 import { ProductFilters } from './components/ProductFilters';
 import { RecentlyViewed } from './components/RecentlyViewed';
@@ -791,6 +792,11 @@ function App() {
               <Newsletter />
             </div>
           } />
+
+          {/* Legal Pages */}
+          <Route path="/mesafeli-satis-sozlesmesi" element={<DistanceSellingContract />} />
+          <Route path="/iade-kosullari" element={<RefundPolicy />} />
+          <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
         </Routes>
       </main>
 
@@ -877,7 +883,7 @@ function App() {
         onCompleteOrder={handleCompleteOrder}
         onAddAddress={() => {
           setIsCheckoutOpen(false);
-          setIsProfileOpen(true);
+          setIsAuthOpen(true);
         }}
       />
 
@@ -925,10 +931,17 @@ function App() {
               </ul>
             </div>
             <div>
+              <h4 style={{ marginBottom: '1rem', fontWeight: '600' }}>Yasal Bilgiler</h4>
+              <ul style={{ opacity: 0.9, fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <li><button onClick={() => { navigate('/mesafeli-satis-sozlesmesi'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left' }}>Mesafeli Satış Sözleşmesi</button></li>
+                <li><button onClick={() => { navigate('/iade-kosullari'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left' }}>İptal ve İade Koşulları</button></li>
+                <li><button onClick={() => { navigate('/gizlilik-politikasi'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left' }}>Gizlilik Politikası</button></li>
+              </ul>
+            </div>
+            <div>
               <h4 style={{ marginBottom: '1rem', fontWeight: '600' }}>İletişim</h4>
               <ul style={{ opacity: 0.9, fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <li>📧 info@sarmalticaret.com</li>
-                <li>📞 +90 (555) 123 45 67</li>
                 <li>📍 İstanbul, Türkiye</li>
               </ul>
             </div>

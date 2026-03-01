@@ -23,6 +23,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         district: '',
         phone: ''
     });
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
 
     if (!isOpen) return null;
 
@@ -95,6 +96,10 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         if (step === 1) {
             setStep(2);
         } else if (step === 2) {
+            if (!agreedToTerms) {
+                alert('Ödemeye geçmeden önce Mesafeli Satış Sözleşmesi ve İade Koşulları metinlerini onaylamanız gerekmektedir.');
+                return;
+            }
             onCompleteOrder({
                 addressId: selectedAddress ? selectedAddress.id : null,
                 guestAddress: (!addresses || addresses.length === 0) ? guestAddress : null,
@@ -434,7 +439,23 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                 </div>
                             </div>
 
-                            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+                            {step === 2 && (
+                                <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'flex-start', gap: '0.75rem', background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}>
+                                    <input
+                                        type="checkbox"
+                                        id="terms-checkbox"
+                                        checked={agreedToTerms}
+                                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                        style={{ marginTop: '0.2rem', cursor: 'pointer', width: '1.2rem', height: '1.2rem', accentColor: 'var(--color-primary)' }}
+                                    />
+                                    <label htmlFor="terms-checkbox" style={{ fontSize: '0.85rem', color: 'var(--color-text)', cursor: 'pointer', lineHeight: '1.5' }}>
+                                        <a href="/mesafeli-satis-sozlesmesi" target="_blank" style={{ color: 'var(--color-primary)' }}>Mesafeli Satış Sözleşmesini</a>, {' '}
+                                        <a href="/iade-kosullari" target="_blank" style={{ color: 'var(--color-primary)' }}>İptal ve İade Koşullarını</a> okudum ve onaylıyorum.
+                                    </label>
+                                </div>
+                            )}
+
+                            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
                                 {step === 2 && (
                                     <button
                                         className="btn btn-outline"
