@@ -151,14 +151,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                     </div>
                 </div>
 
-                <div className="checkout-content" style={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    display: 'grid',
-                    gridTemplateColumns: 'minmax(0, 1.5fr) 1fr',
-                    gap: '2rem',
-                    padding: '0 0.5rem'
-                }}>
+                <div className="checkout-content">
                     <div style={{ minWidth: 0 }}>
                         {step === 1 && (
                             <div>
@@ -318,14 +311,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
 
                     {/* Sidebar Summary */}
                     <div style={{ minWidth: 0 }}>
-                        <div style={{
-                            background: '#f8fafc',
-                            padding: '1.5rem',
-                            borderRadius: 'var(--radius-xl)',
-                            border: '1px solid #e2e8f0',
-                            position: 'sticky',
-                            top: 0
-                        }}>
+                        <div className="checkout-summary">
                             <h3 style={{ marginBottom: '1.5rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <ShoppingBag size={20} /> Sepet Özeti
                             </h3>

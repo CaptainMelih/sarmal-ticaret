@@ -392,6 +392,24 @@ header {
   position: relative;
 }
 
+.checkout-content {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) 1fr;
+  gap: 2rem;
+  padding: 0 0.5rem;
+}
+
+.checkout-summary {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+}
+
 @media (max-width: 768px) {
   .category-text {
     display: none !important;
@@ -420,5 +438,22 @@ header {
     order: 3;
     max-width: 100%;
     width: 100%;
+  }
+
+  .checkout-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0;
+  }
+
+  .checkout-summary {
+    position: static;
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-content {
+    padding: 1rem;
+    width: 95%;
   }
 }
