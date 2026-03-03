@@ -383,6 +383,15 @@ header {
   margin-top: 1.5rem;
 }
 
+.header-middle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  max-width: 600px;
+  position: relative;
+}
+
 @media (max-width: 768px) {
   .category-text {
     display: none !important;
@@ -390,5 +399,26 @@ header {
 
   .hero h1 {
     font-size: 2.2rem;
+  }
+
+  .header-content {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 1rem 0;
+    gap: 1rem;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+  }
+
+  .nav-links {
+    gap: 0.75rem;
+  }
+
+  .header-middle {
+    order: 3;
+    max-width: 100%;
+    width: 100%;
   }
 }

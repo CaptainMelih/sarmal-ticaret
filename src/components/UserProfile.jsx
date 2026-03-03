@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, MapPin, ShoppingBag, CreditCard, LogOut, Edit2, Trash2, Plus, Truck, CheckCircle, Clock } from 'lucide-react';
+import { X, User, MapPin, ShoppingBag, CreditCard, LogOut, Edit2, Trash2, Plus, Truck, CheckCircle, Clock, Mail, Phone } from 'lucide-react';
 
 export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddAddress, onDeleteAddress, orders }) {
     const [activeTab, setActiveTab] = useState('profile');

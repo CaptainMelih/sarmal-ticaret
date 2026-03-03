@@ -53,7 +53,7 @@ export function Header({
           <span>Sarmal Ticaret</span>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, maxWidth: '600px', position: 'relative' }} ref={searchRef}>
+        <div className="header-middle" ref={searchRef}>
           <button
             className="icon-btn"
             onClick={onOpenCategories}
