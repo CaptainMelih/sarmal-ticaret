@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Zap, ArrowRight, ShoppingCart, Clock } from 'lucide-react';
+import { X, Zap, ShoppingCart, Clock } from 'lucide-react';
 
 export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductClick }) {
     const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });

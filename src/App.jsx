@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Banner } from './components/Banner';
@@ -718,7 +718,10 @@ function App() {
                 isAdmin={isAdmin}
               />
               <div className="container">
-                <Banner onOpenFlashDeals={() => setIsFlashDealsOpen(true)} />
+                <Banner
+                  onOpenFlashDeals={() => setIsFlashDealsOpen(true)}
+                  onCategorySelect={handleCategorySelect}
+                />
                 <Categories
                   onCategorySelect={handleCategorySelect}
                   selectedCategory={selectedCategory}
