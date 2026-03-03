@@ -89,12 +89,7 @@ export function Newsletter() {
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit}>
-                            <div style={{
-                                display: 'flex',
-                                gap: '1rem',
-                                maxWidth: '500px',
-                                margin: '0 auto'
-                            }}>
+                            <div className="newsletter-form">
                                 <input
                                     type="email"
                                     value={email}
