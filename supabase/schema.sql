@@ -92,7 +92,7 @@ CREATE POLICY "Auth kullanıcılar ürün silebilir" ON products
 -- ============================================
 CREATE TABLE IF NOT EXISTS orders (
     id BIGSERIAL PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     address_id BIGINT,
     payment_method TEXT DEFAULT 'credit',
     note TEXT DEFAULT '',
@@ -112,9 +112,9 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Kullanıcılar kendi siparişlerini görebilir" ON orders
     FOR SELECT USING (auth.uid() = user_id);
 
--- Kullanıcılar sipariş oluşturabilir
+-- Kullanıcılar veya misafirler sipariş oluşturabilir
 CREATE POLICY "Kullanıcılar sipariş oluşturabilir" ON orders
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+    FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
 
 -- ============================================
@@ -153,12 +153,13 @@ CREATE POLICY "Kullanıcılar sipariş kalemi ekleyebilir" ON order_items
 -- ============================================
 CREATE TABLE IF NOT EXISTS addresses (
     id BIGSERIAL PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     title TEXT NOT NULL DEFAULT 'Ev',
     full_address TEXT NOT NULL DEFAULT '',
     city TEXT NOT NULL DEFAULT '',
     district TEXT DEFAULT '',
     zip_code TEXT DEFAULT '',
+    phone TEXT DEFAULT '',
     is_default BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -169,7 +170,7 @@ CREATE POLICY "Kullanıcılar kendi adreslerini görebilir" ON addresses
     FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Kullanıcılar adres ekleyebilir" ON addresses
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+    FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
 CREATE POLICY "Kullanıcılar kendi adreslerini silebilir" ON addresses
     FOR DELETE USING (auth.uid() = user_id);
