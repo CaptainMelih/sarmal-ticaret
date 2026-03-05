@@ -108,9 +108,9 @@ CREATE TABLE IF NOT EXISTS orders (
 
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
--- Kullanıcılar sadece kendi siparişlerini görebilir
+-- Kullanıcılar veya misafirler kendi siparişlerini görebilir
 CREATE POLICY "Kullanıcılar kendi siparişlerini görebilir" ON orders
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL);
 
 -- Kullanıcılar veya misafirler sipariş oluşturabilir
 CREATE POLICY "Kullanıcılar sipariş oluşturabilir" ON orders
@@ -131,13 +131,17 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
 
--- Kullanıcılar kendi sipariş kalemlerini görebilir
+-- Kullanıcılar veya misafirler sipariş kalemlerini görebilir
 CREATE POLICY "Kullanıcılar kendi sipariş kalemlerini görebilir" ON order_items
     FOR SELECT USING (
         EXISTS (
-            SELECT 1 FROM orders WHERE orders.id = order_items.order_id AND orders.user_id = auth.uid()
+            SELECT 1 FROM orders WHERE orders.id = order_items.order_id AND (orders.user_id = auth.uid() OR orders.user_id IS NULL)
         )
     );
+
+-- Kullanıcılar ve misafirler sipariş kalemi ekleyebilir
+CREATE POLICY "Kullanıcılar sipariş kalemi ekleyebilir" ON order_items
+    FOR INSERT WITH CHECK (true);
 
 -- Sipariş kalemi ekleme
 CREATE POLICY "Kullanıcılar sipariş kalemi ekleyebilir" ON order_items
@@ -167,7 +171,7 @@ CREATE TABLE IF NOT EXISTS addresses (
 ALTER TABLE addresses ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Kullanıcılar kendi adreslerini görebilir" ON addresses
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid() = user_id OR user_id IS NULL);
 
 CREATE POLICY "Kullanıcılar adres ekleyebilir" ON addresses
     FOR INSERT WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
