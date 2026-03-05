@@ -372,6 +372,7 @@ function App() {
       await db.signIn(credentials.email, credentials.password);
       setIsAuthOpen(false);
       showToast('Giriş başarılı! 👋', 'success');
+      navigate('/');
     } catch (err) {
       console.error('Login error:', err);
       showToast('Giriş başarısız: ' + err.message, 'error');
@@ -386,6 +387,7 @@ function App() {
       });
       setIsAuthOpen(false);
       showToast('Hesabınız oluşturuldu! 🎉', 'success');
+      navigate('/');
     } catch (err) {
       console.error('Register error:', err);
       showToast('Kayıt başarısız: ' + err.message, 'error');
