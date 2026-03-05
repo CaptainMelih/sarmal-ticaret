@@ -9,11 +9,39 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
         name: '',
         phone: ''
     });
+    const [error, setError] = useState('');
 
     if (!isOpen) return null;
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setError('');
+
+        if (mode === 'register') {
+            const password = formData.password;
+            if (password.length < 8) {
+                setError('Şifre en az 8 karakter uzunluğunda olmalıdır.');
+                return;
+            }
+            if (!/[A-Z]/.test(password)) {
+                setError('Şifre en az bir büyük harf içermelidir.');
+                return;
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                setError('Şifre en az bir özel karakter (örn: !@#$%^&*) içermelidir.');
+                return;
+            }
+            if (!/[0-9]/.test(password)) {
+                setError('Şifre en az bir rakam içermelidir.');
+                return;
+            }
+
+            if (formData.phone.length < 10) {
+                setError('Lütfen geçerli bir telefon numarası giriniz.');
+                return;
+            }
+        }
+
         if (mode === 'login') {
             onLogin({ email: formData.email, password: formData.password });
         } else if (mode === 'register') {
@@ -21,7 +49,10 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
         } else if (mode === 'reset') {
             onResetPassword(formData.email);
         }
-        if (mode !== 'reset') setFormData({ email: '', password: '', name: '', phone: '' });
+
+        if (mode !== 'reset') {
+            setFormData({ email: '', password: '', name: '', phone: '' });
+        }
     };
 
     return (
@@ -37,6 +68,20 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                         <X />
                     </button>
                 </div>
+
+                {error && (
+                    <div style={{
+                        background: '#fef2f2',
+                        color: '#ef4444',
+                        padding: '1rem',
+                        borderRadius: 'var(--radius-md)',
+                        marginBottom: '1.5rem',
+                        fontSize: '0.9rem',
+                        border: '1px solid #fca5a5'
+                    }}>
+                        {error}
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit}>
                     {mode === 'register' && (
@@ -80,9 +125,13 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                                     <input
                                         type="tel"
                                         value={formData.phone}
-                                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                        onChange={e => {
+                                            const val = e.target.value.replace(/\D/g, '');
+                                            setFormData({ ...formData, phone: val });
+                                        }}
                                         required
-                                        placeholder="0555 123 45 67"
+                                        placeholder="5551234567"
+                                        maxLength={11}
                                         style={{ paddingLeft: '2.5rem' }}
                                     />
                                 </div>
