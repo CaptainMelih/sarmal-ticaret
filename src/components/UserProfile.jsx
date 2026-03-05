@@ -48,7 +48,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', borderBottom: '2px solid #e2e8f0' }}>
+                <div className="profile-tabs">
                     {tabs.map(tab => {
                         const Icon = tab.icon;
                         return (
@@ -99,7 +99,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                             <div style={{ fontWeight: '700', fontSize: '1.1rem' }}>{user.name}</div>
                                         </div>
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div className="profile-grid">
                                         <div style={{ background: 'white', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}>
                                             <div style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}><Mail size={14} /> E-posta</div>
                                             <div style={{ fontWeight: '600', marginTop: '0.25rem' }}>{user.email}</div>
@@ -165,7 +165,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                             required
                                         />
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div className="profile-grid">
                                         <div className="form-group">
                                             <label>İl *</label>
                                             <input

@@ -478,4 +478,31 @@ header {
     width: 100%;
     justify-content: center;
   }
+
+  .profile-tabs {
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .profile-tabs button {
+    flex-shrink: 0;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
