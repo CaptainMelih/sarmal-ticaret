@@ -125,12 +125,10 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                                     <input
                                         type="tel"
                                         value={formData.phone}
-                                        onChange={e => {
-                                            const val = e.target.value.replace(/\D/g, '');
-                                            setFormData({ ...formData, phone: val });
-                                        }}
+                                        onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
+                                        onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                         required
-                                        placeholder="5551234567"
+                                        placeholder="05551234567"
                                         maxLength={11}
                                         style={{ paddingLeft: '2.5rem' }}
                                     />

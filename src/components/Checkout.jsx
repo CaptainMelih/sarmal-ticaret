@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { X, MapPin, CreditCard, Percent, ShoppingBag, Truck, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, MapPin, CreditCard, Percent, ShoppingBag, Truck, CheckCircle, AlertCircle, ShieldCheck, MapIcon } from 'lucide-react';
 import * as db from '../lib/supabase';
+import { TURKEY_DATA } from '../data/turkey-data';
+import { CustomSelect } from './CustomSelect';
+
 
 const PAYMENT_METHODS = [
     { id: 'credit', name: 'Kredi Kartı', icon: CreditCard },
-    { id: 'cash', name: 'Kapıda Ödeme', icon: ShoppingBag },
+    // { id: 'cash', name: 'Kapıda Ödeme', icon: ShoppingBag },
     { id: 'transfer', name: 'Havale/EFT', icon: Truck }
 ];
 
@@ -166,29 +169,30 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                                 onChange={e => setGuestAddress({ ...guestAddress, fullAddress: e.target.value })}
                                                 placeholder="Mahalle, sokak, bina no..."
                                                 rows="3"
-                                                style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}
+                                                style={{ width: '100%', minHeight: '100px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '2px solid #cbd5e1', display: 'block', background: 'white' }}
                                                 required
                                             />
                                         </div>
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                             <div className="form-group">
                                                 <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>İl *</label>
-                                                <input
-                                                    type="text"
+                                                <CustomSelect
                                                     value={guestAddress.city}
-                                                    onChange={e => setGuestAddress({ ...guestAddress, city: e.target.value })}
-                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}
+                                                    onChange={city => setGuestAddress({ ...guestAddress, city, district: '' })}
                                                     required
+                                                    placeholder="İl Seçin"
+                                                    options={Object.keys(TURKEY_DATA).sort((a, b) => a.localeCompare(b, 'tr')).map(city => ({ value: city, label: city }))}
                                                 />
                                             </div>
                                             <div className="form-group">
                                                 <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>İlçe *</label>
-                                                <input
-                                                    type="text"
+                                                <CustomSelect
                                                     value={guestAddress.district}
-                                                    onChange={e => setGuestAddress({ ...guestAddress, district: e.target.value })}
-                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}
+                                                    onChange={district => setGuestAddress({ ...guestAddress, district })}
                                                     required
+                                                    disabled={!guestAddress.city}
+                                                    placeholder="İlçe Seçin"
+                                                    options={guestAddress.city ? TURKEY_DATA[guestAddress.city].sort((a, b) => a.localeCompare(b, 'tr')).map(district => ({ value: district, label: district })) : []}
                                                 />
                                             </div>
                                         </div>
@@ -197,8 +201,10 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                             <input
                                                 type="tel"
                                                 value={guestAddress.phone}
+                                                onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
                                                 onChange={e => setGuestAddress({ ...guestAddress, phone: e.target.value })}
                                                 placeholder="05xxxxxxxxx"
+                                                maxLength={11}
                                                 style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}
                                                 required
                                             />

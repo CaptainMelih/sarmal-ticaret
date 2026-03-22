@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { X, User, MapPin, ShoppingBag, CreditCard, LogOut, Edit2, Trash2, Plus, Truck, CheckCircle, Clock, Mail, Phone } from 'lucide-react';
+import { TURKEY_DATA } from '../data/turkey-data';
+import { CustomSelect } from './CustomSelect';
+
 
 export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddAddress, onDeleteAddress, orders }) {
     const [activeTab, setActiveTab] = useState('profile');
@@ -168,20 +171,23 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                     <div className="profile-grid">
                                         <div className="form-group">
                                             <label>İl *</label>
-                                            <input
-                                                type="text"
+                                            <CustomSelect
                                                 value={newAddress.city}
-                                                onChange={e => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                onChange={city => setNewAddress({ ...newAddress, city, district: '' })}
                                                 required
+                                                placeholder="İl Seçin"
+                                                options={Object.keys(TURKEY_DATA).sort((a, b) => a.localeCompare(b, 'tr')).map(city => ({ value: city, label: city }))}
                                             />
                                         </div>
                                         <div className="form-group">
                                             <label>İlçe *</label>
-                                            <input
-                                                type="text"
+                                            <CustomSelect
                                                 value={newAddress.district}
-                                                onChange={e => setNewAddress({ ...newAddress, district: e.target.value })}
+                                                onChange={district => setNewAddress({ ...newAddress, district })}
                                                 required
+                                                disabled={!newAddress.city}
+                                                placeholder="İlçe Seçin"
+                                                options={newAddress.city ? TURKEY_DATA[newAddress.city].sort((a, b) => a.localeCompare(b, 'tr')).map(district => ({ value: district, label: district })) : []}
                                             />
                                         </div>
                                     </div>
