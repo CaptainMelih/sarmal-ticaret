@@ -6,9 +6,9 @@ export async function getPaytrToken(orderData) {
     const merchant_key = process.env.PAYTR_MERCHANT_KEY || 'test1';
     const merchant_salt = process.env.PAYTR_MERCHANT_SALT || 'test2';
 
-    // Test ortamında iken 1, canlıya alırken 0 yapacağız
-    const test_mode = process.env.PAYTR_TEST_MODE || '1';
-    const debug_on = 1;
+    // Test modunu kapattık, artık gerçek kredi kartlarıyla ödeme alınacak (Canlı Mod)
+    const test_mode = process.env.PAYTR_TEST_MODE || '0';
+    const debug_on = 0;
 
     const {
         merchant_ok_url,
