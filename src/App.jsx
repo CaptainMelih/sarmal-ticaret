@@ -947,7 +947,8 @@ function App() {
               <h4 style={{ marginBottom: '1rem', fontWeight: '600' }}>İletişim</h4>
               <ul style={{ opacity: 0.9, fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <li>📧 info@sarmalticaret.com</li>
-                <li>📍 İstanbul, Türkiye</li>
+                <li>📞 0542 317 85 96</li>
+                <li style={{ lineHeight: '1.4' }}>📍 100.Yıl Mahallesi 1006.Cadde Yıldız Life B Blok Daire:31 Merkez/Karabük</li>
               </ul>
             </div>
           </div>
