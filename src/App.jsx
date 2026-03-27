@@ -57,7 +57,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   // Product state
-  const [products, setProducts] = useState(() => getLocalStorage('sarmal_products', INITIAL_PRODUCTS));
+  const [products, setProducts] = useState(INITIAL_PRODUCTS);
 
   // Cart state
   const [cart, setCart] = useState(() => getLocalStorage('sarmal_cart', []));
@@ -205,12 +205,20 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // LocalStorage sync (keep for non-auth data and fallback)
+  // Fetch fresh products from database on load
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      window.localStorage.setItem('sarmal_products', JSON.stringify(products));
+    async function loadProducts() {
+      try {
+        const freshProducts = await db.getProducts();
+        if (freshProducts && freshProducts.length > 0) {
+          setProducts(freshProducts);
+        }
+      } catch (err) {
+        console.error('Failed to load products from DB', err);
+      }
     }
-  }, [products]);
+    loadProducts();
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
