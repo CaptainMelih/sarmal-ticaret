@@ -29,22 +29,16 @@ import * as db from './lib/supabase';
 
 
 const INITIAL_PRODUCTS = [
-  { id: 1, title: 'Premium Erkek Kol Saati', price: 899, description: 'Zarif tasarımlı, suya dayanıklı premium erkek kol saati.', image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d', category: 3 },
-  { id: 2, title: 'Seramik Kahve Kupası', price: 150, description: 'El yapımı, dayanıklı ve şık seramik kahve kupası.', image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d', category: 4 },
-  { id: 3, title: 'Hakiki Deri Cüzdan', price: 350, description: '%100 hakiki derinden üretilmiş kartlık ve bozuk para bölmeli cüzdan.', image: 'https://images.unsplash.com/photo-1627123424574-724758594e93', category: 1 },
-  { id: 4, title: 'Polarize Güneş Gözlüğü', price: 420, description: 'UV400 korumalı, hafif ve trend polarize güneş gözlüğü.', image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083', category: 3 },
-  { id: 5, title: 'Kablosuz Bluetooth Kulaklık', price: 1250, description: 'Yüksek ses kalitesi ve uzun pil ömrü sunan kablosuz kulaklık.', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e', category: 5 },
-  { id: 6, title: 'Günlük Spor Ayakkabı', price: 1450, description: 'Nefes alabilen file yüzey ve konforlu tabana sahip spor ayakkabı.', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff', category: 5 },
-  { id: 7, title: 'Klasik Kadın El Çantası', price: 950, description: 'Geniş iç hacimli, şık tasarımlı klasik deri el çantası.', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809', category: 3 },
-  { id: 8, title: 'Odunsu Erkek Parfümü', price: 680, description: 'Kalıcı ve etkileyici odunsu notalara sahip premium erkek parfümü.', image: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f', category: 2 },
-  { id: 9, title: 'Minimalist Masa Lambası', price: 320, description: 'Okuma ve çalışma masaları için ayarlanabilir başlıklı lamba.', image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c', category: 6 },
-  { id: 10, title: 'Dijital Kamera', price: 4500, description: 'Yüksek çözünürlüklü lens ve profesyonel çekim modları.', image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32', category: 5 },
-  { id: 11, title: 'Analog Duvar Saati', price: 290, description: 'Sessiz çalışan mekanizmalı, modern tasarımlı duvar saati.', image: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c', category: 6 },
-  { id: 12, title: 'Organik Pamuklu Tişört', price: 199, description: '%100 pamuklu, nefes alan ve terletmeyen günlük tişört.', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab', category: 1 },
-  { id: 13, title: 'Çelik Termos Kupa', price: 280, description: 'Sıcaklığı 12 saat koruyan paslanmaz çelik seyahat termosu.', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8', category: 4 },
-  { id: 14, title: 'Seyahat Çantası', price: 650, description: 'Su geçirmez kumaşlı, geniş hacimli sırt veya el çantası.', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62', category: 1 },
-  { id: 15, title: 'Retro Daktilo', price: 1800, description: 'Koleksiyonluk, aktif çalışan nostaljik klavye tasarımı.', image: 'https://images.unsplash.com/photo-1518082697078-d4fa23126ed6', category: 6 },
-  { id: 16, title: 'Keten Yastık Kılıfı', price: 120, description: 'Dekoratif, kolay yıkanabilir ve ferah dokulu kırlent kılıfı.', image: 'https://images.unsplash.com/photo-1584100936595-c0654b355040', category: 6 }
+  { id: 1, title: "Fjallraven Günlük Sırt Çantası", price: 1099, description: "Günlük kullanım için laptop bölmeli, suya dayanıklı ve geniş iç hacimli dayanıklı kumaş sırt çantası.", image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", category: 1 },
+  { id: 2, title: "Premium Casual Erkek Tişört", price: 250, description: "Yaz ayları için ideal, %100 pamuklu, nefes alan ve slim fit kesim kaliteli erkek tişörtü.", image: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg", category: 1 },
+  { id: 3, title: "Erkek Ceket Uzun Kollu", price: 850, description: "Sonbahar ve ilkbahar geçişleri için tasarlanmış şık astarlı ince ceket.", image: "https://fakestoreapi.com/img/71li-ujtlAL._AC_UX679_.jpg", category: 1 },
+  { id: 4, title: "Erkek Slim Fit Klasik Gömlek", price: 400, description: "Ofis ve günlük şıklık için ütü gerektirmeyen slim fit tasarımlı gömlek.", image: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg", category: 1 },
+  { id: 5, title: "Gümüş Ejderha Tasarımlı Bileklik", price: 2300, description: "Kadınlar için özel seri, efsanevi ejderha detaylarına sahip altın ve gümüş zincir bileklik.", image: "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3.jpg", category: 3 },
+  { id: 6, title: "Solid Altın İnce Yüzük", price: 1680, description: "Zarif ince pırlanta taşlarla süslenmiş saf altın kaplama premium yüzük.", image: "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3.jpg", category: 3 },
+  { id: 7, title: "Prenses Kesim Gümüş Yüzük", price: 950, description: "Beyaz altın kaplama, özel gün hediyesi prenses kesim beyaz taşlı göz alıcı yüzük.", image: "https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3.jpg", category: 3 },
+  { id: 8, title: "Paslanmaz Çelik Çift Halka Küpe", price: 300, description: "Gül kurusu altın (rose gold) renginde alerji yapmayan ve renk atmayan halka çelik küpe.", image: "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3.jpg", category: 3 },
+  { id: 9, title: "WD 2TB Taşınabilir Harici Disk", price: 1950, description: "WD Elements teknolojili, geniş depolama alanına sahip 2 Terabayt veri kapasiteli harici sabit disk.", image: "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg", category: 5 },
+  { id: 10, title: "SanDisk SSD PLUS 1TB SSD Disk", price: 1450, description: "Bilgisayarınızı hızlandıran yüksek okuma/yazma devirli 1 Terabayt dahili SSD bellek.", image: "https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg", category: 5 }
 ];
 
 function getLocalStorage(key, initialValue) {
