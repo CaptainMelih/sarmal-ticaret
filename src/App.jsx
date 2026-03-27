@@ -29,134 +29,22 @@ import * as db from './lib/supabase';
 
 
 const INITIAL_PRODUCTS = [
-  {
-    id: 1,
-    title: 'Lüx Çakmak ve Saat Kombini',
-    price: 350,
-    description: 'Kişiye özel isim yazılabilir, şık erkek seti.',
-    image: 'https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?auto=format&fit=crop&w=500&q=80',
-    category: 1
-  },
-  {
-    id: 2,
-    title: 'Cam Fanus İçinde Solmayan Gül',
-    price: 450,
-    description: 'Sevdiklerinize özel romantik hediye.',
-    image: 'https://images.unsplash.com/photo-1518709594023-6eab9bab7b23?auto=format&fit=crop&w=500&q=80',
-    category: 2
-  },
-  {
-    id: 3,
-    title: 'Kişiye Özel İsimli Termos',
-    price: 250,
-    description: '500ml paslanmaz çelik termos, isim yazılır.',
-    image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=500&q=80',
-    category: 4
-  },
-  {
-    id: 4,
-    title: 'Çelik Erkek Bileklik',
-    price: 180,
-    description: 'İsim yazılabilir unisex bileklik.',
-    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=500&q=80',
-    category: 3
-  },
-  {
-    id: 5,
-    title: 'Dekoratif Sihirli Ayna',
-    price: 320,
-    description: 'LED ışıklı fotoğraf çerçeveli masa aynası.',
-    image: 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=500&q=80',
-    category: 6
-  },
-  {
-    id: 6,
-    title: 'Lüks Kupa Bardak Seti',
-    price: 220,
-    description: 'Kişiye özel 2li kupa bardak seti.',
-    image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=500&q=80',
-    category: 4
-  },
-  {
-    id: 7,
-    title: 'Deri Cüzdan',
-    price: 290,
-    description: '%100 hakiki deri, isim baskılı cüzdan.',
-    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=500&q=80',
-    category: 1
-  },
-  {
-    id: 8,
-    title: 'Romantik Mum Seti',
-    price: 150,
-    description: 'Özel kutulu aromaterapi mum seti.',
-    image: 'https://images.unsplash.com/photo-1602874801006-c2dea7a3f3d7?auto=format&fit=crop&w=500&q=80',
-    category: 2
-  },
-  {
-    id: 9,
-    title: 'Akıllı Saat Erkek',
-    price: 890,
-    description: 'Su geçirmez, çok fonksiyonlu akıllı saat.',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80',
-    category: 3
-  },
-  {
-    id: 10,
-    title: 'Premium Kalem Seti',
-    price: 340,
-    description: 'İsimli lüks tükenmez kalem ve dolma kalem seti.',
-    image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=500&q=80',
-    category: 1
-  },
-  {
-    id: 11,
-    title: 'Sevgililer Günü Kutusu',
-    price: 520,
-    description: 'Çikolata, çiçek ve özel mesajlı kart kombini.',
-    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=500&q=80',
-    category: 2
-  },
-  {
-    id: 12,
-    title: 'Gümüş Kolye Kadın',
-    price: 680,
-    description: '925 ayar gümüş, isimli kolye.',
-    image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=500&q=80',
-    category: 3
-  },
-  {
-    id: 13,
-    title: 'Bambu Kahve Fincan Seti',
-    price: 280,
-    description: 'Çevre dostu, 4lü kahve fincan takımı.',
-    image: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=500&q=80',
-    category: 4
-  },
-  {
-    id: 14,
-    title: 'Kişiye Özel Bornoz',
-    price: 420,
-    description: 'Premium pamuklu, isim nakışlı bornoz.',
-    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=500&q=80',
-    category: 5
-  },
-  {
-    id: 15,
-    title: 'LED Strip Işıklı Tablo',
-    price: 550,
-    description: 'Modern tasarım, renkli LED ışıklı duvar tablosu.',
-    image: 'https://images.unsplash.com/photo-1582037928769-181f2644ecb7?auto=format&fit=crop&w=500&q=80',
-    category: 6
-  },
-  {
-    id: 16,
-    title: 'Çift Yüzükleri Seti',
-    price: 750,
-    description: 'İsim kazılı, 925 ayar gümüş çift yüzükleri.',
-    image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=500&q=80',
-    category: 2
-  }
+  { id: 1, title: 'Premium Erkek Kol Saati', price: 899, description: 'Zarif tasarımlı, suya dayanıklı premium erkek kol saati.', image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d', category: 3 },
+  { id: 2, title: 'Seramik Kahve Kupası', price: 150, description: 'El yapımı, dayanıklı ve şık seramik kahve kupası.', image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d', category: 4 },
+  { id: 3, title: 'Hakiki Deri Cüzdan', price: 350, description: '%100 hakiki derinden üretilmiş kartlık ve bozuk para bölmeli cüzdan.', image: 'https://images.unsplash.com/photo-1627123424574-724758594e93', category: 1 },
+  { id: 4, title: 'Polarize Güneş Gözlüğü', price: 420, description: 'UV400 korumalı, hafif ve trend polarize güneş gözlüğü.', image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083', category: 3 },
+  { id: 5, title: 'Kablosuz Bluetooth Kulaklık', price: 1250, description: 'Yüksek ses kalitesi ve uzun pil ömrü sunan kablosuz kulaklık.', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e', category: 5 },
+  { id: 6, title: 'Günlük Spor Ayakkabı', price: 1450, description: 'Nefes alabilen file yüzey ve konforlu tabana sahip spor ayakkabı.', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff', category: 5 },
+  { id: 7, title: 'Klasik Kadın El Çantası', price: 950, description: 'Geniş iç hacimli, şık tasarımlı klasik deri el çantası.', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809', category: 3 },
+  { id: 8, title: 'Odunsu Erkek Parfümü', price: 680, description: 'Kalıcı ve etkileyici odunsu notalara sahip premium erkek parfümü.', image: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f', category: 2 },
+  { id: 9, title: 'Minimalist Masa Lambası', price: 320, description: 'Okuma ve çalışma masaları için ayarlanabilir başlıklı lamba.', image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c', category: 6 },
+  { id: 10, title: 'Dijital Kamera', price: 4500, description: 'Yüksek çözünürlüklü lens ve profesyonel çekim modları.', image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32', category: 5 },
+  { id: 11, title: 'Analog Duvar Saati', price: 290, description: 'Sessiz çalışan mekanizmalı, modern tasarımlı duvar saati.', image: 'https://images.unsplash.com/photo-1563861826100-9cb868fdbe1c', category: 6 },
+  { id: 12, title: 'Organik Pamuklu Tişört', price: 199, description: '%100 pamuklu, nefes alan ve terletmeyen günlük tişört.', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab', category: 1 },
+  { id: 13, title: 'Çelik Termos Kupa', price: 280, description: 'Sıcaklığı 12 saat koruyan paslanmaz çelik seyahat termosu.', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8', category: 4 },
+  { id: 14, title: 'Seyahat Çantası', price: 650, description: 'Su geçirmez kumaşlı, geniş hacimli sırt veya el çantası.', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62', category: 1 },
+  { id: 15, title: 'Retro Daktilo', price: 1800, description: 'Koleksiyonluk, aktif çalışan nostaljik klavye tasarımı.', image: 'https://images.unsplash.com/photo-1518082697078-d4fa23126ed6', category: 6 },
+  { id: 16, title: 'Keten Yastık Kılıfı', price: 120, description: 'Dekoratif, kolay yıkanabilir ve ferah dokulu kırlent kılıfı.', image: 'https://images.unsplash.com/photo-1584100936595-c0654b355040', category: 6 }
 ];
 
 function getLocalStorage(key, initialValue) {
