@@ -180,7 +180,7 @@ function App() {
         const profile = await db.getProfile(session.user.id);
         setUser({ ...session.user, ...profile });
 
-        if (session.user.email === 'admin@sarmal.com') {
+        if (session.user.email === 'sarmalticarett@gmail.com') {
           setIsAdmin(true);
         }
 

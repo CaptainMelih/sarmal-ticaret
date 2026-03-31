@@ -315,7 +315,7 @@ CREATE POLICY "Kuponlar herkese açık" ON coupons
 
 -- Admin ekleyebilir/güncelleyebilir
 CREATE POLICY "Admin kupon yönetebilir" ON coupons
-    FOR ALL USING (auth.uid() IN (SELECT id FROM profiles WHERE email = 'admin@sarmal.com'));
+    FOR ALL USING (auth.uid() IN (SELECT id FROM profiles WHERE email = 'sarmalticarett@gmail.com'));
 
 
 -- ============================================
@@ -335,7 +335,7 @@ CREATE POLICY "Ürün resimleri herkese açık" ON product_images
     FOR SELECT USING (true);
 
 CREATE POLICY "Admin ürün resimlerini yönetebilir" ON product_images
-    FOR ALL USING (auth.uid() IN (SELECT id FROM profiles WHERE email = 'admin@sarmal.com'));
+    FOR ALL USING (auth.uid() IN (SELECT id FROM profiles WHERE email = 'sarmalticarett@gmail.com'));
 
 -- Indexler
 CREATE INDEX IF NOT EXISTS idx_product_images_product_id ON product_images(product_id);
