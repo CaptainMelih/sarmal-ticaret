@@ -11,7 +11,7 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
     const [isLoading, setIsLoading] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isAddingCoupon, setIsAddingCoupon] = useState(false);
-    const [trackingInfo, setTrackingInfo] = useState({ carrier: '', tracking_number: '' });
+    const [trackingInfo, setTrackingInfo] = useState({ carrier: '', tracking_code: '' });
     const [isShippingDialogOpen, setIsShippingDialogOpen] = useState(false);
     const [newCoupon, setNewCoupon] = useState({
         code: '',
@@ -101,7 +101,7 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
     const handleAdvanceStatus = async (order) => {
         if (order.status === 'preparing') {
             // Ask for tracking when moving to shipping
-            setTrackingInfo({ carrier: '', tracking_number: '' });
+            setTrackingInfo({ carrier: '', tracking_code: '' });
             setIsShippingDialogOpen(true);
             return;
         }
@@ -115,8 +115,8 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
     const submitShippingInfo = async () => {
         if (!selectedOrder) return;
         await handleUpdateStatus(selectedOrder.id, 'shipping', {
-            tracking_number: trackingInfo.tracking_number,
-            payment_method: trackingInfo.carrier // Repurposing payment for demo simplicity if we don't have carrier column, but let's just add tracking_number to tracking URL, we'll store carrier logic there
+            tracking_code: trackingInfo.tracking_code,
+            cargo_company: trackingInfo.carrier
         });
         setIsShippingDialogOpen(false);
     };
@@ -569,15 +569,15 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
                                 <label>Takip Numarası</label>
                                 <input
                                     type="text"
-                                    value={trackingInfo.tracking_number}
-                                    onChange={e => setTrackingInfo({ ...trackingInfo, tracking_number: e.target.value })}
+                                    value={trackingInfo.tracking_code}
+                                    onChange={e => setTrackingInfo({ ...trackingInfo, tracking_code: e.target.value })}
                                     placeholder="Örn: 1Z9999999999999999"
                                     style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
                                 />
                             </div>
                             <div style={{ display: 'flex', gap: '1rem' }}>
                                 <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsShippingDialogOpen(false)}>İptal</button>
-                                <button className="btn btn-primary" style={{ flex: 1 }} onClick={submitShippingInfo} disabled={!trackingInfo.carrier || !trackingInfo.tracking_number}>Kaydet</button>
+                                <button className="btn btn-primary" style={{ flex: 1 }} onClick={submitShippingInfo} disabled={!trackingInfo.carrier || !trackingInfo.tracking_code}>Kaydet</button>
                             </div>
                         </div>
                     </div>
