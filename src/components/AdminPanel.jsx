@@ -42,10 +42,8 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     };
 
     useEffect(() => {
-        if (isOpen) {
-            fetchAdminData();
-        }
-    }, [isOpen]);
+        fetchAdminData();
+    }, []);
 
     useEffect(() => {
         if (activeTab === 'coupons') fetchCoupons();
