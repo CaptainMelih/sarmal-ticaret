@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User, Phone } from 'lucide-react';
+import { X, Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
 
 export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, initialMode = 'login' }) {
     const [mode, setMode] = useState(initialMode);
@@ -11,6 +11,7 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
     });
     const [error, setError] = useState('');
     const [resetSent, setResetSent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     if (!isOpen) return null;
 
@@ -201,14 +202,33 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                                     }}
                                 />
                                 <input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     value={formData.password}
                                     onChange={e => setFormData({ ...formData, password: e.target.value })}
                                     required={mode !== 'reset'}
                                     placeholder="••••••••"
                                     minLength={6}
-                                    style={{ paddingLeft: '2.5rem' }}
+                                    style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '0.75rem',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        padding: 0,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        color: 'var(--color-text-light)',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
                             </div>
                             {mode === 'register' && (
                                 <small style={{ color: 'var(--color-text-light)', fontSize: '0.85rem' }}>
