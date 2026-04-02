@@ -207,7 +207,7 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                                     onChange={e => setFormData({ ...formData, password: e.target.value })}
                                     required={mode !== 'reset'}
                                     placeholder="••••••••"
-                                    minLength={6}
+                                    minLength={8}
                                     style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                                 />
                                 <button
@@ -232,7 +232,7 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                             </div>
                             {mode === 'register' && (
                                 <small style={{ color: 'var(--color-text-light)', fontSize: '0.85rem' }}>
-                                    En az 6 karakter olmalıdır
+                                    En az 8 karakter olmalıdır
                                 </small>
                             )}
                             {mode === 'login' && (
