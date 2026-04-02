@@ -10,7 +10,7 @@ const categories = [
     { id: 6, name: 'Dekoratif Ürünler', icon: Home, color: '#34d399' }
 ];
 
-export function CategoryDrawer({ isOpen, onClose, onCategorySelect }) {
+export function CategoryDrawer({ isOpen, onClose, onCategorySelect, products = [] }) {
     if (!isOpen) return null;
 
     return (
@@ -95,7 +95,7 @@ export function CategoryDrawer({ isOpen, onClose, onCategorySelect }) {
 
                 <div style={{ marginTop: 'auto', padding: '1.5rem', background: 'var(--color-bg)', borderRadius: 'var(--radius-xl)', textAlign: 'center' }}>
                     <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-light)' }}>
-                        Toplan 6 ana kategori ve <br /> 250+ ürün sizi bekliyor!
+                        Toplam {categories.length} ana kategori ve <br /> {products.length || 0}+ ürün sizi bekliyor!
                     </p>
                 </div>
 

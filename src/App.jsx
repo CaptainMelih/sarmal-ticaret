@@ -884,6 +884,7 @@ function App() {
         isOpen={isCategoryDrawerOpen}
         onClose={() => setIsCategoryDrawerOpen(false)}
         onCategorySelect={handleCategorySelect}
+        products={products}
       />
     </div>
   );
