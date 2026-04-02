@@ -10,6 +10,7 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
         phone: ''
     });
     const [error, setError] = useState('');
+    const [resetSent, setResetSent] = useState(false);
 
     if (!isOpen) return null;
 
@@ -47,12 +48,14 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
         } else if (mode === 'register') {
             onRegister(formData);
         } else if (mode === 'reset') {
-            onResetPassword(formData.email);
+            // we assume onResetPassword now returns a Promise
+            onResetPassword(formData.email).then(success => {
+                if (success) setResetSent(true);
+            });
+            return;
         }
 
-        if (mode !== 'reset') {
-            setFormData({ email: '', password: '', name: '', phone: '' });
-        }
+        setFormData({ email: '', password: '', name: '', phone: '' });
     };
 
     return (
@@ -83,7 +86,29 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit}>
+                {mode === 'reset' && resetSent ? (
+                    <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+                        <div style={{
+                            width: '60px', height: '60px', background: '#dcfce7', color: '#16a34a',
+                            borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            margin: '0 auto 1.5rem'
+                        }}>
+                            <Mail size={30} />
+                        </div>
+                        <h3 style={{ marginBottom: '1rem' }}>E-postanızı Kontrol Edin!</h3>
+                        <p style={{ color: 'var(--color-text-light)', marginBottom: '2rem', lineHeight: '1.6' }}>
+                            <b>{formData.email}</b> adresine şifre sıfırlama bağlantısı gönderildi. Lütfen gelen kutunuzu (ve gereksiz kutusunu) kontrol edin.
+                        </p>
+                        <button
+                            onClick={() => { setMode('login'); setResetSent(false); }}
+                            className="btn btn-primary"
+                            style={{ width: '100%', justifyContent: 'center' }}
+                        >
+                            Giriş Ekranına Dön
+                        </button>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSubmit}>
                     {mode === 'register' && (
                         <>
                             <div className="form-group">
@@ -212,7 +237,9 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                         {mode === 'login' ? 'Giriş Yap' : mode === 'register' ? 'Kayıt Ol' : 'Şifremi Sıfırla'}
                     </button>
                 </form>
+                )}
 
+                {(!resetSent) && (
                 <div style={{
                     textAlign: 'center',
                     marginTop: '1.5rem',
@@ -237,6 +264,7 @@ export function Auth({ isOpen, onClose, onLogin, onRegister, onResetPassword, in
                         </button>
                     </p>
                 </div>
+                )}
             </div>
         </div>
     );

@@ -286,11 +286,12 @@ function App() {
   const handleResetPassword = async (email) => {
     try {
       await db.resetPassword(email);
-      setIsAuthOpen(false);
       showToast('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.', 'info');
+      return true;
     } catch (err) {
       console.error('Reset error:', err);
       showToast('Hata: ' + err.message, 'error');
+      return false;
     }
   };
 
