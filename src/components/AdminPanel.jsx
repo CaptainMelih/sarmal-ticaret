@@ -184,7 +184,7 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
                     <button onClick={onClose} style={{ background: 'none' }}><X /></button>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', background: 'var(--color-bg)', padding: '0.5rem', borderRadius: 'var(--radius-lg)', overflowX: 'auto' }}>
+                <div style={{ display: 'flex', flexShrink: 0, gap: '0.5rem', marginBottom: '2rem', background: 'var(--color-bg)', padding: '0.5rem', borderRadius: 'var(--radius-lg)', overflowX: 'auto' }}>
                     {[
                         { id: 'dashboard', label: 'Genel Bakış', icon: TrendingUp },
                         { id: 'orders', label: 'Siparişler', icon: ShoppingBag },
