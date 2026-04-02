@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS products (
     image TEXT DEFAULT '',
     category INTEGER NOT NULL DEFAULT 1,
     stock INTEGER DEFAULT 100,
+    flash_discount_rate INTEGER DEFAULT 0,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()

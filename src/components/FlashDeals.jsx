@@ -30,8 +30,8 @@ export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductCl
 
     if (!isOpen) return null;
 
-    // Filter flash deals (e.g., products with high discount or specific ones)
-    const flashProducts = products.slice(0, 6); // Just as an example, first 6 products
+    // Dynamically filter flash deals from DB flag
+    const flashProducts = products.filter(p => p.flash_discount_rate > 0);
 
     return (
         <div className="modal-overlay" onClick={onClose} style={{ zIndex: 2000 }}>
@@ -72,7 +72,16 @@ export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductCl
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem', maxHeight: '60vh', overflowY: 'auto', padding: '0.5rem' }}>
-                        {flashProducts.map(product => (
+                        {flashProducts.length === 0 ? (
+                            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--color-text-light)' }}>
+                                <Zap size={48} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
+                                <h3>Şu an aktif bir flaş fırsat bulunmuyor.</h3>
+                                <p>Fırsatlar başladığında burada yerini alacak!</p>
+                            </div>
+                        ) : flashProducts.map(product => {
+                            const originalPrice = product.price / (1 - (product.flash_discount_rate / 100));
+                            
+                            return (
                             <div
                                 key={product.id}
                                 className="product-card"
@@ -82,14 +91,14 @@ export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductCl
                                 <div style={{ position: 'relative' }}>
                                     <img src={product.image} alt={product.title} style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: 'var(--radius-lg)' }} />
                                     <div style={{ position: 'absolute', top: '10px', right: '10px', background: '#ef4444', color: 'white', padding: '0.25rem 0.75rem', borderRadius: '20px', fontWeight: '800', fontSize: '0.8rem' }}>
-                                        -%40
+                                        -%{product.flash_discount_rate}
                                     </div>
                                 </div>
                                 <div style={{ padding: '1rem' }}>
                                     <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product.title}</h3>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
                                         <span style={{ color: '#ef4444', fontWeight: '800', fontSize: '1.25rem' }}>{product.price} TL</span>
-                                        <span style={{ color: 'var(--color-text-light)', textDecoration: 'line-through', fontSize: '0.9rem' }}>{(product.price * 1.4).toFixed(0)} TL</span>
+                                        <span style={{ color: 'var(--color-text-light)', textDecoration: 'line-through', fontSize: '0.9rem' }}>{originalPrice.toFixed(0)} TL</span>
                                     </div>
                                     <button
                                         className="btn btn-primary"
@@ -104,7 +113,7 @@ export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductCl
                                     </button>
                                 </div>
                             </div>
-                        ))}
+                        )})}
                     </div>
                 </div>
 

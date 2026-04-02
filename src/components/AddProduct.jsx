@@ -18,7 +18,8 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
         description: '',
         image: '',
         category: 1,
-        stock: 10
+        stock: 10,
+        flash_discount_rate: 0
     });
     const [extraImages, setExtraImages] = useState([]);
     const [newImageUrl, setNewImageUrl] = useState('');
@@ -31,11 +32,12 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
                 description: editProduct.description || '',
                 image: editProduct.image || '',
                 category: editProduct.category || 1,
-                stock: editProduct.stock || 0
+                stock: editProduct.stock || 0,
+                flash_discount_rate: editProduct.flash_discount_rate || 0
             });
             fetchExtraImages(editProduct.id);
         } else {
-            setFormData({ title: '', price: '', description: '', image: '', category: 1, stock: 10 });
+            setFormData({ title: '', price: '', description: '', image: '', category: 1, stock: 10, flash_discount_rate: 0 });
             setExtraImages([]);
         }
     }, [editProduct, isOpen]);
@@ -76,13 +78,14 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
             id: editProduct?.id,
             price: parseFloat(formData.price),
             stock: parseInt(formData.stock),
+            flash_discount_rate: parseInt(formData.flash_discount_rate) || 0,
             category: parseInt(formData.category),
             image: formData.image || 'https://placehold.co/600x400?text=Urun',
             extraImages: extraImages // Pass extra images to parent
         });
 
         if (!editProduct) {
-            setFormData({ title: '', price: '', description: '', image: '', category: 1, stock: 10 });
+            setFormData({ title: '', price: '', description: '', image: '', category: 1, stock: 10, flash_discount_rate: 0 });
             setExtraImages([]);
         }
         onClose();
@@ -125,7 +128,7 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
                             ))}
                         </select>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                         <div className="form-group">
                             <label>Fiyat (TL) *</label>
                             <input
@@ -147,6 +150,17 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
                                 required
                                 min="0"
                                 placeholder="10"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label style={{ color: '#ef4444' }}>⚡ Flaş Oranı (%)</label>
+                            <input
+                                type="number"
+                                value={formData.flash_discount_rate}
+                                onChange={e => setFormData({ ...formData, flash_discount_rate: e.target.value })}
+                                min="0"
+                                max="99"
+                                placeholder="Örn: 40"
                             />
                         </div>
                     </div>
