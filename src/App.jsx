@@ -82,7 +82,6 @@ function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
   const [isFlashDealsOpen, setIsFlashDealsOpen] = useState(false);
   const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
 
@@ -597,7 +596,7 @@ function App() {
         onOpenAuth={() => setIsAuthOpen(true)}
         onOpenProfile={() => setIsProfileOpen(true)}
         isAdmin={isAdmin}
-        onOpenAdmin={() => setIsAdminPanelOpen(true)}
+        onOpenAdmin={() => { navigate('/admin'); window.scrollTo(0, 0); }}
         onOpenCategories={() => setIsCategoryDrawerOpen(true)}
       />
 
@@ -686,6 +685,24 @@ function App() {
               />
               <Newsletter />
             </div>
+          } />
+
+          {/* Admin Page */}
+          <Route path="/admin" element={
+            isAdmin ? (
+              <AdminPanel
+                onRefreshProducts={async () => {
+                  const updated = await db.getProducts();
+                  setProducts(updated);
+                }}
+                onEditProduct={(p) => {
+                  setEditingProduct(p);
+                  setIsAddProductOpen(true);
+                }}
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
           } />
 
           {/* Legal Pages */}
@@ -853,18 +870,6 @@ function App() {
           </div>
         </div>
       </footer>
-      <AdminPanel
-        isOpen={isAdminPanelOpen}
-        onClose={() => setIsAdminPanelOpen(false)}
-        onRefreshProducts={async () => {
-          const updated = await db.getProducts();
-          setProducts(updated);
-        }}
-        onEditProduct={(p) => {
-          setEditingProduct(p);
-          setIsAddProductOpen(true);
-        }}
-      />
 
       <FlashDeals
         isOpen={isFlashDealsOpen}

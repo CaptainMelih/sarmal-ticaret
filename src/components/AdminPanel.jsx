@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent } from 'lucide-react';
 import * as db from '../lib/supabase';
 
-export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }) {
+export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const [activeTab, setActiveTab] = useState('orders');
     const [orders, setOrders] = useState([]);
     const [products, setProducts] = useState([]);
@@ -165,14 +165,17 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
         }
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="container" style={{ padding: '2rem 0', minHeight: '70vh' }}>
             <div
-                className="modal-content"
-                style={{ maxWidth: '1100px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                onClick={(e) => e.stopPropagation()}
+                style={{ 
+                    background: 'var(--color-surface)', 
+                    borderRadius: 'var(--radius-lg)', 
+                    boxShadow: 'var(--shadow-md)', 
+                    padding: '2rem', 
+                    display: 'flex', 
+                    flexDirection: 'column' 
+                }}
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -181,7 +184,6 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
                         </div>
                         <h2 style={{ margin: 0 }}>Yönetim Paneli</h2>
                     </div>
-                    <button onClick={onClose} style={{ background: 'none' }}><X /></button>
                 </div>
 
                 <div style={{ display: 'flex', flexShrink: 0, gap: '0.5rem', marginBottom: '2rem', background: 'var(--color-bg)', padding: '0.5rem', borderRadius: 'var(--radius-lg)', overflowX: 'auto' }}>
