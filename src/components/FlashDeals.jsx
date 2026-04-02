@@ -57,15 +57,17 @@ export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductCl
                             </div>
                             <div>
                                 <h2 style={{ margin: 0, color: '#991b1b' }}>Flaş Fırsatlar</h2>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ef4444', fontWeight: '700', fontSize: '1.1rem' }}>
-                                    <Clock size={18} />
-                                    <span>
-                                        {String(timeLeft.h).padStart(2, '0')}:
-                                        {String(timeLeft.m).padStart(2, '0')}:
-                                        {String(timeLeft.s).padStart(2, '0')}
-                                    </span>
-                                    <span style={{ fontSize: '0.8rem', color: '#b91c1c', fontWeight: '400' }}>sonra bitiyor!</span>
-                                </div>
+                                {flashProducts.length > 0 && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ef4444', fontWeight: '700', fontSize: '1.1rem' }}>
+                                        <Clock size={18} />
+                                        <span>
+                                            {String(timeLeft.h).padStart(2, '0')}:
+                                            {String(timeLeft.m).padStart(2, '0')}:
+                                            {String(timeLeft.s).padStart(2, '0')}
+                                        </span>
+                                        <span style={{ fontSize: '0.8rem', color: '#b91c1c', fontWeight: '400' }}>sonra bitiyor!</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <button onClick={onClose} style={{ background: 'white', border: '1px solid #fee2e2', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X /></button>
