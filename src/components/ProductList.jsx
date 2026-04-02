@@ -49,9 +49,10 @@ export function ProductList({
         );
     }
 
-    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const availableProducts = products.filter(p => p.stock > 0);
+    const totalPages = Math.ceil(availableProducts.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentProducts = products.slice(startIndex, startIndex + itemsPerPage);
+    const currentProducts = availableProducts.slice(startIndex, startIndex + itemsPerPage);
 
     return (
         <div className="container">
@@ -240,7 +241,10 @@ export function ProductList({
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem', gap: '0.5rem' }}>
                     <button
                         className="btn btn-outline"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        onClick={() => {
+                            setCurrentPage(prev => Math.max(prev - 1, 1));
+                            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                        }}
                         disabled={currentPage === 1}
                         style={{ padding: '0.5rem 1rem' }}
                     >
@@ -250,7 +254,10 @@ export function ProductList({
                         <button
                             key={idx}
                             className={`btn ${currentPage === idx + 1 ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => setCurrentPage(idx + 1)}
+                            onClick={() => {
+                                setCurrentPage(idx + 1);
+                                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                            }}
                             style={{ padding: '0.5rem 1rem', width: '40px' }}
                         >
                             {idx + 1}
@@ -258,7 +265,10 @@ export function ProductList({
                     ))}
                     <button
                         className="btn btn-outline"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        onClick={() => {
+                            setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                        }}
                         disabled={currentPage === totalPages}
                         style={{ padding: '0.5rem 1rem' }}
                     >
