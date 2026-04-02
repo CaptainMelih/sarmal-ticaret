@@ -54,6 +54,15 @@ export function ProductList({
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentProducts = availableProducts.slice(startIndex, startIndex + itemsPerPage);
 
+    const scrollToTop = () => {
+        const anchor = document.getElementById('product-section-anchor');
+        if (anchor) {
+            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="container">
             <h2 style={{
@@ -243,7 +252,7 @@ export function ProductList({
                         className="btn btn-outline"
                         onClick={() => {
                             setCurrentPage(prev => Math.max(prev - 1, 1));
-                            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                            scrollToTop();
                         }}
                         disabled={currentPage === 1}
                         style={{ padding: '0.5rem 1rem' }}
@@ -256,7 +265,7 @@ export function ProductList({
                             className={`btn ${currentPage === idx + 1 ? 'btn-primary' : 'btn-outline'}`}
                             onClick={() => {
                                 setCurrentPage(idx + 1);
-                                window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                                scrollToTop();
                             }}
                             style={{ padding: '0.5rem 1rem', width: '40px' }}
                         >
@@ -267,7 +276,7 @@ export function ProductList({
                         className="btn btn-outline"
                         onClick={() => {
                             setCurrentPage(prev => Math.min(prev + 1, totalPages));
-                            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+                            scrollToTop();
                         }}
                         disabled={currentPage === totalPages}
                         style={{ padding: '0.5rem 1rem' }}

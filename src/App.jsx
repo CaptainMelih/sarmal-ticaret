@@ -620,7 +620,7 @@ function App() {
                 />
               </div>
 
-              <div className="container">
+              <div className="container" id="product-section-anchor">
                 <div style={{ marginBottom: '2rem' }}>
                   <h2 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--color-secondary)', fontWeight: '700' }}>Öne Çıkanlar</h2>
                 </div>
