@@ -133,6 +133,7 @@ export async function getProducts() {
     const { data, error } = await supabase
         .from('products')
         .select('*')
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -163,7 +164,7 @@ export async function updateProduct(productId, updates) {
 export async function deleteProduct(productId) {
     const { error } = await supabase
         .from('products')
-        .delete()
+        .update({ is_active: false })
         .eq('id', productId);
 
     if (error) throw error;
