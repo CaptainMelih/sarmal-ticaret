@@ -52,13 +52,15 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const fetchAdminData = async () => {
         setIsLoading(true);
         try {
-            const [allOrdersResult, allProductsResult] = await Promise.allSettled([
+            const [allOrdersResult, allProductsResult, profileCountResult] = await Promise.allSettled([
                 db.getAllOrders(),
-                db.getProducts()
+                db.getProducts(),
+                db.getProfileCount()
             ]);
             
             const allOrders = allOrdersResult.status === 'fulfilled' ? allOrdersResult.value : [];
             const allProducts = allProductsResult.status === 'fulfilled' ? allProductsResult.value : [];
+            const activeUsersCount = profileCountResult.status === 'fulfilled' ? profileCountResult.value : 0;
             
             if (allOrdersResult.status === 'rejected') console.error('Orders failed:', allOrdersResult.reason);
             if (allProductsResult.status === 'rejected') console.error('Products failed:', allProductsResult.reason);
@@ -73,7 +75,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                 totalSales: total,
                 orderCount: allOrders.length,
                 outOfStock: lowStock,
-                activeUsers: new Set(allOrders.map(o => o.user_id)).size
+                activeUsers: activeUsersCount
             });
         } catch (err) {
             console.error('Admin data fetch error:', err);

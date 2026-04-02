@@ -116,6 +116,15 @@ export async function updateProfile(userId, updates) {
     return data;
 }
 
+export async function getProfileCount() {
+    const { count, error } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+    if (error) throw error;
+    return count || 0;
+}
+
 // ==========================================
 // 📦 ÜRÜN FONKSİYONLARI
 // ==========================================
