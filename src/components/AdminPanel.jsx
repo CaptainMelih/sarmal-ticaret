@@ -54,10 +54,17 @@ export function AdminPanel({ isOpen, onClose, onRefreshProducts, onEditProduct }
     const fetchAdminData = async () => {
         setIsLoading(true);
         try {
-            const [allOrders, allProducts] = await Promise.all([
+            const [allOrdersResult, allProductsResult] = await Promise.allSettled([
                 db.getAllOrders(),
                 db.getProducts()
             ]);
+            
+            const allOrders = allOrdersResult.status === 'fulfilled' ? allOrdersResult.value : [];
+            const allProducts = allProductsResult.status === 'fulfilled' ? allProductsResult.value : [];
+            
+            if (allOrdersResult.status === 'rejected') console.error('Orders failed:', allOrdersResult.reason);
+            if (allProductsResult.status === 'rejected') console.error('Products failed:', allProductsResult.reason);
+
             setOrders(allOrders);
             setProducts(allProducts);
 

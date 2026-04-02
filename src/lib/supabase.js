@@ -186,7 +186,6 @@ export async function getAllOrders() {
         .from('orders')
         .select(`
             *,
-            profiles (name, email),
             addresses (*),
             order_items (
                 *,
@@ -196,7 +195,16 @@ export async function getAllOrders() {
         .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    const orders = data || [];
+    
+    // Attach profiles manually to bypass missing foreign key constraint
+    for (let o of orders) {
+        if (o.user_id) {
+            const { data: prof } = await supabase.from('profiles').select('name, email').eq('id', o.user_id).single();
+            o.profiles = prof || null;
+        }
+    }
+    return orders;
 }
 
 export async function createOrder(orderData) {
