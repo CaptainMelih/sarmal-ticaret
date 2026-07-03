@@ -31,12 +31,14 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
 
     const statusNext = {
         'preparing': 'shipping',
+        'completed': 'shipping',
         'shipping': 'delivered',
         'delivered': 'delivered'
     };
 
     const statusLabels = {
         'preparing': 'Hazırlanıyor',
+        'completed': 'Hazırlanıyor',
         'shipping': 'Kargoda',
         'delivered': 'Teslim Edildi',
         'cancelled': 'İptal Edildi'

@@ -299,7 +299,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                                         fontWeight: '700',
                                                         marginTop: '0.25rem'
                                                     }}>
-                                                        {order.status === 'preparing' ? 'Hazırlanıyor' : order.status === 'shipping' ? 'Kargoda' : order.status === 'delivered' ? 'Teslim Edildi' : 'İptal Edildi'}
+                                                        {(order.status === 'preparing' || order.status === 'completed') ? 'Hazırlanıyor' : order.status === 'shipping' ? 'Kargoda' : order.status === 'delivered' ? 'Teslim Edildi' : 'İptal Edildi'}
                                                     </div>
                                                 </div>
                                             </div>

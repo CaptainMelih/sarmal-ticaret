@@ -221,7 +221,7 @@ app.post('/api/paytr-webhook', async (req, res) => {
             console.log("Ödeme Onaylandı:", postData.merchant_oid);
             await supabase
                 .from('orders')
-                .update({ status: 'completed', payment_status: 'paid', updated_at: new Date().toISOString() })
+                .update({ status: 'preparing', payment_status: 'paid', updated_at: new Date().toISOString() })
                 .eq('id', postData.merchant_oid);
         } else {
             console.log("Ödeme Hatalı:", postData.merchant_oid, postData.failed_reason_msg);

@@ -18,6 +18,7 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS transfer_bank VARCHAR(100);
 -- --------------------------------------------------------------
 ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
 ALTER TABLE order_items DISABLE ROW LEVEL SECURITY;
+ALTER TABLE addresses DISABLE ROW LEVEL SECURITY;
 
 -- --------------------------------------------------------------
 -- 💡 SEÇENEK B (ALTERNATİF GÜVENLİK MODELİ):

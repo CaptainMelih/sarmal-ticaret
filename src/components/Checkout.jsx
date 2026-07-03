@@ -85,20 +85,23 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         }
     };
 
-    const handleComplete = async () => {
-        if (step === 1 && !selectedAddress && user && addresses?.length > 0) {
-            alert('Lütfen bir teslimat adresi seçin.');
-            return;
+    const isAddressValid = () => {
+        if (user) {
+            return selectedAddress !== null;
+        } else {
+            return (guestAddress.fullAddress || '').trim() !== '' &&
+                   (guestAddress.city || '').trim() !== '' &&
+                   (guestAddress.district || '').trim() !== '' &&
+                   (guestAddress.phone || '').trim().length >= 10;
         }
+    };
 
-        if (step === 1 && !user) {
-            if (!guestAddress.fullAddress || !guestAddress.city || !guestAddress.district || !guestAddress.phone) {
-                alert('Lütfen tüm adres bilgilerinizi eksiksiz doldurun.');
+    const handleComplete = async () => {
+        if (step === 1) {
+            if (!isAddressValid()) {
+                alert(user ? 'Lütfen bir teslimat adresi seçin.' : 'Lütfen tüm adres bilgilerinizi eksiksiz doldurun.');
                 return;
             }
-        }
-
-        if (step === 1) {
             setStep(2);
         } else if (step === 2) {
             if (!agreedToTerms) {
@@ -559,8 +562,15 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                     <button
                                         className="btn btn-primary"
                                         onClick={handleComplete}
-                                        disabled={isSubmitting}
-                                        style={{ flex: 2, justifyContent: 'center', padding: '0.8rem', fontWeight: '800', opacity: isSubmitting ? 0.7 : 1 }}
+                                        disabled={isSubmitting || (step === 1 && !isAddressValid())}
+                                        style={{
+                                            flex: 2,
+                                            justifyContent: 'center',
+                                            padding: '0.8rem',
+                                            fontWeight: '800',
+                                            opacity: (isSubmitting || (step === 1 && !isAddressValid())) ? 0.5 : 1,
+                                            cursor: (isSubmitting || (step === 1 && !isAddressValid())) ? 'not-allowed' : 'pointer'
+                                        }}
                                     >
                                         {isSubmitting ? 'İşleniyor...' : (step === 1 ? 'Ödemeye Geç' : 'Siparişi Onayla')}
                                     </button>
