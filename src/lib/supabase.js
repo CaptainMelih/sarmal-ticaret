@@ -125,6 +125,16 @@ export async function getProfileCount() {
     return count || 0;
 }
 
+export async function getAllProfiles() {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+}
+
 // ==========================================
 // 📦 ÜRÜN FONKSİYONLARI
 // ==========================================

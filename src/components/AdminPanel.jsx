@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent } from 'lucide-react';
+import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users } from 'lucide-react';
 import * as db from '../lib/supabase';
 
 export function AdminPanel({ onRefreshProducts, onEditProduct }) {
@@ -8,6 +8,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const [products, setProducts] = useState([]);
     const [coupons, setCoupons] = useState([]);
     const [reviews, setReviews] = useState([]);
+    const [customers, setCustomers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isAddingCoupon, setIsAddingCoupon] = useState(false);
@@ -52,21 +53,25 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const fetchAdminData = async () => {
         setIsLoading(true);
         try {
-            const [allOrdersResult, allProductsResult, profileCountResult] = await Promise.allSettled([
+            const [allOrdersResult, allProductsResult, profileCountResult, allProfilesResult] = await Promise.allSettled([
                 db.getAllOrders(),
                 db.getProducts(),
-                db.getProfileCount()
+                db.getProfileCount(),
+                db.getAllProfiles()
             ]);
             
             const allOrders = allOrdersResult.status === 'fulfilled' ? allOrdersResult.value : [];
             const allProducts = allProductsResult.status === 'fulfilled' ? allProductsResult.value : [];
             const activeUsersCount = profileCountResult.status === 'fulfilled' ? profileCountResult.value : 0;
+            const allProfiles = allProfilesResult.status === 'fulfilled' ? allProfilesResult.value : [];
             
             if (allOrdersResult.status === 'rejected') console.error('Orders failed:', allOrdersResult.reason);
             if (allProductsResult.status === 'rejected') console.error('Products failed:', allProductsResult.reason);
+            if (allProfilesResult.status === 'rejected') console.error('Profiles failed:', allProfilesResult.reason);
 
             setOrders(allOrders);
             setProducts(allProducts);
+            setCustomers(allProfiles);
 
             const total = allOrders.reduce((sum, o) => sum + (o.status !== 'cancelled' ? Number(o.total) : 0), 0);
             const lowStock = allProducts.filter(p => p.stock <= 0).length;
@@ -107,7 +112,6 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
 
     const handleAdvanceStatus = async (order) => {
         if (order.status === 'preparing') {
-            // Ask for tracking when moving to shipping
             setTrackingInfo({ carrier: '', tracking_code: '' });
             setIsShippingDialogOpen(true);
             return;
@@ -165,6 +169,18 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         }
     };
 
+    function StatCard({ title, value, icon, trend }) {
+        return (
+            <div style={{ background: 'white', padding: '1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', background: '#f8fafc' }}>{icon}</div>
+                <div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)' }}>{title}</div>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>{value}</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container" style={{ padding: '2rem 0', minHeight: '70vh' }}>
             <div
@@ -191,7 +207,8 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                         { id: 'dashboard', label: 'Genel Bakış', icon: TrendingUp },
                         { id: 'orders', label: 'Siparişler', icon: ShoppingBag },
                         { id: 'products', label: 'Ürünler', icon: Package },
-                        { id: 'coupons', label: 'Kuponlar', icon: Ticket }
+                        { id: 'coupons', label: 'Kuponlar', icon: Ticket },
+                        { id: 'customers', label: 'Müşteriler', icon: Users }
                     ].map(tab => {
                         const Icon = tab.icon;
                         return (
@@ -233,7 +250,6 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                 <StatCard title="Aktif Müşteri" value={stats.activeUsers} icon={<Package color="#f59e0b" />} />
                             </div>
 
-                            {/* Stock Warnings */}
                             <div style={{ marginBottom: '2rem' }}>
                                 <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ef4444' }}>
                                     <AlertCircle size={20} /> Kritik Stok Uyarıları
@@ -255,6 +271,95 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                             </div>
                                         ))
                                     )}
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
+                                <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <h3 style={{ margin: '0 0 1.25rem 0', fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-text)' }}>🔥 En Çok Satan Ürünler</h3>
+                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                        {(() => {
+                                            const counts = {};
+                                            orders.forEach(order => {
+                                                if (order.status !== 'cancelled' && order.order_items) {
+                                                    order.order_items.forEach(item => {
+                                                        const pId = item.product_id;
+                                                        const pTitle = item.products?.title || 'Bilinmeyen Ürün';
+                                                        const pImage = item.products?.image;
+                                                        if (!counts[pId]) {
+                                                            counts[pId] = { title: pTitle, image: pImage, count: 0, totalSales: 0 };
+                                                        }
+                                                        counts[pId].count += item.quantity;
+                                                        counts[pId].totalSales += (item.quantity * item.price);
+                                                    });
+                                                }
+                                            });
+                                            const topSelling = Object.values(counts).sort((a, b) => b.count - a.count).slice(0, 5);
+
+                                            if (topSelling.length === 0) {
+                                                return <p style={{ color: 'var(--color-text-light)', fontSize: '0.9rem' }}>Henüz yeterli satış verisi bulunmuyor.</p>;
+                                            }
+
+                                            const maxCount = Math.max(...topSelling.map(item => item.count)) || 1;
+                                            return topSelling.map((p, idx) => {
+                                                const pct = (p.count / maxCount) * 100;
+                                                return (
+                                                    <div key={idx} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                                        {p.image && <img src={p.image} style={{ width: '40px', height: '40px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} />}
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontSize: '0.85rem', fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '200px' }} title={p.title}>{p.title}</div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                                                                <div style={{ flex: 1, height: '6px', background: '#f1f5f9', borderRadius: '3px', overflow: 'hidden' }}>
+                                                                    <div style={{ width: `${pct}%`, height: '100%', background: 'var(--color-primary)', borderRadius: '3px' }}></div>
+                                                                </div>
+                                                                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--color-text-light)', minWidth: '45px', textAlign: 'right' }}>{p.count} adet</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            });
+                                        })()}
+                                    </div>
+                                </div>
+
+                                <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <h3 style={{ margin: '0 0 1.25rem 0', fontSize: '1.1rem', fontWeight: '700', color: 'var(--color-text)' }}>📊 Aylık Satış Dağılımı</h3>
+                                    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', height: '160px', paddingTop: '1rem', borderBottom: '2px solid #e2e8f0' }}>
+                                        {(() => {
+                                            const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+                                            const monthlySales = Array(12).fill(0);
+                                            orders.forEach(o => {
+                                                if (o.status !== 'cancelled') {
+                                                    const m = new Date(o.created_at).getMonth();
+                                                    monthlySales[m] += Number(o.total);
+                                                }
+                                            });
+                                            const maxSales = Math.max(...monthlySales) || 1;
+                                            const currentMonth = new Date().getMonth();
+                                            const showMonths = [];
+                                            for (let i = 5; i >= 0; i--) {
+                                                const mIdx = (currentMonth - i + 12) % 12;
+                                                showMonths.push({ name: months[mIdx], value: monthlySales[mIdx] });
+                                            }
+
+                                            return showMonths.map((m, idx) => {
+                                                const pct = (m.value / maxSales) * 80 + 5;
+                                                return (
+                                                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, gap: '0.5rem' }}>
+                                                        <div style={{ fontSize: '0.65rem', fontWeight: '700', color: 'var(--color-primary)' }}>{m.value > 0 ? `${Math.round(m.value)}₺` : ''}</div>
+                                                        <div style={{
+                                                            width: '24px',
+                                                            height: `${m.value > 0 ? pct : 2}px`,
+                                                            background: m.value > 0 ? 'linear-gradient(to top, var(--color-primary), #818cf8)' : '#e2e8f0',
+                                                            borderRadius: '4px 4px 0 0',
+                                                            transition: 'height 0.3s ease'
+                                                        }} title={`${m.name}: ${m.value.toFixed(2)} TL`}></div>
+                                                        <div style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--color-text-light)' }}>{m.name}</div>
+                                                    </div>
+                                                );
+                                            });
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -383,17 +488,38 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                         )}
                                         <img src={product.image} style={{ width: '80px', height: '80px', borderRadius: 'var(--radius-md)', objectFit: 'cover' }} />
                                         <div style={{ flex: 1 }}>
-                                            <h4 style={{ margin: 0, fontSize: '1rem' }}>{product.title}</h4>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--color-primary)', fontWeight: '700' }}>{product.price} TL</div>
+                                            <h4 style={{ margin: 0, fontSize: '1rem', marginBottom: '0.5rem' }}>{product.title}</h4>
+                                            
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                                                <span style={{ fontSize: '0.85rem', width: '35px' }}>Fiyat:</span>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    defaultValue={product.price}
+                                                    onBlur={async (e) => {
+                                                        const newPrice = parseFloat(e.target.value);
+                                                        if (newPrice !== product.price && !isNaN(newPrice)) {
+                                                            try {
+                                                                await db.updateProduct(product.id, { price: newPrice });
+                                                                onRefreshProducts();
+                                                            } catch (err) {
+                                                                alert('Fiyat güncellenemedi');
+                                                            }
+                                                        }
+                                                    }}
+                                                    style={{ width: '80px', padding: '0.2rem 0.4rem', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid #ddd', fontWeight: '700', color: 'var(--color-primary)' }}
+                                                />
+                                                <span style={{ fontSize: '0.85rem', fontWeight: '700' }}>TL</span>
+                                            </div>
 
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
-                                                <span style={{ fontSize: '0.85rem' }}>Stok:</span>
+                                                <span style={{ fontSize: '0.85rem', width: '35px' }}>Stok:</span>
                                                 <input
                                                     type="number"
                                                     defaultValue={product.stock}
                                                     onBlur={async (e) => {
                                                         const newStock = parseInt(e.target.value);
-                                                        if (newStock !== product.stock) {
+                                                        if (newStock !== product.stock && !isNaN(newStock)) {
                                                             try {
                                                                 await db.updateProduct(product.id, { stock: newStock });
                                                                 onRefreshProducts();
@@ -402,7 +528,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                                             }
                                                         }
                                                     }}
-                                                    style={{ width: '60px', padding: '0.2rem', borderRadius: '4px', border: product.stock < 5 ? '1px solid #ef4444' : '1px solid #ddd', background: product.stock < 5 ? '#fef2f2' : 'white' }}
+                                                    style={{ width: '80px', padding: '0.2rem 0.4rem', fontSize: '0.85rem', borderRadius: '4px', border: product.stock < 5 ? '1px solid #ef4444' : '1px solid #ddd', background: product.stock < 5 ? '#fef2f2' : 'white' }}
                                                 />
                                             </div>
 
@@ -500,6 +626,43 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'customers' && (
+                        <div>
+                            <h3 style={{ marginBottom: '1.5rem' }}>Müşteri Listesi ({customers.length})</h3>
+                            <div style={{ overflowX: 'auto', background: 'white', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', textAlign: 'left' }}>
+                                    <thead>
+                                        <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                                            <th style={{ padding: '1rem' }}>Ad Soyad</th>
+                                            <th style={{ padding: '1rem' }}>E-posta</th>
+                                            <th style={{ padding: '1rem' }}>Telefon</th>
+                                            <th style={{ padding: '1rem' }}>Kayıt Tarihi</th>
+                                            <th style={{ padding: '1rem' }}>Sipariş Adeti</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {customers.map(c => {
+                                            const userOrdersCount = orders.filter(o => o.user_id === c.id).length;
+                                            return (
+                                                <tr key={c.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                    <td style={{ padding: '1rem', fontWeight: '600' }}>{c.name || 'Belirtilmemiş'}</td>
+                                                    <td style={{ padding: '1rem', color: '#475569' }}>{c.email}</td>
+                                                    <td style={{ padding: '1rem', color: '#475569' }}>{c.phone || 'Belirtilmemiş'}</td>
+                                                    <td style={{ padding: '1rem', color: 'var(--color-text-light)' }}>{c.created_at ? new Date(c.created_at).toLocaleDateString('tr-TR') : 'Belirtilmemiş'}</td>
+                                                    <td style={{ padding: '1rem', fontWeight: 'bold' }}>
+                                                        <span style={{ background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                                                            {userOrdersCount}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     )}
