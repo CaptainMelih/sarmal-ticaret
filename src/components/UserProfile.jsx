@@ -4,9 +4,12 @@ import { TURKEY_DATA } from '../data/turkey-data';
 import { CustomSelect } from './CustomSelect';
 
 
-export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddAddress, onDeleteAddress, orders }) {
+export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddAddress, onDeleteAddress, orders, onSubmitTransferNotification }) {
     const [activeTab, setActiveTab] = useState('profile');
     const [isAddingAddress, setIsAddingAddress] = useState(false);
+    const [selectedOrderForNotification, setSelectedOrderForNotification] = useState(null);
+    const [senderName, setSenderName] = useState('');
+    const [selectedBank, setSelectedBank] = useState('Ziraat Bankası');
     const [newAddress, setNewAddress] = useState({
         title: '',
         fullAddress: '',
@@ -386,6 +389,50 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                                 </div>
                                             )}
 
+                                            {/* Transfer Payment Status / Notification Button */}
+                                            {order.payment_method === 'transfer' && (
+                                                <div style={{
+                                                    marginTop: '1rem',
+                                                    padding: '1rem',
+                                                    background: '#f8fafc',
+                                                    borderRadius: 'var(--radius-md)',
+                                                    border: '1px solid #e2e8f0',
+                                                    fontSize: '0.9rem'
+                                                }}>
+                                                    <div style={{ fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text)' }}>
+                                                        <span>💳 Ödeme Durumu:</span>
+                                                        {order.payment_status === 'paid' ? (
+                                                            <span style={{ color: '#10b981' }}>Ödeme Onaylandı ✅</span>
+                                                        ) : order.payment_status === 'notification_sent' ? (
+                                                            <span style={{ color: '#3b82f6' }}>Bildirim Alındı (Onay Bekleniyor) ⏳</span>
+                                                        ) : (
+                                                            <span style={{ color: '#f59e0b' }}>Ödeme Bekleniyor ⏳</span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    {order.payment_status === 'notification_sent' && (
+                                                        <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)', marginTop: '0.25rem' }}>
+                                                            Gönderen: <strong>{order.transfer_sender}</strong> ({order.transfer_bank})
+                                                        </div>
+                                                    )}
+
+                                                    {(!order.payment_status || order.payment_status === 'pending') && (
+                                                        <div style={{ marginTop: '0.75rem' }}>
+                                                            <button
+                                                                className="btn btn-primary"
+                                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', width: '100%', justifyContent: 'center' }}
+                                                                onClick={() => {
+                                                                    setSelectedOrderForNotification(order);
+                                                                    setSenderName(user?.name || '');
+                                                                }}
+                                                            >
+                                                                Havale Bildirimi Yap
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             {/* Action Buttons */}
                                             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
                                                 {order.status === 'preparing' && (
@@ -426,6 +473,80 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                     )}
                 </div>
             </div>
+
+            {/* Transfer Notification Modal */}
+            {selectedOrderForNotification && (
+                <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setSelectedOrderForNotification(null)}>
+                    <div className="modal-content" style={{ maxWidth: '400px', width: '90%' }} onClick={e => e.stopPropagation()}>
+                        <h3 style={{ marginTop: 0, marginBottom: '1.25rem' }}>Havale Ödeme Bildirimi</h3>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-light)', marginBottom: '1rem' }}>
+                            Lütfen banka hesabımıza ödemeyi yaptıktan sonra bu formu doldurun.
+                        </p>
+                        
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            onSubmitTransferNotification(selectedOrderForNotification.id, senderName, selectedBank);
+                            setSelectedOrderForNotification(null);
+                        }}>
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>
+                                    Sipariş Numarası
+                                </label>
+                                <input
+                                    type="text"
+                                    value={`#${selectedOrderForNotification.id}`}
+                                    disabled
+                                    style={{ width: '100%', padding: '0.5rem', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                                />
+                            </div>
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>
+                                    Gönderen Adı Soyadı *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={senderName}
+                                    onChange={(e) => setSenderName(e.target.value)}
+                                    required
+                                    placeholder="Hesap sahibinin adı soyadı"
+                                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                                />
+                            </div>
+                            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>
+                                    Gönderilen Banka *
+                                </label>
+                                <select
+                                    value={selectedBank}
+                                    onChange={(e) => setSelectedBank(e.target.value)}
+                                    style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+                                >
+                                    <option value="Ziraat Bankası">Ziraat Bankası (Melih Yıldız)</option>
+                                </select>
+                            </div>
+                            
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline"
+                                    style={{ flex: 1, padding: '0.5rem' }}
+                                    onClick={() => setSelectedOrderForNotification(null)}
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                    style={{ flex: 2, padding: '0.5rem' }}
+                                    disabled={!senderName.trim()}
+                                >
+                                    Bildirimi Gönder
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

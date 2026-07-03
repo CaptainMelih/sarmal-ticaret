@@ -292,6 +292,28 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                                     {order.status === 'preparing' ? 'Kargoya Ver' : 'Teslim Et'}
                                                 </button>
                                             )}
+                                            {order.payment_method === 'transfer' && order.payment_status !== 'paid' && (
+                                                <button
+                                                    onClick={async () => {
+                                                        if (confirm('Bu siparişin Havale/EFT ödemesini onaylıyor musunuz?')) {
+                                                            await handleUpdateStatus(order.id, 'preparing', { payment_status: 'paid' });
+                                                        }
+                                                    }}
+                                                    className="btn"
+                                                    style={{
+                                                        padding: '0.4rem 0.8rem',
+                                                        fontSize: '0.85rem',
+                                                        background: '#10b981',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        cursor: 'pointer',
+                                                        borderRadius: 'var(--radius-md)',
+                                                        fontWeight: '600'
+                                                    }}
+                                                >
+                                                    Ödemeyi Onayla
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
 
@@ -313,6 +335,29 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                             {order.order_items?.length} Ürün {order.coupon_code && <span style={{ color: 'var(--color-primary)' }}>🏷️ {order.coupon_code}</span>}
                                         </div>
                                     </div>
+
+                                    {/* Wire Transfer Details on List */}
+                                    {order.payment_method === 'transfer' && (
+                                        <div style={{
+                                            marginTop: '0.75rem',
+                                            padding: '0.75rem',
+                                            background: '#f8fafc',
+                                            border: '1px dashed #cbd5e1',
+                                            borderRadius: 'var(--radius-md)',
+                                            fontSize: '0.85rem'
+                                        }}>
+                                            <strong>💰 Havale Ödemesi: </strong>
+                                            {order.payment_status === 'paid' ? (
+                                                <span style={{ color: '#10b981', fontWeight: 'bold' }}>Ödeme Onaylandı ✅</span>
+                                            ) : order.payment_status === 'notification_sent' ? (
+                                                <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>
+                                                    Bildirim Geldi! ⚠️ (Gönderen: {order.transfer_sender} - {order.transfer_bank})
+                                                </span>
+                                            ) : (
+                                                <span style={{ color: '#f59e0b' }}>Ödeme Bekleniyor ⏳</span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -522,6 +567,41 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                         </div>
                                     </div>
                                 </div>
+
+                                {selectedOrder.payment_method === 'transfer' && (
+                                    <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', fontSize: '0.9rem' }}>
+                                        <div style={{ fontWeight: '700', marginBottom: '0.5rem' }}>💳 Ödeme Yöntemi: Havale/EFT</div>
+                                        <div>
+                                            Ödeme Durumu: 
+                                            {selectedOrder.payment_status === 'paid' ? (
+                                                <span style={{ color: '#10b981', fontWeight: '700' }}> Onaylandı ✅</span>
+                                            ) : selectedOrder.payment_status === 'notification_sent' ? (
+                                                <span style={{ color: '#3b82f6', fontWeight: '700' }}> Bildirim Yapıldı ⏳</span>
+                                            ) : (
+                                                <span style={{ color: '#f59e0b', fontWeight: '700' }}> Bekleniyor ⏳</span>
+                                            )}
+                                        </div>
+                                        {selectedOrder.transfer_sender && (
+                                            <div style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
+                                                <div>Gönderen: <strong>{selectedOrder.transfer_sender}</strong></div>
+                                                <div>Banka: <strong>{selectedOrder.transfer_bank}</strong></div>
+                                            </div>
+                                        )}
+                                        {selectedOrder.payment_status !== 'paid' && (
+                                            <button
+                                                onClick={async () => {
+                                                    if (confirm('Ödemeyi onaylamak istiyor musunuz?')) {
+                                                        await handleUpdateStatus(selectedOrder.id, 'preparing', { payment_status: 'paid' });
+                                                    }
+                                                }}
+                                                className="btn btn-primary"
+                                                style={{ width: '100%', marginTop: '0.75rem', justifyContent: 'center', background: '#10b981', cursor: 'pointer' }}
+                                            >
+                                                Ödemeyi Onayla
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
 
                                 {selectedOrder.note && (
                                     <div>

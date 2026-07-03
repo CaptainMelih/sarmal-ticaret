@@ -426,6 +426,25 @@ function App() {
     }
   };
 
+  const handleSubmitTransferNotification = async (orderId, sender, bank) => {
+    try {
+      await db.updateOrderStatus(orderId, 'preparing', {
+        payment_status: 'notification_sent',
+        transfer_sender: sender,
+        transfer_bank: bank
+      });
+      showToast('Havale bildirimi başarıyla gönderildi.', 'success');
+      // Refresh orders
+      if (user) {
+        const updatedOrders = await db.getOrders(user.id);
+        setOrders(updatedOrders);
+      }
+    } catch (err) {
+      console.error('Submit transfer notification error:', err);
+      showToast('Bildirim gönderilemedi: ' + err.message, 'error');
+    }
+  };
+
   // Checkout handlers
   const handleInitiateCheckout = () => {
     setIsCartOpen(false);
@@ -812,6 +831,7 @@ function App() {
         onAddAddress={handleAddAddress}
         onDeleteAddress={handleDeleteAddress}
         orders={orders}
+        onSubmitTransferNotification={handleSubmitTransferNotification}
       />
 
       <Checkout
