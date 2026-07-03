@@ -206,7 +206,6 @@ export async function getAllOrders() {
         .from('orders')
         .select(`
             *,
-            addresses (*),
             order_items (
                 *,
                 products (title, price, image)
@@ -217,11 +216,15 @@ export async function getAllOrders() {
     if (error) throw error;
     const orders = data || [];
     
-    // Attach profiles manually to bypass missing foreign key constraint
+    // Attach profiles and addresses manually to bypass missing foreign key constraints
     for (let o of orders) {
         if (o.user_id) {
             const { data: prof } = await supabase.from('profiles').select('name, email').eq('id', o.user_id).single();
             o.profiles = prof || null;
+        }
+        if (o.address_id) {
+            const { data: addr } = await supabase.from('addresses').select('*').eq('id', o.address_id).single();
+            o.addresses = addr || null;
         }
     }
     return orders;
