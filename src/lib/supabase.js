@@ -250,7 +250,13 @@ export async function createOrder(orderData) {
         .from('order_items')
         .insert(orderItems);
 
-    if (itemsError) throw itemsError;
+    if (itemsError) {
+        console.error("Order Items Insertion Error:", itemsError);
+        if (itemsError.code === '23503') {
+            throw new Error("Bazı ürünler artık mevcut değil. Lütfen sepetinizi kontrol edip tekrar deneyin.");
+        }
+        throw itemsError;
+    }
 
     return order;
 }
@@ -304,7 +310,13 @@ export async function createGuestOrder(orderData, guestAddress) {
         .from('order_items')
         .insert(orderItems);
 
-    if (itemsError) throw itemsError;
+    if (itemsError) {
+        console.error("Guest Order Items Insertion Error:", itemsError);
+        if (itemsError.code === '23503') {
+            throw new Error("Bazı ürünler artık mevcut değil. Lütfen sepetinizi kontrol edip tekrar deneyin.");
+        }
+        throw itemsError;
+    }
 
     return order;
 }

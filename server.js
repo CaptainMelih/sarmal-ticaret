@@ -88,6 +88,18 @@ app.post('/api/checkout', async (req, res) => {
             return res.status(500).json({ status: 'failure', errorMessage: 'Ürün fiyatları doğrulanamadı.' });
         }
 
+        // Securely fetch order details to check for discounts, coupons, shipping
+        const { data: orderData, error: orderError } = await supabase
+            .from('orders')
+            .select('coupon_code, shipping, discount')
+            .eq('id', basketId)
+            .single();
+
+        if (orderError || !orderData) {
+            console.error("Supabase Order Fetch Error:", orderError);
+            return res.status(400).json({ status: 'failure', errorMessage: 'Sipariş bulunamadı.' });
+        }
+
         // Calculate real total amount
         let realTotal = 0;
         const validUserBasket = [];
@@ -104,17 +116,45 @@ app.post('/api/checkout', async (req, res) => {
             }
         }
 
-        // (We are omitting shipping/discount recalculation here for brevity, 
-        // assuming standard price. If discounts apply, they'd need backend validation too).
+        // Verify and recalculate coupon discount if any
+        let discount = 0;
+        if (orderData.coupon_code) {
+            const { data: coupon } = await supabase
+                .from('coupons')
+                .select('*')
+                .eq('code', orderData.coupon_code)
+                .single();
+            if (coupon) {
+                if (coupon.discount_type === 'percentage') {
+                    discount = (realTotal * parseFloat(coupon.discount_amount)) / 100;
+                } else {
+                    discount = parseFloat(coupon.discount_amount);
+                }
+                if (discount > realTotal) {
+                    discount = realTotal;
+                }
+            }
+        }
+
+        const shipping = parseFloat(orderData.shipping || 0);
+        const finalTotal = Math.max(0, realTotal - discount + shipping);
 
         // Update the order in the database with the verified total to wipe any frontend manipulation
-        await supabase
+        const { error: updateError } = await supabase
             .from('orders')
-            .update({ total_amount: realTotal })
+            .update({ 
+                total: finalTotal,
+                discount: discount
+            })
             .eq('id', basketId);
 
+        if (updateError) {
+            console.error("Supabase Order Update Error:", updateError);
+            return res.status(500).json({ status: 'failure', errorMessage: 'Sipariş güncellenemedi.' });
+        }
+
         // PayTR expects amount in cents/kurus (e.g. 10.50 TL -> 1050)
-        const payment_amount = Math.round(parseFloat(realTotal) * 100).toString();
+        const payment_amount = Math.round(finalTotal * 100).toString();
 
         const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
         const requestData = {

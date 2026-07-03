@@ -28,18 +28,7 @@ import { CategoryDrawer } from './components/CategoryDrawer';
 import * as db from './lib/supabase';
 
 
-const INITIAL_PRODUCTS = [
-  { id: 1, title: "Fjallraven Günlük Sırt Çantası", price: 1099, description: "Günlük kullanım için laptop bölmeli, suya dayanıklı ve geniş iç hacimli dayanıklı kumaş sırt çantası.", image: "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg", category: 1 },
-  { id: 2, title: "Premium Casual Erkek Tişört", price: 250, description: "Yaz ayları için ideal, %100 pamuklu, nefes alan ve slim fit kesim kaliteli erkek tişörtü.", image: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg", category: 1 },
-  { id: 3, title: "Erkek Ceket Uzun Kollu", price: 850, description: "Sonbahar ve ilkbahar geçişleri için tasarlanmış şık astarlı ince ceket.", image: "https://fakestoreapi.com/img/71li-ujtlAL._AC_UX679_.jpg", category: 1 },
-  { id: 4, title: "Erkek Slim Fit Klasik Gömlek", price: 400, description: "Ofis ve günlük şıklık için ütü gerektirmeyen slim fit tasarımlı gömlek.", image: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg", category: 1 },
-  { id: 5, title: "Gümüş Ejderha Tasarımlı Bileklik", price: 2300, description: "Kadınlar için özel seri, efsanevi ejderha detaylarına sahip altın ve gümüş zincir bileklik.", image: "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_QL65_ML3.jpg", category: 3 },
-  { id: 6, title: "Solid Altın İnce Yüzük", price: 1680, description: "Zarif ince pırlanta taşlarla süslenmiş saf altın kaplama premium yüzük.", image: "https://fakestoreapi.com/img/61sbMiUnoGL._AC_UL640_QL65_ML3.jpg", category: 3 },
-  { id: 7, title: "Prenses Kesim Gümüş Yüzük", price: 950, description: "Beyaz altın kaplama, özel gün hediyesi prenses kesim beyaz taşlı göz alıcı yüzük.", image: "https://fakestoreapi.com/img/71YAIFU48IL._AC_UL640_QL65_ML3.jpg", category: 3 },
-  { id: 8, title: "Paslanmaz Çelik Çift Halka Küpe", price: 300, description: "Gül kurusu altın (rose gold) renginde alerji yapmayan ve renk atmayan halka çelik küpe.", image: "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3.jpg", category: 3 },
-  { id: 9, title: "WD 2TB Taşınabilir Harici Disk", price: 1950, description: "WD Elements teknolojili, geniş depolama alanına sahip 2 Terabayt veri kapasiteli harici sabit disk.", image: "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg", category: 5 },
-  { id: 10, title: "SanDisk SSD PLUS 1TB SSD Disk", price: 1450, description: "Bilgisayarınızı hızlandıran yüksek okuma/yazma devirli 1 Terabayt dahili SSD bellek.", image: "https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg", category: 5 }
-];
+const INITIAL_PRODUCTS = [];
 
 function getLocalStorage(key, initialValue) {
   if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
@@ -93,7 +82,7 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // New premium features states
-  const [isDarkMode, setIsDarkMode] = useState(() => getLocalStorage('sarmal_darkMode', false));
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [viewedProducts, setViewedProducts] = useState(() => getLocalStorage('sarmal_viewed', []));
@@ -244,11 +233,25 @@ function App() {
     }
   }, [isDarkMode]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
       window.localStorage.setItem('sarmal_viewed', JSON.stringify(viewedProducts));
     }
   }, [viewedProducts]);
+
+  // Sync cart with database products to prevent foreign key errors
+  useEffect(() => {
+    if (products.length > 0 && cart.length > 0) {
+      const validCart = cart.filter(cartItem => 
+        products.some(p => p.id === cartItem.id)
+      );
+      
+      if (validCart.length !== cart.length) {
+        setCart(validCart);
+        console.warn('Bazı ürünler veritabanında bulunamadığı için sepetten temizlendi.');
+      }
+    }
+  }, [products]);
 
   // Toast helper
   const showToast = (message, type = 'success') => {
@@ -442,13 +445,17 @@ function App() {
         created = await db.createGuestOrder(orderData, orderData.guestAddress);
       }
 
-      // 2. Update Stock in Supabase
-      for (const item of orderData.items) {
-        const product = products.find(p => p.id === item.id);
-        if (product) {
-          const newStock = Math.max(0, product.stock - item.quantity);
-          await db.updateProduct(product.id, { stock: newStock });
+      // 2. Update Stock in Supabase (with error bypass so RLS doesn't block guest checkouts)
+      try {
+        for (const item of orderData.items) {
+          const product = products.find(p => p.id === item.id);
+          if (product) {
+            const newStock = Math.max(0, product.stock - item.quantity);
+            await db.updateProduct(product.id, { stock: newStock });
+          }
         }
+      } catch (stockErr) {
+        console.warn('Stock update failed (normal for guest RLS):', stockErr);
       }
 
       // 3. Update Coupon Usage if any
@@ -457,6 +464,18 @@ function App() {
         if (coupon) {
           await db.useCoupon(coupon.id);
         }
+      }
+
+      // If Wire Transfer (Havale/EFT), clear cart, show toast, and return order directly
+      if (orderData.paymentMethod === 'transfer') {
+        setCart([]);
+        showToast('Siparişiniz başarıyla alındı! Havale bilgileri bekleniyor. 🎉', 'success');
+        // Refresh product inventory list from DB in background
+        db.getProducts().then(setProducts).catch(console.error);
+        if (user) {
+          db.getOrders(user.id).then(setOrders).catch(console.error);
+        }
+        return created;
       }
 
       let orderAddress;
@@ -807,12 +826,12 @@ function App() {
         onClose={() => setToast({ ...toast, isVisible: false })}
       />
 
-      {/* Premium Widgets */}
-      <DarkModeToggle
+      {/* Premium Widgets (Temporarily Disabled) */}
+      {/* <DarkModeToggle
         isDark={isDarkMode}
         onToggle={() => setIsDarkMode(!isDarkMode)}
-      />
-      <LiveSupport />
+      /> */}
+      {/* <LiveSupport /> */}
       <SocialProof />
       <BackToTop />
 
