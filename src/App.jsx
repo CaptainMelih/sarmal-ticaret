@@ -485,9 +485,16 @@ function App() {
         orderAddress = addresses.find(a => a.id === orderData.addressId) || {};
       }
 
+      // Get the current session to pass access token to the server to bypass RLS select
+      const session = await db.getSession();
+      const headers = { 'Content-Type': 'application/json' };
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
       const checkoutRes = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({
           price: orderData.total,
           paidPrice: orderData.total,

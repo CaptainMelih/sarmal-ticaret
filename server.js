@@ -5,9 +5,9 @@ import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
 import { createClient } from '@supabase/supabase-js'
 
-// Initialize Supabase
+// Initialize Supabase (Use service role key if available to bypass RLS in backend)
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Constants
@@ -65,8 +65,22 @@ app.post('/api/checkout', async (req, res) => {
     try {
         const { basketId, buyer, basketItems } = req.body;
 
+        // Initialize user-authorized client if access token is sent in header (falls back to global supabase)
+        const authHeader = req.headers.authorization;
+        let clientSupabase = supabase;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.split(' ')[1];
+            clientSupabase = createClient(supabaseUrl, supabaseKey, {
+                global: {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            });
+        }
+
         // Securely fetch order items and recalculate real price
-        const { data: orderItemsData, error: itemsError } = await supabase
+        const { data: orderItemsData, error: itemsError } = await clientSupabase
             .from('order_items')
             .select('product_id, quantity')
             .eq('order_id', basketId);
@@ -78,7 +92,7 @@ app.post('/api/checkout', async (req, res) => {
 
         // Fetch all legitimate product prices
         const productIds = orderItemsData.map(item => item.product_id);
-        const { data: productsData, error: productsError } = await supabase
+        const { data: productsData, error: productsError } = await clientSupabase
             .from('products')
             .select('id, price, title')
             .in('id', productIds);
@@ -89,7 +103,7 @@ app.post('/api/checkout', async (req, res) => {
         }
 
         // Securely fetch order details to check for discounts, coupons, shipping
-        const { data: orderData, error: orderError } = await supabase
+        const { data: orderData, error: orderError } = await clientSupabase
             .from('orders')
             .select('coupon_code, shipping, discount')
             .eq('id', basketId)
@@ -119,7 +133,7 @@ app.post('/api/checkout', async (req, res) => {
         // Verify and recalculate coupon discount if any
         let discount = 0;
         if (orderData.coupon_code) {
-            const { data: coupon } = await supabase
+            const { data: coupon } = await clientSupabase
                 .from('coupons')
                 .select('*')
                 .eq('code', orderData.coupon_code)
@@ -140,7 +154,7 @@ app.post('/api/checkout', async (req, res) => {
         const finalTotal = Math.max(0, realTotal - discount + shipping);
 
         // Update the order in the database with the verified total to wipe any frontend manipulation
-        const { error: updateError } = await supabase
+        const { error: updateError } = await clientSupabase
             .from('orders')
             .update({ 
                 total: finalTotal,
