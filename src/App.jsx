@@ -130,7 +130,7 @@ function App() {
           const profile = await db.getProfile(session.user.id);
           setUser({ ...session.user, ...profile });
 
-          if (session.user.email === 'admin@sarmal.com') {
+          if (session.user.email === 'sarmalticarett@gmail.com' || session.user.email === 'admin@sarmal.com') {
             setIsAdmin(true);
           }
 
@@ -168,7 +168,7 @@ function App() {
         const profile = await db.getProfile(session.user.id);
         setUser({ ...session.user, ...profile });
 
-        if (session.user.email === 'sarmalticarett@gmail.com') {
+        if (session.user.email === 'sarmalticarett@gmail.com' || session.user.email === 'admin@sarmal.com') {
           setIsAdmin(true);
         }
 
