@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, User, MapPin, ShoppingBag, CreditCard, LogOut, Edit2, Trash2, Plus, Truck, CheckCircle, Clock, Mail, Phone } from 'lucide-react';
 import { TURKEY_DATA } from '../data/turkey-data';
 import { CustomSelect } from './CustomSelect';
+import * as db from '../lib/supabase';
 
 
 export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddAddress, onDeleteAddress, orders, onSubmitTransferNotification }) {
@@ -435,7 +436,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
 
                                             {/* Action Buttons */}
                                             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem' }}>
-                                                {order.status === 'preparing' && (
+                                                {order.status !== 'shipping' && order.status !== 'delivered' && order.status !== 'cancelled' && (
                                                     <button
                                                         className="btn btn-outline"
                                                         style={{ color: '#ef4444', border: '1px solid #fecaca', flex: 1, padding: '0.5rem' }}
