@@ -842,8 +842,13 @@ function App() {
         onCompleteOrder={handleCompleteOrder}
         onAddAddress={() => {
           setIsCheckoutOpen(false);
-          setIsAuthOpen(true);
+          if (user) {
+            setIsProfileOpen(true);
+          } else {
+            setIsAuthOpen(true);
+          }
         }}
+        user={user}
       />
 
       <Toast

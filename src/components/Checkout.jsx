@@ -11,7 +11,7 @@ const PAYMENT_METHODS = [
     { id: 'transfer', name: 'Havale/EFT', icon: Truck }
 ];
 
-export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrder, onAddAddress }) {
+export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrder, onAddAddress, user }) {
     const [step, setStep] = useState(1);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState('credit');
@@ -86,12 +86,12 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
     };
 
     const handleComplete = async () => {
-        if (step === 1 && !selectedAddress && addresses?.length > 0) {
+        if (step === 1 && !selectedAddress && user && addresses?.length > 0) {
             alert('Lütfen bir teslimat adresi seçin.');
             return;
         }
 
-        if (step === 1 && (!addresses || addresses.length === 0)) {
+        if (step === 1 && !user) {
             if (!guestAddress.fullAddress || !guestAddress.city || !guestAddress.district || !guestAddress.phone) {
                 alert('Lütfen tüm adres bilgilerinizi eksiksiz doldurun.');
                 return;
@@ -109,7 +109,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
             try {
                 const result = await onCompleteOrder({
                     addressId: selectedAddress ? selectedAddress.id : null,
-                    guestAddress: (!addresses || addresses.length === 0) ? guestAddress : null,
+                    guestAddress: !user ? guestAddress : null,
                     paymentMethod: selectedPayment,
                     items: groupedItems,
                     subtotal,
@@ -244,7 +244,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                             {step === 1 && (
                                 <div>
                                     <h3 style={{ marginBottom: '1.25rem', fontSize: '1.1rem' }}>Teslimat Adresi Seçin</h3>
-                                    {!addresses || addresses.length === 0 ? (
+                                    {!user ? (
                                         <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: 'var(--radius-lg)' }}>
                                             <h4 style={{ marginBottom: '1rem' }}>Misafir Teslimat Bilgileri</h4>
                                             <div className="form-group" style={{ marginBottom: '1rem' }}>
@@ -305,44 +305,57 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                         </div>
                                     ) : (
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                                            {addresses.map(address => (
-                                                <div
-                                                    key={address.id}
-                                                    onClick={() => setSelectedAddress(address)}
-                                                    style={{
-                                                        padding: '1.25rem',
-                                                        background: selectedAddress?.id === address.id ? '#f0f7ff' : 'white',
-                                                        borderRadius: 'var(--radius-lg)',
-                                                        cursor: 'pointer',
-                                                        border: selectedAddress?.id === address.id ? '2px solid var(--color-primary)' : '2px solid #e2e8f0',
-                                                        transition: 'all 0.2s',
-                                                        position: 'relative'
-                                                    }}
-                                                >
-                                                    {selectedAddress?.id === address.id && (
-                                                        <div style={{ position: 'absolute', top: '10px', right: '10px', color: 'var(--color-primary)' }}>
-                                                            <CheckCircle size={20} />
-                                                        </div>
-                                                    )}
-                                                    <div style={{ fontWeight: '700', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                        <MapPin size={16} color={selectedAddress?.id === address.id ? 'var(--color-primary)' : '#64748b'} />
-                                                        {address.title}
-                                                    </div>
-                                                    <div style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5' }}>
-                                                        {address.full_address}
-                                                    </div>
-                                                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem', fontWeight: '600' }}>
-                                                        {address.district}, {address.city}
-                                                    </div>
+                                            {addresses.length === 0 ? (
+                                                <div style={{ padding: '2rem', textAlign: 'center', background: '#f8fafc', borderRadius: 'var(--radius-lg)', gridColumn: '1 / -1' }}>
+                                                    <p style={{ color: 'var(--color-text-light)', marginBottom: '1rem' }}>
+                                                        Kayıtlı teslimat adresiniz bulunmamaktadır. Siparişe devam etmek için lütfen hesabınıza bir adres ekleyin.
+                                                    </p>
+                                                    <button className="btn btn-primary" onClick={onAddAddress} style={{ margin: '0 auto' }}>
+                                                        Profilime Git ve Adres Ekle 📍
+                                                    </button>
                                                 </div>
-                                            ))}
-                                            <div
-                                                onClick={() => { onClose(); onAddAddress(); }}
-                                                style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: 'var(--radius-lg)', cursor: 'pointer', border: '2px dashed #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b' }}
-                                            >
-                                                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>+</div>
-                                                <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>Yeni Adres Ekle</span>
-                                            </div>
+                                            ) : (
+                                                addresses.map(address => (
+                                                    <div
+                                                        key={address.id}
+                                                        onClick={() => setSelectedAddress(address)}
+                                                        style={{
+                                                            padding: '1.25rem',
+                                                            background: selectedAddress?.id === address.id ? '#f0f7ff' : 'white',
+                                                            borderRadius: 'var(--radius-lg)',
+                                                            cursor: 'pointer',
+                                                            border: selectedAddress?.id === address.id ? '2px solid var(--color-primary)' : '2px solid #e2e8f0',
+                                                            transition: 'all 0.2s',
+                                                            position: 'relative'
+                                                        }}
+                                                    >
+                                                        {selectedAddress?.id === address.id && (
+                                                            <div style={{ position: 'absolute', top: '10px', right: '10px', color: 'var(--color-primary)' }}>
+                                                                <CheckCircle size={20} />
+                                                            </div>
+                                                        )}
+                                                        <div style={{ fontWeight: '700', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            <MapPin size={16} color={selectedAddress?.id === address.id ? 'var(--color-primary)' : '#64748b'} />
+                                                            {address.title}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: '1.5' }}>
+                                                            {address.full_address}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem', fontWeight: '600' }}>
+                                                            {address.district}, {address.city}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                            {addresses.length > 0 && (
+                                                <div
+                                                    onClick={() => { onClose(); onAddAddress(); }}
+                                                    style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: 'var(--radius-lg)', cursor: 'pointer', border: '2px dashed #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#64748b' }}
+                                                >
+                                                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0' }}>+</div>
+                                                    <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>Yeni Adres Ekle</span>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
