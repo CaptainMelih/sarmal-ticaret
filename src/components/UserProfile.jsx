@@ -276,7 +276,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
                                                 <div>
                                                     <div style={{ fontSize: '0.9rem', fontWeight: '700' }}>
-                                                        Sipariş #{order.id.slice(0, 8)}
+                                                        Sipariş #{order.id}
                                                     </div>
                                                     <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)', marginTop: '0.25rem' }}>
                                                         {new Date(order.created_at).toLocaleDateString('tr-TR')} • {order.order_items?.length || 0} Ürün
