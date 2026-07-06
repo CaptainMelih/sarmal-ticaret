@@ -103,22 +103,14 @@ function App() {
     }
 
     const init = async () => {
-      // 1. Products Load with Timeout Protection
+      // 1. Products Load
       try {
-        // Timeout protection for initial fetch
-        const productFetch = db.getProducts();
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Product fetch timeout')), 5000)
-        );
-
-        const productsData = await Promise.race([productFetch, timeoutPromise]);
-
-        if (productsData && productsData.length > 0) {
+        const productsData = await db.getProducts();
+        if (productsData) {
           setProducts(productsData);
         }
       } catch (err) {
-        console.error('App init: product load failed or timed out:', err);
-        // Fallback happened automatically since state remains INITIAL_PRODUCTS
+        console.error('App init: product load failed:', err);
       } finally {
         setIsLoading(false);
       }

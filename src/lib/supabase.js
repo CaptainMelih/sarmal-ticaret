@@ -153,7 +153,7 @@ export async function getProducts() {
 export async function addProduct(product) {
     const { data, error } = await supabase
         .from('products')
-        .insert([product])
+        .insert([{ ...product, is_active: true }])
         .select();
 
     if (error) throw error;
