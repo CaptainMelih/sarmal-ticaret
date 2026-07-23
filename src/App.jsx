@@ -32,6 +32,7 @@ import { CustomerTestimonials } from './components/CustomerTestimonials';
 import { FAQSection } from './components/FAQSection';
 import { AboutUsPage } from './components/AboutUsPage';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
+import { InstagramStories } from './components/InstagramStories';
 import * as db from './lib/supabase';
 
 
@@ -649,6 +650,10 @@ function App() {
         <Routes>
           <Route path="/" element={
             <>
+              <InstagramStories
+                onOpenFlashDeals={() => setIsFlashDealsOpen(true)}
+                onCategorySelect={handleCategorySelect}
+              />
               <Hero
                 onAddProduct={() => setIsAddProductOpen(true)}
                 isAdmin={isAdmin}

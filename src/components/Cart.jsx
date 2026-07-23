@@ -130,6 +130,21 @@ export function Cart({ isOpen, onClose, cartItems, onRemoveFromCart, onUpdateQua
                         borderTop: '2px solid #e2e8f0',
                         paddingTop: '1rem'
                     }}>
+                        {/* Free Shipping Progress Bar */}
+                        <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
+                            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: total >= 500 ? '#166534' : 'var(--color-primary)', marginBottom: '0.4rem', display: 'flex', justifyContent: 'space-between' }}>
+                                <span>{total >= 500 ? '🎉 Tebrikler! Kargo Ücretsiz!' : `🚚 Ücretsiz Kargo için ${(500 - total).toFixed(2)} TL kaldı`}</span>
+                                <span>{Math.min(100, Math.round((total / 500) * 100))}%</span>
+                            </div>
+                            <div style={{ height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                                <div style={{
+                                    height: '100%',
+                                    background: total >= 500 ? '#22c55e' : 'linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%)',
+                                    width: `${Math.min(100, (total / 500) * 100)}%`,
+                                    transition: 'width 0.4s ease'
+                                }} />
+                            </div>
+                        </div>
                         <div style={{
                             display: 'flex',
                             justifyContent: 'space-between',

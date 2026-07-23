@@ -1,37 +1,37 @@
 import React, { useState } from 'react';
-import { MessageCircle, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 export function WhatsAppWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const phoneNumber = '905423178596';
-    const message = 'Merhaba Sarmal Ticaret! Ürünler ve siparişim hakkında bilgi almak istiyorum.';
+    const message = 'Merhaba Sarmal Ticaret! Ürünleriniz ve siparişim hakkında bilgi almak istiyorum.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
     return (
         <div style={{ position: 'fixed', bottom: '85px', right: '20px', zIndex: 1000 }}>
-            {/* Pop-up message box */}
+            {/* Pop-up Chat Window */}
             {isOpen && (
                 <div style={{
                     background: 'white',
                     padding: '1.25rem',
-                    borderRadius: '16px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                    marginBottom: '10px',
-                    width: '280px',
+                    borderRadius: '18px',
+                    boxShadow: '0 12px 35px rgba(0,0,0,0.18)',
+                    marginBottom: '12px',
+                    width: '300px',
                     border: '1px solid #e2e8f0',
-                    animation: 'slideUp 0.3s ease'
+                    animation: 'slideUp 0.3s ease-out'
                 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', fontSize: '0.95rem', color: '#166534' }}>
-                            <div style={{ width: '10px', height: '10px', background: '#22c55e', borderRadius: '50%' }}></div>
-                            Sarmal Destek
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '800', fontSize: '0.95rem', color: '#15803d' }}>
+                            <div style={{ width: '10px', height: '10px', background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 8px #22c55e' }}></div>
+                            Sarmal Canlı Destek
                         </div>
-                        <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}>
-                            <X size={16} />
+                        <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '0.2rem' }}>
+                            <X size={18} />
                         </button>
                     </div>
-                    <p style={{ fontSize: '0.85rem', color: '#475569', margin: '0 0 1rem 0', lineHeight: '1.5' }}>
-                        Merhaba! 👋 Size nasıl yardımcı olabiliriz? Sorularınız için 7/24 WhatsApp hattımızdan bize ulaşabilirsiniz.
+                    <p style={{ fontSize: '0.85rem', color: '#334155', margin: '0 0 1.1rem 0', lineHeight: '1.5', background: '#f0fdf4', padding: '0.75rem', borderRadius: '10px', border: '1px solid #dcfce7' }}>
+                        Merhaba! 👋 Sarmal Ticaret müşteri hizmetlerine hoş geldiniz. Size nasıl yardımcı olabiliriz?
                     </p>
                     <a
                         href={whatsappUrl}
@@ -44,42 +44,57 @@ export function WhatsAppWidget() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '0.5rem',
-                            padding: '0.65rem 1rem',
-                            borderRadius: '25px',
-                            fontWeight: '700',
-                            fontSize: '0.88rem',
-                            boxShadow: '0 4px 12px rgba(37,211,102,0.3)'
+                            gap: '0.6rem',
+                            padding: '0.75rem 1rem',
+                            borderRadius: '30px',
+                            fontWeight: '800',
+                            fontSize: '0.9rem',
+                            boxShadow: '0 4px 15px rgba(37,211,102,0.4)',
+                            transition: 'background 0.2s'
                         }}
+                        onMouseEnter={e => e.currentTarget.style.background = '#1da851'}
+                        onMouseLeave={e => e.currentTarget.style.background = '#25D366'}
                     >
-                        <MessageCircle size={18} /> Sohbeti Başlat
+                        {/* Authentic WhatsApp SVG Logo */}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                        WhatsApp İle Yazın
                     </a>
                 </div>
             )}
 
-            {/* Floating Green Trigger Button */}
+            {/* Floating Green WhatsApp Trigger Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
-                    width: '58px',
-                    height: '58px',
+                    width: '60px',
+                    height: '60px',
                     borderRadius: '50%',
                     background: '#25D366',
                     color: 'white',
                     border: 'none',
-                    boxShadow: '0 6px 20px rgba(37, 211, 102, 0.4)',
+                    boxShadow: '0 8px 25px rgba(37, 211, 102, 0.45)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
                     position: 'relative',
-                    transition: 'transform 0.2s ease'
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
                 }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'scale(1.08)';
+                    e.currentTarget.style.boxShadow = '0 10px 30px rgba(37, 211, 102, 0.6)';
+                }}
+                onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(37, 211, 102, 0.45)';
+                }}
                 title="WhatsApp Canlı Destek"
             >
-                <MessageCircle size={30} />
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
                 <span style={{
                     position: 'absolute',
                     top: '2px',
