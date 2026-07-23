@@ -27,6 +27,8 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         phone: ''
     });
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [isGiftWrap, setIsGiftWrap] = useState(false);
+    const [giftNote, setGiftNote] = useState('');
     const [createdOrder, setCreatedOrder] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -119,7 +121,9 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                     discount,
                     couponCode: appliedCoupon?.code || null,
                     total,
-                    note: orderNote
+                    note: orderNote,
+                    isGiftWrap: isGiftWrap,
+                    giftNote: giftNote
                 });
 
                 if (selectedPayment === 'transfer') {
@@ -438,6 +442,28 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                             <div style={{ fontWeight: '700', fontSize: '0.9rem', textAlign: 'right' }}>{(item.price * item.quantity).toFixed(2)} TL</div>
                                         </div>
                                     ))}
+                                </div>
+
+                                {/* Gift Options Section */}
+                                <div style={{ background: '#fef2f2', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #fee2e2', marginBottom: '1.25rem' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: '700', color: '#991b1b', fontSize: '0.9rem' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={isGiftWrap}
+                                            onChange={e => setIsGiftWrap(e.target.checked)}
+                                            style={{ width: '1.1rem', height: '1.1rem', accentColor: '#ef4444', cursor: 'pointer' }}
+                                        />
+                                        <span>🎁 Siparişimi Hediye Paketi Yap (Ücretsiz)</span>
+                                    </label>
+                                    {isGiftWrap && (
+                                        <textarea
+                                            value={giftNote}
+                                            onChange={e => setGiftNote(e.target.value)}
+                                            placeholder="Hediye paketi üzerine yazılacak notunuz..."
+                                            rows={2}
+                                            style={{ width: '100%', marginTop: '0.75rem', padding: '0.5rem', borderRadius: '6px', border: '1px solid #fca5a5', fontSize: '0.85rem' }}
+                                        />
+                                    )}
                                 </div>
 
                                 {/* Coupon Section */}

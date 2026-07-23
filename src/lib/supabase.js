@@ -239,6 +239,8 @@ export async function createOrder(orderData) {
             address_id: orderData.addressId,
             payment_method: orderData.paymentMethod,
             note: orderData.note || '',
+            is_gift_wrap: orderData.isGiftWrap || false,
+            gift_note: orderData.giftNote || '',
             subtotal: orderData.subtotal,
             discount: orderData.discount || 0,
             coupon_code: orderData.couponCode || null,

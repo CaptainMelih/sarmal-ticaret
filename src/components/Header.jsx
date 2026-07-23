@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Package, Search, Heart, User, LogIn, LayoutDashboard, LayoutGrid, X } from 'lucide-react';
+import { ShoppingCart, Package, Search, Heart, User, LogIn, LayoutDashboard, LayoutGrid, X, Truck } from 'lucide-react';
 
 export function Header({
   cartCount,
@@ -143,6 +143,25 @@ export function Header({
         </div>
 
         <div className="nav-links">
+          <Link
+            to="/siparis-takip"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              color: 'var(--color-text)',
+              textDecoration: 'none',
+              fontSize: '0.85rem',
+              fontWeight: '700',
+              padding: '0.4rem 0.75rem',
+              borderRadius: 'var(--radius-md)',
+              background: '#f1f5f9'
+            }}
+          >
+            <Truck size={18} color="var(--color-primary)" />
+            <span>Sipariş Takibi</span>
+          </Link>
+
           {isAdmin && (
             <button
               className="btn btn-primary"

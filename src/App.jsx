@@ -26,6 +26,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { FlashDeals } from './components/FlashDeals';
 import { CategoryDrawer } from './components/CategoryDrawer';
 import { ProductDetailPage } from './components/ProductDetailPage';
+import { OrderTrackingPage } from './components/OrderTrackingPage';
 import * as db from './lib/supabase';
 
 
@@ -754,6 +755,9 @@ function App() {
               user={user}
             />
           } />
+
+          {/* Order Tracking Page */}
+          <Route path="/siparis-takip" element={<OrderTrackingPage />} />
 
           {/* Legal Pages */}
           <Route path="/mesafeli-satis-sozlesmesi" element={<DistanceSellingContract />} />

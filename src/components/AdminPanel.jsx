@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare } from 'lucide-react';
+import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare, Gift } from 'lucide-react';
 import * as db from '../lib/supabase';
 
 export function AdminPanel({ onRefreshProducts, onEditProduct }) {
@@ -765,6 +765,19 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                         </div>
                                     </div>
                                 </div>
+
+                                {selectedOrder.is_gift_wrap && (
+                                    <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem' }}>
+                                        <div style={{ fontWeight: '700', color: '#991b1b', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            <Gift size={18} color="#ef4444" /> 🎁 Hediye Paketi İsteniyor
+                                        </div>
+                                        {selectedOrder.gift_note && (
+                                            <div style={{ fontSize: '0.85rem', color: '#7f1d1d', marginTop: '0.35rem', fontStyle: 'italic', background: 'white', padding: '0.5rem', borderRadius: '4px', border: '1px solid #fca5a5' }}>
+                                                Hediye Notu: "{selectedOrder.gift_note}"
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <div>
                                     <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}><ShoppingBag size={18} /> Ürünler</h4>
