@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Package, Search, Heart, User, LogIn, LayoutDashboard, LayoutGrid, X, Truck } from 'lucide-react';
+import { ShoppingCart, Package, Search, Heart, User, LogIn, LayoutDashboard, LayoutGrid, X, Truck, Instagram } from 'lucide-react';
 
 export function Header({
   cartCount,
@@ -48,8 +48,18 @@ export function Header({
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white', boxShadow: 'var(--shadow-sm)' }}>
       {/* Top Announcement Bar */}
-      <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontSize: '0.8rem', fontWeight: '600', padding: '0.45rem 0', textAlign: 'center', letterSpacing: '0.5px' }}>
-        🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo | 🔒 %100 Güvenli Ödeme
+      <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontSize: '0.8rem', fontWeight: '600', padding: '0.45rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', letterSpacing: '0.5px' }}>
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo | 🔒 %100 Güvenli Ödeme
+        </div>
+        <a
+          href="https://instagram.com/sarmalticaret"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', textDecoration: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}
+        >
+          <Instagram size={14} /> Instagram
+        </a>
       </div>
       <div className="container header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', minHeight: '4.5rem', height: 'auto', padding: '0.5rem 1rem' }}>
         <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>

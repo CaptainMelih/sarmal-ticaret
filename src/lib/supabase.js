@@ -151,13 +151,20 @@ export async function getProducts() {
 }
 
 export async function getAllProductsAdmin() {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+        if (error || !data || data.length === 0) {
+            return await getProducts();
+        }
+        return data;
+    } catch (err) {
+        console.warn("getAllProductsAdmin error, falling back to getProducts:", err);
+        return await getProducts();
+    }
 }
 
 export async function addProduct(product) {
@@ -347,14 +354,32 @@ export async function createGuestOrder(orderData, guestAddress) {
 }
 
 export async function updateOrderStatus(orderId, status, additionalChanges = {}) {
-    const { data, error } = await supabase
-        .from('orders')
-        .update({ status, updated_at: new Date().toISOString(), ...additionalChanges })
-        .eq('id', orderId)
-        .select();
+    try {
+        const { data, error } = await supabase
+            .from('orders')
+            .update({ status, updated_at: new Date().toISOString(), ...additionalChanges })
+            .eq('id', orderId)
+            .select();
 
-    if (error) throw error;
-    return data[0];
+        if (error) throw error;
+        return data ? data[0] : null;
+    } catch (err) {
+        console.warn("updateOrderStatus primary failed, retrying without optional columns:", err.message);
+        // If optional columns like payment_status do not exist in database, retry with core fields
+        const safeChanges = { ...additionalChanges };
+        delete safeChanges.payment_status;
+        delete safeChanges.transfer_sender;
+        delete safeChanges.transfer_bank;
+
+        const { data, error: retryError } = await supabase
+            .from('orders')
+            .update({ status, updated_at: new Date().toISOString(), ...safeChanges })
+            .eq('id', orderId)
+            .select();
+
+        if (retryError) throw retryError;
+        return data ? data[0] : null;
+    }
 }
 
 // ==========================================
@@ -466,17 +491,36 @@ export async function getProductAverageRating(productId) {
 }
 
 export async function getAllReviews() {
-    const { data, error } = await supabase
-        .from('reviews')
-        .select(`
-            *,
-            profiles (name, email),
-            products (title, image)
-        `)
-        .order('created_at', { ascending: false });
+    try {
+        const { data, error } = await supabase
+            .from('reviews')
+            .select(`
+                *,
+                profiles (name, email),
+                products (title, image)
+            `)
+            .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+        if (error) throw error;
+        return data || [];
+    } catch (err) {
+        console.warn("getAllReviews primary query failed, using safe fallback:", err.message);
+        try {
+            const { data: safeData, error: safeError } = await supabase
+                .from('reviews')
+                .select(`*, products (title, image)`)
+                .order('created_at', { ascending: false });
+
+            if (safeError) throw safeError;
+            return (safeData || []).map(r => ({
+                ...r,
+                profiles: { name: 'Müşteri', email: '' }
+            }));
+        } catch (fallbackErr) {
+            console.error("getAllReviews fallback error:", fallbackErr);
+            return [];
+        }
+    }
 }
 
 export async function deleteReview(reviewId) {

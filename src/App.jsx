@@ -31,6 +31,7 @@ import { MobileBottomNav } from './components/MobileBottomNav';
 import { CustomerTestimonials } from './components/CustomerTestimonials';
 import { FAQSection } from './components/FAQSection';
 import { AboutUsPage } from './components/AboutUsPage';
+import { WhatsAppWidget } from './components/WhatsAppWidget';
 import * as db from './lib/supabase';
 
 
@@ -955,6 +956,8 @@ function App() {
         onCategorySelect={handleCategorySelect}
         products={products}
       />
+
+      <WhatsAppWidget />
 
       <MobileBottomNav
         cartCount={cart.length}
