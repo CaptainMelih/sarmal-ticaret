@@ -32,10 +32,10 @@ export function BackToTop() {
             onClick={scrollToTop}
             style={{
                 position: 'fixed',
-                bottom: '7rem',
-                right: '2rem',
-                width: '3rem',
-                height: '3rem',
+                bottom: '160px',
+                right: '24px',
+                width: '46px',
+                height: '46px',
                 borderRadius: '50%',
                 background: 'white',
                 border: '2px solid var(--color-primary)',
@@ -44,9 +44,9 @@ export function BackToTop() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                boxShadow: '0 6px 16px rgba(0,0,0,0.15)',
                 transition: 'all 0.3s ease',
-                zIndex: 998,
+                zIndex: 999,
                 animation: 'fadeIn 0.3s ease'
             }}
             onMouseEnter={(e) => {
