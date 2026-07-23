@@ -58,11 +58,27 @@ export function OrderTrackingPage() {
                         <Truck size={32} />
                     </div>
                     <h1 style={{ fontSize: '1.8rem', fontWeight: '800', margin: '0 0 0.5rem 0', color: 'var(--color-text)' }}>
-                        🚚 Sipariş Takibi & Kargo Sorgulama
+                        Sipariş Takibi
                     </h1>
-                    <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0 0 2rem 0' }}>
-                        Sipariş numaranızı girerek kargonuzun nerede olduğunu ve canlı durumunu sorgulayabilirsiniz.
+                    <p style={{ color: '#64748b', fontSize: '0.95rem', margin: '0 0 1.5rem 0' }}>
+                        Sipariş numaranızı girerek kargonuzun nerede olduğunu anlık olarak takip edebilirsiniz.
                     </p>
+
+                    {/* How it works 3-step guide */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', marginBottom: '1.5rem', textAlign: 'left', fontSize: '0.85rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ background: 'var(--color-primary)', color: 'white', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem', flexShrink: 0 }}>1</span>
+                            <span><strong>Sipariş No Girin:</strong> SMS veya e-postanızdaki numarayı yazın.</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ background: 'var(--color-primary)', color: 'white', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem', flexShrink: 0 }}>2</span>
+                            <span><strong>Sorgulayın:</strong> "Siparişi Sorgula" butonuna basın.</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span style={{ background: 'var(--color-primary)', color: 'white', borderRadius: '50%', width: '22px', height: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '800', fontSize: '0.75rem', flexShrink: 0 }}>3</span>
+                            <span><strong>Canlı İzleyin:</strong> Kargo durumunu anlık görüntüleyin.</span>
+                        </div>
+                    </div>
 
                     <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                         <input

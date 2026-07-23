@@ -4,7 +4,7 @@ import { ChevronDown, HelpCircle } from 'lucide-react';
 const FAQS = [
     {
         q: 'Siparişlerim kaç gün içerisinde kargoya teslim edilir?',
-        a: 'Hafta içi saat 14:00\'e kadar verilen tüm siparişleriniz aynı gün kargoya hazırlanır. Teslimat süresi bulunduğunuz ile bağlı olarak genellikle 1-3 iş günüdür.'
+        a: 'Tüm siparişleriniz ertesi gün hızlı kargoya teslim edilir. Teslimat süresi bulunduğunuz şehre bağlı olarak genellikle 1-3 iş günüdür.'
     },
     {
         q: 'Hediye paketi ve hediye notu ekleme seçeneği var mıdır?',

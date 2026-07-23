@@ -21,6 +21,13 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         min_purchase: 0,
         usage_limit: ''
     });
+    const [isAddingReview, setIsAddingReview] = useState(false);
+    const [newReviewData, setNewReviewData] = useState({
+        productId: '',
+        name: '',
+        rating: 5,
+        comment: ''
+    });
 
     const [stats, setStats] = useState({
         totalSales: 0,
@@ -67,7 +74,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         try {
             const [allOrdersResult, allProductsResult, profileCountResult, allProfilesResult] = await Promise.allSettled([
                 db.getAllOrders(),
-                db.getProducts(),
+                db.getAllProductsAdmin(),
                 db.getProfileCount(),
                 db.getAllProfiles()
             ]);
@@ -682,7 +689,97 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
 
                     {activeTab === 'reviews' && (
                         <div>
-                            <h3 style={{ marginBottom: '1.5rem' }}>Müşteri Yorumları ({reviews.length})</h3>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <h3 style={{ margin: 0 }}>Müşteri Yorumları ({reviews.length})</h3>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setIsAddingReview(!isAddingReview)}
+                                    style={{ fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+                                >
+                                    <Plus size={16} /> {isAddingReview ? 'Formu Kapat' : 'Yeni Yorum Ekle'}
+                                </button>
+                            </div>
+
+                            {isAddingReview && (
+                                <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #cbd5e1', marginBottom: '1.5rem' }}>
+                                    <h4 style={{ margin: '0 0 1rem 0' }}>Manuel Yorum Ekle</h4>
+                                    <form onSubmit={async (e) => {
+                                        e.preventDefault();
+                                        if (!newReviewData.productId) {
+                                            alert('Lütfen bir ürün seçin.');
+                                            return;
+                                        }
+                                        try {
+                                            await db.addReview({
+                                                product_id: newReviewData.productId,
+                                                rating: Number(newReviewData.rating),
+                                                comment: newReviewData.comment
+                                            });
+                                            alert('Yorum başarıyla eklendi!');
+                                            setIsAddingReview(false);
+                                            setNewReviewData({ productId: '', name: '', rating: 5, comment: '' });
+                                            fetchReviews();
+                                        } catch (err) {
+                                            alert('Yorum eklenirken hata: ' + err.message);
+                                        }
+                                    }} style={{ display: 'grid', gap: '1rem' }}>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>Ürün Seçin</label>
+                                            <select
+                                                value={newReviewData.productId}
+                                                onChange={e => setNewReviewData({ ...newReviewData, productId: e.target.value })}
+                                                style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                                required
+                                            >
+                                                <option value="">-- Ürün Seçin --</option>
+                                                {products.map(p => (
+                                                    <option key={p.id} value={p.id}>{p.title}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>Müşteri Adı (İsteğe Bağlı)</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Örn: Ahmet Y."
+                                                    value={newReviewData.name}
+                                                    onChange={e => setNewReviewData({ ...newReviewData, name: e.target.value })}
+                                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>Puan (1 - 5)</label>
+                                                <select
+                                                    value={newReviewData.rating}
+                                                    onChange={e => setNewReviewData({ ...newReviewData, rating: Number(e.target.value) })}
+                                                    style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                                >
+                                                    <option value={5}>⭐⭐⭐⭐⭐ (5 Yıldız)</option>
+                                                    <option value={4}>⭐⭐⭐⭐ (4 Yıldız)</option>
+                                                    <option value={3}>⭐⭐⭐ (3 Yıldız)</option>
+                                                    <option value={2}>⭐⭐ (2 Yıldız)</option>
+                                                    <option value={1}>⭐ (1 Yıldız)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.35rem' }}>Yorum Metni</label>
+                                            <textarea
+                                                rows={3}
+                                                placeholder="Müşteri yorumu..."
+                                                value={newReviewData.comment}
+                                                onChange={e => setNewReviewData({ ...newReviewData, comment: e.target.value })}
+                                                style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                                required
+                                            />
+                                        </div>
+                                        <button className="btn btn-primary" type="submit" style={{ justifyContent: 'center', padding: '0.75rem' }}>
+                                            Yorum Kaydet
+                                        </button>
+                                    </form>
+                                </div>
+                            )}
                             <div style={{ display: 'grid', gap: '1rem' }}>
                                 {reviews.length === 0 ? (
                                     <p style={{ color: '#64748b' }}>Henüz kayıtlı yorum bulunmuyor.</p>

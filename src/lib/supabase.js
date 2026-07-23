@@ -150,6 +150,16 @@ export async function getProducts() {
     return data || [];
 }
 
+export async function getAllProductsAdmin() {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+}
+
 export async function addProduct(product) {
     const { data, error } = await supabase
         .from('products')

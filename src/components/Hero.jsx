@@ -3,7 +3,7 @@ import { Sparkles, Truck, ShieldCheck, Gift, Headphones, ArrowRight } from 'luci
 
 export function Hero({ onAddProduct, isAdmin }) {
     return (
-        <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6366f1 100%)', color: 'white', padding: '4rem 0 3rem 0', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #6366f1 100%)', color: 'white', padding: '3.5rem 0 3.5rem 0', marginBottom: '3rem', position: 'relative', overflow: 'hidden' }}>
             {/* Decorative background glow circles */}
             <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '350px', height: '350px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '300px', height: '300px', background: 'rgba(255,255,255,0.08)', borderRadius: '50%', pointerEvents: 'none' }} />
@@ -83,8 +83,8 @@ export function Hero({ onAddProduct, isAdmin }) {
                             <Truck size={24} color="#ffffff" />
                         </div>
                         <div>
-                            <div style={{ fontWeight: '800', fontSize: '0.95rem' }}>Aynı Gün Kargo</div>
-                            <div style={{ fontSize: '0.8rem', opacity: 0.85 }}>Saat 14:00'e kadar siparişlerde</div>
+                            <div style={{ fontWeight: '800', fontSize: '0.95rem' }}>Ertesi Gün Kargo</div>
+                            <div style={{ fontSize: '0.8rem', opacity: 0.85 }}>Hızlı ve güvenli teslimat</div>
                         </div>
                     </div>
 

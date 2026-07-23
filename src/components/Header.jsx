@@ -48,11 +48,11 @@ export function Header({
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white', boxShadow: 'var(--shadow-sm)' }}>
       {/* Top Announcement Bar */}
-      <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontSize: '0.8rem', fontWeight: '600', padding: '0.4rem 0', textAlign: 'center', letterSpacing: '0.5px' }}>
-        🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Saat 14:00'e Kadar Aynı Gün Kargo | 🔒 %100 Güvenli Ödeme
+      <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontSize: '0.8rem', fontWeight: '600', padding: '0.45rem 0', textAlign: 'center', letterSpacing: '0.5px' }}>
+        🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo | 🔒 %100 Güvenli Ödeme
       </div>
-      <div className="container header-content">
-        <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none' }}>
+      <div className="container header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', minHeight: '4.5rem', height: 'auto', padding: '0.5rem 1rem' }}>
+        <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
           <Package size={28} />
           <span>Sarmal Ticaret</span>
         </Link>
