@@ -27,6 +27,10 @@ import { FlashDeals } from './components/FlashDeals';
 import { CategoryDrawer } from './components/CategoryDrawer';
 import { ProductDetailPage } from './components/ProductDetailPage';
 import { OrderTrackingPage } from './components/OrderTrackingPage';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { CustomerTestimonials } from './components/CustomerTestimonials';
+import { FAQSection } from './components/FAQSection';
+import { AboutUsPage } from './components/AboutUsPage';
 import * as db from './lib/supabase';
 
 
@@ -691,6 +695,8 @@ function App() {
                 onToggleFavorite={handleToggleFavorite}
                 favorites={favorites}
               />
+              <CustomerTestimonials />
+              <FAQSection />
               <Newsletter />
             </>
           } />
@@ -758,6 +764,9 @@ function App() {
 
           {/* Order Tracking Page */}
           <Route path="/siparis-takip" element={<OrderTrackingPage />} />
+
+          {/* About Us Page */}
+          <Route path="/hakkimizda" element={<AboutUsPage />} />
 
           {/* Legal Pages */}
           <Route path="/mesafeli-satis-sozlesmesi" element={<DistanceSellingContract />} />
@@ -903,8 +912,9 @@ function App() {
               </ul>
             </div>
             <div>
-              <h4 style={{ marginBottom: '1rem', fontWeight: '600' }}>Yasal Bilgiler</h4>
+              <h4 style={{ marginBottom: '1rem', fontWeight: '600' }}>Kurumsal & Yasal</h4>
               <ul style={{ opacity: 0.9, fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <li><button onClick={() => { navigate('/hakkimizda'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left', fontWeight: 'bold' }}>Hakkımızda</button></li>
                 <li><button onClick={() => { navigate('/mesafeli-satis-sozlesmesi'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left' }}>Mesafeli Satış Sözleşmesi</button></li>
                 <li><button onClick={() => { navigate('/iade-kosullari'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left' }}>İptal ve İade Koşulları</button></li>
                 <li><button onClick={() => { navigate('/gizlilik-politikasi'); window.scrollTo(0, 0); }} style={{ background: 'none', padding: 0, color: 'inherit', cursor: 'pointer', transition: 'opacity 0.2s', textAlign: 'left' }}>Gizlilik Politikası</button></li>
@@ -944,6 +954,17 @@ function App() {
         onClose={() => setIsCategoryDrawerOpen(false)}
         onCategorySelect={handleCategorySelect}
         products={products}
+      />
+
+      <MobileBottomNav
+        cartCount={cart.length}
+        favoriteCount={favorites.length}
+        onOpenCart={() => setIsCartOpen(true)}
+        onOpenFavorites={() => setIsFavoritesOpen(true)}
+        onOpenCategories={() => setIsCategoryDrawerOpen(true)}
+        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenAuth={() => setIsAuthOpen(true)}
+        user={user}
       />
     </div>
   );
