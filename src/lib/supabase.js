@@ -453,6 +453,29 @@ export async function getProductAverageRating(productId) {
     return { average: sum / data.length, count: data.length };
 }
 
+export async function getAllReviews() {
+    const { data, error } = await supabase
+        .from('reviews')
+        .select(`
+            *,
+            profiles (name, email),
+            products (title, image)
+        `)
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+}
+
+export async function deleteReview(reviewId) {
+    const { error } = await supabase
+        .from('reviews')
+        .delete()
+        .eq('id', reviewId);
+
+    if (error) throw error;
+}
+
 // ==========================================
 // 🎟️ KUPON FONKSİYONLARI
 // ==========================================

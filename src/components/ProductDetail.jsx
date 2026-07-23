@@ -184,6 +184,21 @@ export function ProductDetail({ product, isOpen, onClose, onAddToCart, onToggleF
                                         {product.price} <span style={{ fontSize: '1.2rem' }}>TL</span>
                                     </div>
                                 </div>
+                                <a
+                                    href={`/product/${product.id}`}
+                                    onClick={onClose}
+                                    style={{
+                                        fontSize: '0.9rem',
+                                        fontWeight: '700',
+                                        color: 'var(--color-primary)',
+                                        textDecoration: 'none',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem'
+                                    }}
+                                >
+                                    Tam Detay Sayfasına Git ↗
+                                </a>
                             </div>
 
                             <div style={{ display: 'flex', gap: '1rem' }}>

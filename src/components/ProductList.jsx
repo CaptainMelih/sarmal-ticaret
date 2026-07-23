@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Star, Heart, Eye, ShoppingCart } from 'lucide-react';
 
 export function ProductList({
@@ -11,6 +12,7 @@ export function ProductList({
     isLoading = false,
     itemsPerPage = 12
 }) {
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
@@ -85,8 +87,9 @@ export function ProductList({
                                     src={product.image}
                                     alt={product.title}
                                     className="product-image"
+                                    onClick={() => navigate(`/product/${product.id}`)}
                                     onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Sarmal+Ticaret'; }}
-                                    style={{ filter: isOutOfStock ? 'grayscale(0.5)' : 'none' }}
+                                    style={{ filter: isOutOfStock ? 'grayscale(0.5)' : 'none', cursor: 'pointer' }}
                                 />
                                 {isOutOfStock && (
                                     <div style={{

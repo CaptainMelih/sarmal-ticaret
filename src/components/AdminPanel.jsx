@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users } from 'lucide-react';
+import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare } from 'lucide-react';
 import * as db from '../lib/supabase';
 
 export function AdminPanel({ onRefreshProducts, onEditProduct }) {
@@ -50,7 +50,17 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
 
     useEffect(() => {
         if (activeTab === 'coupons') fetchCoupons();
+        if (activeTab === 'reviews') fetchReviews();
     }, [activeTab]);
+
+    const fetchReviews = async () => {
+        try {
+            const data = await db.getAllReviews();
+            setReviews(data);
+        } catch (err) {
+            console.error('Fetch admin reviews error:', err);
+        }
+    };
 
     const fetchAdminData = async () => {
         setIsLoading(true);
@@ -210,7 +220,8 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                         { id: 'orders', label: 'Siparişler', icon: ShoppingBag },
                         { id: 'products', label: 'Ürünler', icon: Package },
                         { id: 'coupons', label: 'Kuponlar', icon: Ticket },
-                        { id: 'customers', label: 'Müşteriler', icon: Users }
+                        { id: 'customers', label: 'Müşteriler', icon: Users },
+                        { id: 'reviews', label: 'Yorumlar', icon: MessageSquare }
                     ].map(tab => {
                         const Icon = tab.icon;
                         return (
@@ -665,6 +676,53 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                         })}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'reviews' && (
+                        <div>
+                            <h3 style={{ marginBottom: '1.5rem' }}>Müşteri Yorumları ({reviews.length})</h3>
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                {reviews.length === 0 ? (
+                                    <p style={{ color: '#64748b' }}>Henüz kayıtlı yorum bulunmuyor.</p>
+                                ) : (
+                                    reviews.map(r => (
+                                        <div key={r.id} style={{ background: 'white', padding: '1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                {r.products?.image && (
+                                                    <img src={r.products.image} style={{ width: '50px', height: '50px', borderRadius: '6px', objectFit: 'cover' }} alt="" />
+                                                )}
+                                                <div>
+                                                    <div style={{ fontWeight: '700', fontSize: '0.95rem' }}>{r.products?.title || 'Bilinmeyen Ürün'}</div>
+                                                    <div style={{ fontSize: '0.8rem', color: '#64748b', margin: '0.25rem 0' }}>
+                                                        Müşteri: <strong>{r.profiles?.name || r.profiles?.email || 'Kullanıcı'}</strong> • {new Date(r.created_at).toLocaleDateString('tr-TR')}
+                                                    </div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', margin: '0.25rem 0' }}>
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <Star key={i} size={14} fill={i < r.rating ? '#f59e0b' : 'none'} color={i < r.rating ? '#f59e0b' : '#cbd5e1'} />
+                                                        ))}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.9rem', color: '#334155', fontStyle: 'italic', marginTop: '0.5rem' }}>
+                                                        "{r.comment}"
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                className="btn btn-outline"
+                                                style={{ color: '#ef4444', borderColor: '#fee2e2', padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                                                onClick={async () => {
+                                                    if (confirm('Bu yorumu silmek istediğinize emin misiniz?')) {
+                                                        await db.deleteReview(r.id);
+                                                        fetchReviews();
+                                                    }
+                                                }}
+                                            >
+                                                <Trash2 size={14} /> Yorumu Sil
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
                     )}

@@ -25,6 +25,7 @@ import { Newsletter } from './components/Newsletter';
 import { AdminPanel } from './components/AdminPanel';
 import { FlashDeals } from './components/FlashDeals';
 import { CategoryDrawer } from './components/CategoryDrawer';
+import { ProductDetailPage } from './components/ProductDetailPage';
 import * as db from './lib/supabase';
 
 
@@ -741,6 +742,17 @@ function App() {
             ) : (
               <Navigate to="/" replace />
             )
+          } />
+
+          {/* Product Detail Page */}
+          <Route path="/product/:id" element={
+            <ProductDetailPage
+              products={products}
+              onAddToCart={handleAddToCart}
+              onToggleFavorite={(p) => handleToggleFavorite(p.id)}
+              isFavorite={(id) => favorites.includes(id)}
+              user={user}
+            />
           } />
 
           {/* Legal Pages */}
