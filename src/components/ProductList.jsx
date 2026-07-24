@@ -9,6 +9,7 @@ export function ProductList({
     onToggleFavorite,
     favorites = [],
     onViewDetails,
+    onQuickView,
     isLoading = false,
     itemsPerPage = 12
 }) {
@@ -28,13 +29,8 @@ export function ProductList({
                         <div key={i} className="product-card">
                             <div className="skeleton" style={{ height: '200px', width: '100%' }}></div>
                             <div className="product-info">
-                                <div className="skeleton skeleton-title"></div>
-                                <div className="skeleton skeleton-text"></div>
-                                <div className="skeleton skeleton-text" style={{ width: '60%' }}></div>
-                                <div className="product-footer">
-                                    <div className="skeleton skeleton-price"></div>
-                                    <div className="skeleton" style={{ height: '2.5rem', width: '4rem' }}></div>
-                                </div>
+                                <div className="skeleton" style={{ height: '1.2rem', width: '80%', marginBottom: '0.5rem' }}></div>
+                                <div className="skeleton" style={{ height: '1rem', width: '40%' }}></div>
                             </div>
                         </div>
                     ))}
@@ -43,18 +39,10 @@ export function ProductList({
         );
     }
 
-    if (products.length === 0) {
-        return (
-            <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-                <p style={{ fontSize: '1.2rem', color: 'var(--color-text-light)' }}>Henüz ürün eklenmemiş.</p>
-            </div>
-        );
-    }
-
-    const availableProducts = products.filter(p => p.stock > 0);
-    const totalPages = Math.ceil(availableProducts.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentProducts = availableProducts.slice(startIndex, startIndex + itemsPerPage);
+    const indexOfLastProduct = currentPage * itemsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+    const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(products.length / itemsPerPage);
 
     const scrollToTop = () => {
         const anchor = document.getElementById('product-section-anchor');
@@ -91,6 +79,35 @@ export function ProductList({
                                     onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Sarmal+Ticaret'; }}
                                     style={{ filter: isOutOfStock ? 'grayscale(0.5)' : 'none', cursor: 'pointer' }}
                                 />
+
+                                {/* Quick View Button Overlay */}
+                                {onQuickView && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onQuickView(product);
+                                        }}
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: '10px',
+                                            right: '10px',
+                                            background: 'white',
+                                            border: '1px solid #e2e8f0',
+                                            borderRadius: '50%',
+                                            width: '36px',
+                                            height: '36px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                                            color: 'var(--color-primary)'
+                                        }}
+                                        title="Hızlı İncele"
+                                    >
+                                        <Eye size={18} />
+                                    </button>
+                                )}
                                 {isOutOfStock && (
                                     <div style={{
                                         position: 'absolute',

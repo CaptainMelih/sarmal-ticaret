@@ -15,6 +15,7 @@ export function Header({
   isAdmin,
   onOpenAdmin,
   onOpenCategories,
+  onOpenWheel,
   products = []
 }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -52,14 +53,24 @@ export function Header({
         <div style={{ flex: 1, textAlign: 'center' }}>
           🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo | 🔒 %100 Güvenli Ödeme
         </div>
-        <a
-          href="https://instagram.com/sarmalticaret"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', textDecoration: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}
-        >
-          <Instagram size={14} /> Instagram
-        </a>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          {onOpenWheel && (
+            <button
+              onClick={onOpenWheel}
+              style={{ color: 'white', border: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+            >
+              🎡 Şans Çarkı
+            </button>
+          )}
+          <a
+            href="https://www.instagram.com/sarmalticaret/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', textDecoration: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}
+          >
+            <Instagram size={14} /> Instagram
+          </a>
+        </div>
       </div>
       <div className="container header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', minHeight: '4.5rem', height: 'auto', padding: '0.5rem 1rem' }}>
         <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>

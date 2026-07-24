@@ -492,14 +492,55 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                                 <h3 style={{ margin: 0 }}>Ürün Yönetimi ({products.length})</h3>
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={() => document.getElementById('add-product-trigger')?.click()}
-                                    style={{ padding: '0.5rem 1rem' }}
-                                >
+                                <button className="btn btn-primary" onClick={() => {
+                                    const trigger = document.getElementById('add-product-trigger');
+                                    if (trigger) trigger.click();
+                                }}>
                                     <Package size={18} /> Yeni Ürün Ekle
                                 </button>
                             </div>
+
+                            {/* Bulk Discount & Price Tool */}
+                            <div style={{ background: '#f8fafc', padding: '1rem 1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                                <div style={{ fontWeight: '700', fontSize: '0.9rem', color: '#334155', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Percent size={18} color="var(--color-primary)" /> Toplu İndirim Tanımla:
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <input
+                                        type="number"
+                                        placeholder="İndirim % (Örn: 10)"
+                                        id="bulk-discount-input"
+                                        style={{ width: '150px', padding: '0.4rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                                    />
+                                    <button
+                                        className="btn btn-primary"
+                                        style={{ padding: '0.42rem 1rem', fontSize: '0.85rem' }}
+                                        onClick={async () => {
+                                            const val = parseFloat(document.getElementById('bulk-discount-input').value);
+                                            if (isNaN(val) || val <= 0 || val > 100) {
+                                                alert('Lütfen 1 ile 100 arasında geçerli bir yüzde girin.');
+                                                return;
+                                            }
+                                            if (confirm(`Tüm ürünlere %${val} indirim uygulamak istediğinize emin misiniz?`)) {
+                                                try {
+                                                    for (const p of products) {
+                                                        const newPrice = Math.round(p.price * (1 - val / 100));
+                                                        await db.updateProduct(p.id, { price: newPrice, flash_discount_rate: val });
+                                                    }
+                                                    alert(`Tüm ürünlere %${val} indirim uygulandı!`);
+                                                    fetchAdminData();
+                                                    onRefreshProducts();
+                                                } catch (err) {
+                                                    alert('Toplu indirim uygulanamadı: ' + err.message);
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        Uygula
+                                    </button>
+                                </div>
+                            </div>
+
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
                                 {products.map(product => (
                                     <div key={product.id} style={{ display: 'flex', gap: '1rem', background: 'white', padding: '1rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', position: 'relative' }}>

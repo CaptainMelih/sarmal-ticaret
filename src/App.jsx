@@ -33,6 +33,8 @@ import { FAQSection } from './components/FAQSection';
 import { AboutUsPage } from './components/AboutUsPage';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 import { InstagramStories } from './components/InstagramStories';
+import { QuickViewModal } from './components/QuickViewModal';
+import { DiscountWheelModal } from './components/DiscountWheelModal';
 import * as db from './lib/supabase';
 
 
@@ -95,6 +97,8 @@ function App() {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [viewedProducts, setViewedProducts] = useState(() => getLocalStorage('sarmal_viewed', []));
   const [isAdmin, setIsAdmin] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [isWheelOpen, setIsWheelOpen] = useState(false);
 
   // Supabase sync
   useEffect(() => {
@@ -644,6 +648,7 @@ function App() {
         isAdmin={isAdmin}
         onOpenAdmin={() => { navigate('/admin'); window.scrollTo(0, 0); }}
         onOpenCategories={() => setIsCategoryDrawerOpen(true)}
+        onOpenWheel={() => setIsWheelOpen(true)}
       />
 
       <main>
@@ -689,6 +694,7 @@ function App() {
                 onToggleFavorite={handleToggleFavorite}
                 favorites={favorites}
                 onViewDetails={handleViewProductDetails}
+                onQuickView={(p) => setQuickViewProduct(p)}
                 isLoading={isLoading}
                 title={searchQuery ? `🔍 Arama Sonuçları: "${searchQuery}"` : "Sizin İçin Seçtiklerimiz"}
               />
@@ -960,6 +966,20 @@ function App() {
         onClose={() => setIsCategoryDrawerOpen(false)}
         onCategorySelect={handleCategorySelect}
         products={products}
+      />
+
+      <QuickViewModal
+        product={quickViewProduct}
+        isOpen={!!quickViewProduct}
+        onClose={() => setQuickViewProduct(null)}
+        onAddToCart={handleAddToCart}
+        onToggleFavorite={handleToggleFavorite}
+        isFavorite={(id) => favorites.includes(id)}
+      />
+
+      <DiscountWheelModal
+        isOpen={isWheelOpen}
+        onClose={() => setIsWheelOpen(false)}
       />
 
       <WhatsAppWidget />
