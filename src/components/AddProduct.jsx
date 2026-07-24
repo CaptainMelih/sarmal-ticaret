@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Image as ImageIcon, Upload, Check, ListPlus } from 'lucide-react';
 import * as db from '../lib/supabase';
+import { compressImage } from '../utils/imageCompressor';
 
 const categories = [
     { id: 1, name: '🎁 Kişiye Özel' },
@@ -67,35 +68,30 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
 
     if (!isOpen) return null;
 
-    // Device File Upload Handler (Multi-file support using FileReader -> DataURL)
-    const handleFilesSelected = (e) => {
+    // Device File Upload Handler (Auto Compress & Resize)
+    const handleFilesSelected = async (e) => {
         const files = Array.from(e.target.files || []);
         if (files.length === 0) return;
 
         setIsUploading(true);
-        let processedCount = 0;
-        const newImgs = [];
+        try {
+            const compressedUrls = await Promise.all(
+                files.map(file => compressImage(file, 1200, 1200, 0.82))
+            );
 
-        files.forEach((file) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const dataUrl = event.target.result;
-                newImgs.push({ url: dataUrl, is_new: true });
-                processedCount++;
+            const newImgs = compressedUrls.map(url => ({ url, is_new: true }));
 
-                if (processedCount === files.length) {
-                    // Set first image as main image if main image is empty
-                    if (!formData.image && newImgs.length > 0) {
-                        setFormData(prev => ({ ...prev, image: newImgs[0].url }));
-                        setExtraImages(prev => [...prev, ...newImgs.slice(1)]);
-                    } else {
-                        setExtraImages(prev => [...prev, ...newImgs]);
-                    }
-                    setIsUploading(false);
-                }
-            };
-            reader.readAsDataURL(file);
-        });
+            if (!formData.image && newImgs.length > 0) {
+                setFormData(prev => ({ ...prev, image: newImgs[0].url }));
+                setExtraImages(prev => [...prev, ...newImgs.slice(1)]);
+            } else {
+                setExtraImages(prev => [...prev, ...newImgs]);
+            }
+        } catch (err) {
+            alert('Görsel yüklenirken / sıkıştırılırken hata oluştu: ' + err.message);
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     const handleAddExtraImage = () => {
