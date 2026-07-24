@@ -96,7 +96,7 @@ function App() {
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [viewedProducts, setViewedProducts] = useState(() => getLocalStorage('sarmal_viewed', []));
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(() => getLocalStorage('sarmal_is_admin', false));
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [isWheelOpen, setIsWheelOpen] = useState(false);
 
@@ -136,6 +136,7 @@ function App() {
 
           if (session.user.email === 'sarmalticarett@gmail.com' || session.user.email === 'admin@sarmal.com') {
             setIsAdmin(true);
+            window.localStorage.setItem('sarmal_is_admin', 'true');
           }
 
           // Fetch user-specific data in parallel
@@ -174,6 +175,7 @@ function App() {
 
         if (session.user.email === 'sarmalticarett@gmail.com' || session.user.email === 'admin@sarmal.com') {
           setIsAdmin(true);
+          window.localStorage.setItem('sarmal_is_admin', 'true');
         }
 
         // Sync user-specific data
@@ -188,6 +190,7 @@ function App() {
       } else {
         setUser(null);
         setIsAdmin(false);
+        window.localStorage.setItem('sarmal_is_admin', 'false');
         setFavorites([]);
         setAddresses([]);
         setOrders([]);

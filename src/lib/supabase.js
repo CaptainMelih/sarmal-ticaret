@@ -219,32 +219,56 @@ export async function getOrders(userId) {
 }
 
 export async function getAllOrders() {
-    const { data, error } = await supabase
-        .from('orders')
-        .select(`
-            *,
-            order_items (
+    try {
+        const { data, error } = await supabase
+            .from('orders')
+            .select(`
                 *,
-                products (title, price, image)
-            )
-        `)
-        .order('created_at', { ascending: false });
+                order_items (
+                    *,
+                    products (title, price, image)
+                )
+            `)
+            .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    const orders = data || [];
-    
-    // Attach profiles and addresses manually to bypass missing foreign key constraints
-    for (let o of orders) {
-        if (o.user_id) {
-            const { data: prof } = await supabase.from('profiles').select('name, email').eq('id', o.user_id).single();
-            o.profiles = prof || null;
+        if (error) throw error;
+        const orders = data || [];
+        
+        // Attach profiles and addresses safely
+        for (let o of orders) {
+            if (o.user_id) {
+                try {
+                    const { data: prof } = await supabase.from('profiles').select('name, email').eq('id', o.user_id).single();
+                    o.profiles = prof || null;
+                } catch (e) {
+                    o.profiles = { name: 'Müşteri', email: '' };
+                }
+            }
+            if (o.address_id) {
+                try {
+                    const { data: addr } = await supabase.from('addresses').select('*').eq('id', o.address_id).single();
+                    o.addresses = addr || null;
+                } catch (e) {
+                    o.addresses = null;
+                }
+            }
         }
-        if (o.address_id) {
-            const { data: addr } = await supabase.from('addresses').select('*').eq('id', o.address_id).single();
-            o.addresses = addr || null;
-        }
+        return orders;
+    } catch (err) {
+        console.warn("getAllOrders failed, returning safe fallback:", err.message);
+        return [];
     }
-    return orders;
+}
+
+export const getAllOrdersAdmin = getAllOrders;
+export async function getAllUsersAdmin() {
+    try {
+        const { data, error } = await supabase.from('profiles').select('*');
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        return [];
+    }
 }
 
 export async function createOrder(orderData) {

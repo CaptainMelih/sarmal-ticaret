@@ -3,6 +3,7 @@ import { X, User, MapPin, ShoppingBag, CreditCard, LogOut, Edit2, Trash2, Plus, 
 import { TURKEY_DATA } from '../data/turkey-data';
 import { CustomSelect } from './CustomSelect';
 import * as db from '../lib/supabase';
+import { formatOrderCode } from '../utils/orderUtils';
 
 
 export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddAddress, onDeleteAddress, orders, onSubmitTransferNotification }) {
@@ -279,8 +280,8 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                         >
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
                                                 <div>
-                                                    <div style={{ fontSize: '0.9rem', fontWeight: '700' }}>
-                                                        Sipariş #{order.id}
+                                                    <div style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--color-primary)' }}>
+                                                        Sipariş {formatOrderCode(order)}
                                                     </div>
                                                     <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)', marginTop: '0.25rem' }}>
                                                         {new Date(order.created_at).toLocaleDateString('tr-TR')} • {order.order_items?.length || 0} Ürün
@@ -354,36 +355,27 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                             )}
 
                                             {/* Tracking Info */}
-                                            {order.tracking_code && (
+                                            {(order.tracking_number || order.tracking_code) && (
                                                 <div style={{ marginTop: '1rem', padding: '1rem', background: '#f8fafc', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                                                         <div>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--color-primary)', fontWeight: '600' }}>
                                                                 <Truck size={18} /> Kargo Takip Bilgileri
                                                             </div>
-                                                            {order.cargo_company && (
-                                                                <div style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>Firma: <span style={{ fontWeight: '600' }}>{order.cargo_company}</span></div>
-                                                            )}
+                                                            <div style={{ fontSize: '0.9rem', marginBottom: '0.25rem' }}>Firma: <span style={{ fontWeight: '600' }}>{order.carrier || order.cargo_company || 'Yurtiçi Kargo'}</span></div>
                                                             <div style={{ fontSize: '0.9rem' }}>
-                                                                Takip No: <span style={{ fontWeight: '600', letterSpacing: '1px' }}>{order.tracking_code}</span>
+                                                                Takip No: <span style={{ fontWeight: '600', letterSpacing: '1px' }}>{order.tracking_number || order.tracking_code}</span>
                                                             </div>
                                                         </div>
                                                         <div>
                                                             <a 
-                                                                href={
-                                                                    order.cargo_company === 'Yurtiçi Kargo' ? `https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=${order.tracking_code}` :
-                                                                    order.cargo_company === 'Aras Kargo' ? `https://www.araskargo.com.tr/kargo-takip?c=${order.tracking_code}` :
-                                                                    order.cargo_company === 'MNG Kargo' ? `https://www.mngkargo.com.tr/gonderitakip?takipNumarasi=${order.tracking_code}` :
-                                                                    order.cargo_company === 'Sürat Kargo' ? `https://suratkargo.com.tr/KargoTakip/?takipno=${order.tracking_code}` :
-                                                                    order.cargo_company === 'PTT Kargo' ? `https://gonderitakip.ptt.gov.tr/Track/Verify?q=${order.tracking_code}` :
-                                                                    '#'
-                                                                }
+                                                                href={`https://www.google.com/search?q=${encodeURIComponent((order.carrier || order.cargo_company || 'Yurtiçi') + ' kargo takip ' + (order.tracking_number || order.tracking_code))}`}
                                                                 target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="btn btn-primary"
-                                                                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+                                                                rel="noreferrer"
+                                                                className="btn btn-outline"
+                                                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
                                                             >
-                                                                📦 Kargom Nerede?
+                                                                <ExternalLink size={14} /> Sorgula
                                                             </a>
                                                         </div>
                                                     </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, Package, Truck, CheckCircle2, Clock, MapPin, AlertCircle, ArrowLeft, ExternalLink, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import * as db from '../lib/supabase';
+import { formatOrderCode } from '../utils/orderUtils';
 
 export function OrderTrackingPage() {
     const [orderId, setOrderId] = useState('');
@@ -12,14 +13,23 @@ export function OrderTrackingPage() {
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        if (!orderId.trim()) return;
+        const trimmed = orderId.trim();
+        if (!trimmed) return;
 
         setIsLoading(true);
         setSearched(true);
         try {
             const allOrders = await db.getAllOrders();
-            const cleanId = parseInt(orderId.replace(/\D/g, '')) || parseInt(orderId);
-            const found = allOrders.find(o => o.id === cleanId || String(o.id) === orderId.trim());
+            const cleanId = parseInt(trimmed.replace(/\D/g, '')) || 0;
+
+            const found = allOrders.find(o => {
+                if (cleanId > 0 && o.id === cleanId) return true;
+                if (o.tracking_number && o.tracking_number.toLowerCase() === trimmed.toLowerCase()) return true;
+                if (o.tracking_code && o.tracking_code.toLowerCase() === trimmed.toLowerCase()) return true;
+                const formattedCode = formatOrderCode(o);
+                if (formattedCode.toLowerCase() === trimmed.toLowerCase() || `#${formattedCode}`.toLowerCase() === trimmed.toLowerCase()) return true;
+                return false;
+            });
 
             setOrder(found || null);
         } catch (err) {
@@ -108,7 +118,7 @@ export function OrderTrackingPage() {
                         <div style={{ background: 'white', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                                 <div>
-                                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800' }}>Sipariş #{order.id}</h2>
+                                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800' }}>Sipariş {formatOrderCode(order)}</h2>
                                     <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
                                         Tarih: {new Date(order.created_at).toLocaleDateString('tr-TR')} • Toplam: <strong>{order.total} TL</strong>
                                     </div>
@@ -178,14 +188,14 @@ export function OrderTrackingPage() {
                             )}
 
                             {/* Cargo Tracking Info */}
-                            {order.cargo_company && order.tracking_code && (
-                                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 'var(--radius-md)', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            {(order.tracking_number || order.tracking_code) && (
+                                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 'var(--radius-md)', padding: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                                     <div>
-                                        <div style={{ fontSize: '0.85rem', color: '#1e40af' }}>Kargo Firması: <strong>{order.cargo_company}</strong></div>
-                                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e3a8a', marginTop: '0.2rem' }}>Takip Kodu: {order.tracking_code}</div>
+                                        <div style={{ fontSize: '0.85rem', color: '#1e40af' }}>Kargo Firması: <strong>{order.carrier || order.cargo_company || 'Yurtiçi Kargo'}</strong></div>
+                                        <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#1e3a8a', marginTop: '0.2rem' }}>Kargo Takip Kodu: {order.tracking_number || order.tracking_code}</div>
                                     </div>
                                     <a
-                                        href={`https://www.google.com/search?q=${encodeURIComponent(order.cargo_company + ' kargo takip ' + order.tracking_code)}`}
+                                        href={`https://www.google.com/search?q=${encodeURIComponent((order.carrier || order.cargo_company || 'Yurtiçi') + ' kargo takip ' + (order.tracking_number || order.tracking_code))}`}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="btn btn-primary"

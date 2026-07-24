@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare, Gift } from 'lucide-react';
 import * as db from '../lib/supabase';
+import { formatOrderCode, generateTrackingNumber } from '../utils/orderUtils';
 
 export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const [activeTab, setActiveTab] = useState('orders');
@@ -108,15 +109,6 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         }
     };
 
-    const fetchCoupons = async () => {
-        try {
-            const data = await db.getCoupons();
-            setCoupons(data);
-        } catch (err) {
-            console.error('Coupons fetch error:', err);
-        }
-    };
-
     const handleUpdateStatus = async (orderId, newStatus, additionalChanges = {}) => {
         try {
             await db.updateOrderStatus(orderId, newStatus, additionalChanges);
@@ -130,8 +122,10 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     };
 
     const handleAdvanceStatus = async (order) => {
+        setSelectedOrder(order);
         if (order.status === 'preparing') {
-            setTrackingInfo({ carrier: '', tracking_code: '' });
+            const autoCode = generateTrackingNumber(order.id);
+            setTrackingInfo({ carrier: 'Yurtiçi Kargo', tracking_code: autoCode });
             setIsShippingDialogOpen(true);
             return;
         }
@@ -144,9 +138,13 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
 
     const submitShippingInfo = async () => {
         if (!selectedOrder) return;
+        const code = trackingInfo.tracking_code || generateTrackingNumber(selectedOrder.id);
+        const carrier = trackingInfo.carrier || 'Yurtiçi Kargo';
         await handleUpdateStatus(selectedOrder.id, 'shipping', {
-            tracking_code: trackingInfo.tracking_code,
-            cargo_company: trackingInfo.carrier
+            tracking_code: code,
+            cargo_company: carrier,
+            tracking_number: code,
+            carrier: carrier
         });
         setIsShippingDialogOpen(false);
     };
@@ -391,7 +389,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                 <div key={order.id} style={{ border: '1px solid #e2e8f0', borderRadius: 'var(--radius-lg)', padding: '1.25rem', background: 'white', transition: 'all 0.2s' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
                                         <div>
-                                            <div style={{ fontWeight: '700', fontSize: '1rem' }}>Sipariş #{order.id.toString().slice(0, 8)}</div>
+                                            <div style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--color-primary)' }}>Sipariş {formatOrderCode(order)}</div>
                                             <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)' }}>
                                                 {new Date(order.created_at).toLocaleString('tr-TR')} • {order.profiles?.name}
                                             </div>
