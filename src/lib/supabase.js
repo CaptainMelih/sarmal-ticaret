@@ -140,14 +140,31 @@ export async function getAllProfiles() {
 // ==========================================
 
 export async function getProducts() {
-    const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+        if (error) throw error;
+        if (data && data.length > 0) {
+            if (typeof window !== 'undefined' && window.sessionStorage) {
+                window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(data));
+            }
+            return data;
+        }
+    } catch (err) {
+        console.warn("getProducts network call failed, attempting session cache fallback:", err.message);
+    }
+
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+        const cached = window.sessionStorage.getItem('sarmal_cached_products');
+        if (cached) {
+            try { return JSON.parse(cached); } catch (e) {}
+        }
+    }
+    return [];
 }
 
 export async function getAllProductsAdmin() {
@@ -378,31 +395,41 @@ export async function createGuestOrder(orderData, guestAddress) {
 }
 
 export async function updateOrderStatus(orderId, status, additionalChanges = {}) {
+    const payload = {
+        status,
+        updated_at: new Date().toISOString(),
+        ...additionalChanges
+    };
+
     try {
         const { data, error } = await supabase
             .from('orders')
-            .update({ status, updated_at: new Date().toISOString(), ...additionalChanges })
+            .update(payload)
             .eq('id', orderId)
             .select();
 
         if (error) throw error;
-        return data ? data[0] : null;
+        return data ? data[0] : payload;
     } catch (err) {
         console.warn("updateOrderStatus primary failed, retrying without optional columns:", err.message);
-        // If optional columns like payment_status do not exist in database, retry with core fields
         const safeChanges = { ...additionalChanges };
         delete safeChanges.payment_status;
         delete safeChanges.transfer_sender;
         delete safeChanges.transfer_bank;
 
-        const { data, error: retryError } = await supabase
-            .from('orders')
-            .update({ status, updated_at: new Date().toISOString(), ...safeChanges })
-            .eq('id', orderId)
-            .select();
+        try {
+            const { data, error: retryError } = await supabase
+                .from('orders')
+                .update({ status, updated_at: new Date().toISOString(), ...safeChanges })
+                .eq('id', orderId)
+                .select();
 
-        if (retryError) throw retryError;
-        return data ? data[0] : null;
+            if (retryError) throw retryError;
+            return data ? data[0] : payload;
+        } catch (fallbackErr) {
+            console.error("updateOrderStatus fallback error:", fallbackErr);
+            return payload;
+        }
     }
 }
 

@@ -56,7 +56,15 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   // Product state
-  const [products, setProducts] = useState(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState(() => {
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      const cached = window.sessionStorage.getItem('sarmal_cached_products');
+      if (cached) {
+        try { return JSON.parse(cached); } catch (e) {}
+      }
+    }
+    return INITIAL_PRODUCTS;
+  });
 
   // Cart state
   const [cart, setCart] = useState(() => getLocalStorage('sarmal_cart', []));
@@ -207,6 +215,9 @@ function App() {
         const freshProducts = await db.getProducts();
         if (freshProducts && freshProducts.length > 0) {
           setProducts(freshProducts);
+          if (typeof window !== 'undefined' && window.sessionStorage) {
+            window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(freshProducts));
+          }
         }
       } catch (err) {
         console.error('Failed to load products from DB', err);
