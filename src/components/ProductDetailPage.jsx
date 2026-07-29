@@ -354,34 +354,50 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
                 {/* Tabs Section: Specs, Description, Reviews */}
                 <div style={{ marginTop: '3rem', background: 'white', borderRadius: 'var(--radius-lg)', padding: '2rem', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
                     {/* Tab Buttons */}
-                    <div style={{ display: 'flex', gap: '1rem', borderBottom: '2px solid #f1f5f9', paddingBottom: '1rem', marginBottom: '2rem', overflowX: 'auto' }}>
+                    <div className="product-tab-container" style={{
+                        display: 'flex',
+                        gap: '0.4rem',
+                        borderBottom: '2px solid #f1f5f9',
+                        paddingBottom: '0.75rem',
+                        marginBottom: '1.5rem',
+                        width: '100%',
+                        overflowX: 'auto',
+                        WebkitOverflowScrolling: 'touch'
+                    }}>
                         {[
-                            { id: 'specs', label: 'Teknik Özellikler', icon: List },
-                            { id: 'desc', label: 'Ürün Açıklaması', icon: Info },
-                            { id: 'reviews', label: 'Müşteri Yorumları', icon: MessageSquare },
-                            { id: 'shipping', label: 'Kargo & İade Şartları', icon: Truck }
+                            { id: 'specs', label: 'Özellikler', fullLabel: 'Teknik Özellikler', icon: List },
+                            { id: 'desc', label: 'Açıklama', fullLabel: 'Ürün Açıklaması', icon: Info },
+                            { id: 'reviews', label: 'Yorumlar', fullLabel: 'Müşteri Yorumları', icon: MessageSquare },
+                            { id: 'shipping', label: 'Kargo', fullLabel: 'Kargo & İade', icon: Truck }
                         ].map(tab => {
                             const Icon = tab.icon;
+                            const isActive = activeTab === tab.id;
                             return (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     style={{
+                                        flex: '1 1 0%',
+                                        minWidth: '0',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        gap: '0.5rem',
-                                        padding: '0.75rem 1.25rem',
+                                        justifyContent: 'center',
+                                        gap: '0.35rem',
+                                        padding: '0.5rem 0.4rem',
                                         borderRadius: 'var(--radius-md)',
                                         border: 'none',
-                                        background: activeTab === tab.id ? 'var(--color-primary)' : '#f8fafc',
-                                        color: activeTab === tab.id ? 'white' : 'var(--color-text-light)',
+                                        background: isActive ? 'var(--color-primary)' : '#f8fafc',
+                                        color: isActive ? 'white' : 'var(--color-text-light)',
                                         fontWeight: '700',
-                                        fontSize: '0.95rem',
+                                        fontSize: '0.78rem',
                                         cursor: 'pointer',
+                                        whiteSpace: 'nowrap',
                                         transition: 'all 0.2s'
                                     }}
                                 >
-                                    <Icon size={18} /> {tab.label}
+                                    <Icon size={15} />
+                                    <span className="mobile-tab-label">{tab.label}</span>
+                                    <span className="desktop-tab-label">{tab.fullLabel}</span>
                                 </button>
                             );
                         })}

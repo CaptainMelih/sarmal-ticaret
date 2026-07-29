@@ -80,8 +80,10 @@ export function Header({
         letterSpacing: '0.3px',
         transition: 'all 0.3s ease'
       }}>
-        <div style={{ flex: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '0.5rem' }}>
-          🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo
+        <div className="marquee-wrapper" style={{ flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative' }}>
+          <div className="marquee-text">
+            🚚 500 TL Üzeri Ücretsiz Kargo &nbsp;•&nbsp; ⚡ Ertesi Gün Hızlı Kargo &nbsp;•&nbsp; 🔒 %100 Güvenli Ödeme &nbsp;•&nbsp; 🎁 Sürpriz Hediyeler &nbsp;•&nbsp; 🚚 500 TL Üzeri Ücretsiz Kargo &nbsp;•&nbsp; ⚡ Ertesi Gün Hızlı Kargo &nbsp;•&nbsp; 🔒 %100 Güvenli Ödeme
+          </div>
         </div>
         <div className="announcement-buttons" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0 }}>
           {onOpenWheel && (

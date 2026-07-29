@@ -579,4 +579,73 @@ header {
   body {
     padding-bottom: 70px;
   }
+  .testimonials-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth;
+    gap: 1rem !important;
+    padding-bottom: 1rem !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .testimonial-card {
+    flex: 0 0 85% !important;
+    scroll-snap-align: start !important;
+    min-width: 85% !important;
+  }
+}
+
+/* 📢 Smooth Continuous Marquee Ticker */
+@keyframes marqueeScroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marqueeScroll 25s linear infinite;
+}
+
+.marquee-wrapper:hover .marquee-text {
+  animation-play-state: paused;
+}
+
+/* 📱 Tab Labels Responsiveness */
+@media (max-width: 640px) {
+  .desktop-tab-label { display: none !important; }
+  .mobile-tab-label { display: inline !important; }
+}
+
+@media (min-width: 641px) {
+  .desktop-tab-label { display: inline !important; }
+  .mobile-tab-label { display: none !important; }
+}
+
+/* ✨ Micro-Animations & Page Transitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-card, .category-card, .testimonial-card {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.product-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
