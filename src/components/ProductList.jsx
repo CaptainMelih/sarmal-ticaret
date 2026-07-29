@@ -69,15 +69,19 @@ export function ProductList({
                     const isFavorite = favorites.includes(product.id);
                     const isOutOfStock = product.stock <= 0;
                     return (
-                        <div key={product.id} className="product-card" style={{ opacity: isOutOfStock ? 0.8 : 1 }}>
+                        <div
+                            key={product.id}
+                            className="product-card"
+                            onClick={() => navigate(`/product/${product.id}`)}
+                            style={{ opacity: isOutOfStock ? 0.8 : 1, cursor: 'pointer' }}
+                        >
                             <div style={{ position: 'relative' }}>
                                 <img
                                     src={product.image}
                                     alt={product.title}
                                     className="product-image"
-                                    onClick={() => navigate(`/product/${product.id}`)}
                                     onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Sarmal+Ticaret'; }}
-                                    style={{ filter: isOutOfStock ? 'grayscale(0.5)' : 'none', cursor: 'pointer' }}
+                                    style={{ filter: isOutOfStock ? 'grayscale(0.5)' : 'none' }}
                                 />
 
                                 {/* Quick View Button Overlay */}
@@ -146,7 +150,10 @@ export function ProductList({
                                     </div>
                                 )}
                                 <button
-                                    onClick={() => onToggleFavorite(product.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onToggleFavorite(product.id);
+                                    }}
                                     style={{
                                         position: 'absolute',
                                         top: '0.5rem',

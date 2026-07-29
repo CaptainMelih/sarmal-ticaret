@@ -44,6 +44,7 @@ export function RecentlyViewed({
                     return (
                         <div
                             key={product.id}
+                            onClick={() => onViewDetails(product)}
                             style={{
                                 background: 'white',
                                 borderRadius: 'var(--radius-lg)',
@@ -61,7 +62,7 @@ export function RecentlyViewed({
                                 e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
                             }}
                         >
-                            <div style={{ position: 'relative' }} onClick={() => onViewDetails(product)}>
+                            <div style={{ position: 'relative' }}>
                                 <img
                                     src={product.image}
                                     alt={product.title}

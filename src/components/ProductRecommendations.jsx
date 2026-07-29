@@ -47,6 +47,7 @@ export function ProductRecommendations({
                     return (
                         <div
                             key={product.id}
+                            onClick={() => onViewDetails(product)}
                             style={{
                                 background: 'white',
                                 borderRadius: 'var(--radius-lg)',
@@ -73,7 +74,6 @@ export function ProductRecommendations({
                                         height: '150px',
                                         objectFit: 'cover'
                                     }}
-                                    onClick={() => onViewDetails(product)}
                                 />
                                 <button
                                     onClick={(e) => {
