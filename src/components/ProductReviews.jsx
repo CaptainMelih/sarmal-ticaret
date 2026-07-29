@@ -92,15 +92,15 @@ export function ProductReviews({ productId, user }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 1fr) 2fr', gap: '2rem', marginBottom: '2rem' }}>
                 <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: 'var(--radius-lg)', textAlign: 'center' }}>
                     <div style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--color-secondary)' }}>
-                        {(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)).toFixed(1)}
+                        {(reviews.length > 0 ? (reviews.reduce((acc, r) => acc + (Number(r?.rating) || 5), 0) / reviews.length) : 5).toFixed(1)}
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '0.2rem', marginBottom: '0.5rem' }}>
                         {[...Array(5)].map((_, i) => (
                             <Star
                                 key={i}
                                 size={20}
-                                fill={i < Math.round(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)) ? 'var(--color-accent)' : 'none'}
-                                color={i < Math.round(reviews.reduce((acc, r) => acc + r.rating, 0) / (reviews.length || 1)) ? 'var(--color-accent)' : '#cbd5e1'}
+                                fill={i < Math.round(reviews.length > 0 ? (reviews.reduce((acc, r) => acc + (Number(r?.rating) || 5), 0) / reviews.length) : 5) ? 'var(--color-accent)' : 'none'}
+                                color={i < Math.round(reviews.length > 0 ? (reviews.reduce((acc, r) => acc + (Number(r?.rating) || 5), 0) / reviews.length) : 5) ? 'var(--color-accent)' : '#cbd5e1'}
                             />
                         ))}
                     </div>
@@ -116,7 +116,7 @@ export function ProductReviews({ productId, user }) {
                                 <div style={{
                                     height: '100%',
                                     background: 'var(--color-accent)',
-                                    width: `${(reviews.filter(r => r.rating === num).length / (reviews.length || 1)) * 100}%`
+                                    width: `${(reviews.filter(r => Number(r?.rating || 5) === num).length / (reviews.length || 1)) * 100}%`
                                 }}></div>
                             </div>
                             <span style={{ fontSize: '0.85rem', width: '30px', color: 'var(--color-text-light)' }}>

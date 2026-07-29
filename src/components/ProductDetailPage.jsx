@@ -102,7 +102,7 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
         );
     }
 
-    const isOutOfStock = product.stock <= 0;
+    const isOutOfStock = Number(product.stock || 0) <= 0;
     const isFav = isFavorite ? isFavorite(product.id) : false;
     const categoryName = categoryNames[product.category] || 'Ürünler';
 
@@ -475,7 +475,7 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
                                     <img src={rel.image} alt={rel.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
                                     <div style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: '700', fontSize: '0.95rem', marginBottom: '0.5rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rel.title}</div>
-                                        <div style={{ fontWeight: '800', color: 'var(--color-primary)', fontSize: '1.1rem' }}>{rel.price} TL</div>
+                                        <div style={{ fontWeight: '800', color: 'var(--color-primary)', fontSize: '1.1rem' }}>{Number(rel.price || 0).toFixed(2)} TL</div>
                                     </div>
                                 </div>
                             ))}
