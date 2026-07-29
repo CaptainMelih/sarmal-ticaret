@@ -31,7 +31,8 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        const currentProd = products.find(p => p.id === productId);
+        const targetIdStr = String(productId);
+        const currentProd = products.find(p => String(p.id) === targetIdStr);
 
         if (currentProd) {
             setProduct(currentProd);
@@ -53,7 +54,7 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
         } else {
             // Fetch directly from DB if not in initial list
             db.getProducts().then(allProds => {
-                const found = allProds.find(p => p.id === productId);
+                const found = (allProds || []).find(p => String(p.id) === targetIdStr);
                 if (found) {
                     setProduct(found);
                     try {
@@ -64,6 +65,7 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
                     } catch (e) { }
                     fetchGalleryImages(found);
                     findRelatedProducts(found);
+                    document.title = `${found.title} - Sarmal Ticaret`;
                 }
             }).catch(console.error);
         }

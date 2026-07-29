@@ -603,11 +603,15 @@ function App() {
     }
   };
 
-  // Track product view
+  // Track product view and navigate cleanly
   const handleViewProductDetails = (product) => {
-    setSelectedProduct(product);
-    if (!viewedProducts.includes(product.id)) {
-      setViewedProducts([...viewedProducts, product.id]);
+    if (product && product.id) {
+      if (!viewedProducts.includes(product.id)) {
+        setViewedProducts([...viewedProducts, product.id]);
+      }
+      setSelectedProduct(null);
+      navigate(`/product/${product.id}`);
+      window.scrollTo(0, 0);
     }
   };
 
