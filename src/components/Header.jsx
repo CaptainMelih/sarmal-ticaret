@@ -65,29 +65,29 @@ export function Header({
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white', boxShadow: 'var(--shadow-sm)', transition: 'all 0.3s ease' }}>
       {/* Top Announcement Bar - Hides on mobile scroll down */}
-      <div style={{
+      <div className="top-announcement-bar" style={{
         background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
         color: 'white',
-        fontSize: '0.8rem',
+        fontSize: '0.75rem',
         fontWeight: '600',
-        padding: isScrolled ? '0 1rem' : '0.45rem 1rem',
-        maxHeight: isScrolled ? '0px' : '40px',
+        padding: isScrolled ? '0 0.75rem' : '0.35rem 0.75rem',
+        maxHeight: isScrolled ? '0px' : '36px',
         opacity: isScrolled ? 0 : 1,
         overflow: 'hidden',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        letterSpacing: '0.5px',
+        letterSpacing: '0.3px',
         transition: 'all 0.3s ease'
       }}>
-        <div style={{ flex: 1, textAlign: 'center' }}>
-          🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo | 🔒 %100 Güvenli Ödeme
+        <div style={{ flex: 1, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '0.5rem' }}>
+          🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div className="announcement-buttons" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0 }}>
           {onOpenWheel && (
             <button
               onClick={onOpenWheel}
-              style={{ color: 'white', border: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem' }}
+              style={{ color: 'white', border: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '12px', fontSize: '0.7rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', whiteSpace: 'nowrap' }}
             >
               🎡 Şans Çarkı
             </button>
@@ -96,48 +96,50 @@ export function Header({
             href="https://www.instagram.com/sarmalticaret/"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.75rem', textDecoration: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.2rem 0.6rem', borderRadius: '12px' }}
+            style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.7rem', textDecoration: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '12px', whiteSpace: 'nowrap' }}
           >
-            <Instagram size={14} /> Instagram
+            <Instagram size={12} /> Instagram
           </a>
         </div>
       </div>
+
       <div className="container header-content" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '1rem',
-        minHeight: isScrolled ? '3.2rem' : '4.2rem',
+        gap: '0.75rem',
+        minHeight: isScrolled ? '3.2rem' : '4rem',
         height: 'auto',
-        padding: isScrolled ? '0.25rem 0.75rem' : '0.5rem 1rem',
+        padding: isScrolled ? '0.25rem 0.75rem' : '0.4rem 0.75rem',
         transition: 'all 0.3s ease'
       }}>
         <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
-          <Package size={28} />
+          <Package size={26} />
           <span>Sarmal Ticaret</span>
         </Link>
 
         <div className="header-middle" ref={searchRef}>
           <button
-            className="icon-btn"
+            className="icon-btn category-btn"
             onClick={onOpenCategories}
             style={{
               background: 'white',
               border: '1px solid #e2e8f0',
               borderRadius: 'var(--radius-md)',
-              padding: '0.6rem',
+              padding: '0.5rem 0.6rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: '0.4rem',
+              flexShrink: 0
             }}
             title="Kategoriler"
           >
-            <LayoutGrid size={24} color="var(--color-primary)" />
+            <LayoutGrid size={22} color="var(--color-primary)" />
             <span style={{ fontSize: '0.85rem', fontWeight: '600' }} className="category-text">Kategoriler</span>
           </button>
 
           <div className="search-bar" style={{ margin: 0, flex: 1 }}>
-            <Search size={20} color="var(--color-text-light)" />
+            <Search size={18} color="var(--color-text-light)" />
             <input
               type="text"
               placeholder="Ürün ara..."
@@ -192,12 +194,6 @@ export function Header({
                   </div>
                 </div>
               ))}
-              <div
-                onClick={() => setShowSuggestions(false)}
-                style={{ padding: '0.5rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-light)', background: '#f8fafc' }}
-              >
-                Daha fazla sonuç için entera basın veya aramaya devam edin
-              </div>
             </div>
           )}
         </div>
@@ -205,56 +201,60 @@ export function Header({
         <div className="nav-links">
           <Link
             to="/siparis-takip"
+            className="tracking-link"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.3rem',
               color: 'var(--color-text)',
               textDecoration: 'none',
-              fontSize: '0.85rem',
+              fontSize: '0.8rem',
               fontWeight: '700',
-              padding: '0.4rem 0.75rem',
+              padding: '0.4rem 0.65rem',
               borderRadius: 'var(--radius-md)',
-              background: '#f1f5f9'
+              background: '#f1f5f9',
+              whiteSpace: 'nowrap'
             }}
           >
-            <Truck size={18} color="var(--color-primary)" />
-            <span>Sipariş Takibi</span>
+            <Truck size={16} color="var(--color-primary)" />
+            <span className="tracking-text">Sipariş Takibi</span>
           </Link>
 
           {isAdmin && (
             <button
               className="btn btn-primary"
               onClick={onOpenAdmin}
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', background: '#334155' }}
+              style={{ padding: '0.4rem 0.7rem', fontSize: '0.8rem', background: '#334155', whiteSpace: 'nowrap' }}
             >
-              <LayoutDashboard size={18} />
-              Yönetim
+              <LayoutDashboard size={16} />
+              <span className="admin-text">Yönetim</span>
             </button>
           )}
-          <button className="icon-btn" onClick={onOpenFavorites}>
-            <Heart size={24} />
+
+          <button className="icon-btn desktop-only-btn" onClick={onOpenFavorites}>
+            <Heart size={22} />
             {favoriteCount > 0 && <span className="cart-badge">{favoriteCount}</span>}
           </button>
-          <button className="cart-btn" onClick={onOpenCart}>
-            <ShoppingCart size={24} />
+          <button className="cart-btn desktop-only-btn" onClick={onOpenCart}>
+            <ShoppingCart size={22} />
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
           </button>
+
           {user ? (
             <button
-              className="icon-btn"
+              className="icon-btn desktop-only-btn"
               onClick={onOpenProfile}
               style={{
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
                 borderRadius: '50%',
-                width: '40px',
-                height: '40px',
+                width: '36px',
+                height: '36px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: '600',
-                fontSize: '0.9rem'
+                fontSize: '0.85rem'
               }}
               title={user.name || user.email}
             >
@@ -262,11 +262,11 @@ export function Header({
             </button>
           ) : (
             <button
-              className="btn btn-primary"
+              className="btn btn-primary desktop-only-btn"
               onClick={onOpenAuth}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
             >
-              <LogIn size={18} />
+              <LogIn size={16} />
               Giriş
             </button>
           )}
