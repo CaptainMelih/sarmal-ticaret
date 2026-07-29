@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // 🔑 Supabase Project Credentials
 // Bu bilgileri .env dosyasından alıyoruz
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
@@ -21,6 +21,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         }
     }
 });
+
+const ALLOWED_ADMIN_EMAILS = new Set(['sarmalticarett@gmail.com', 'admin@sarmal.com']);
+
+export function isAdminUser(email) {
+    if (!email || typeof email !== 'string') return false;
+    return ALLOWED_ADMIN_EMAILS.has(email.trim().toLowerCase());
+}
 
 // ==========================================
 // 🔐 AUTH FONKSİYONLARI

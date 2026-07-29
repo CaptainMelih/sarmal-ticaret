@@ -20,7 +20,23 @@ export function Header({
 }) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [isScrolled, setIsScrolled] = useState(false);
   const searchRef = useRef(null);
+
+  useEffect(() => {
+    let lastScrollY = window.pageYOffset;
+    const handleScroll = () => {
+      const currentScrollY = window.pageYOffset;
+      if (currentScrollY > 70 && currentScrollY > lastScrollY) {
+        setIsScrolled(true);
+      } else if (currentScrollY < lastScrollY || currentScrollY <= 20) {
+        setIsScrolled(false);
+      }
+      lastScrollY = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (searchQuery.length > 1) {
@@ -47,9 +63,23 @@ export function Header({
   }, []);
 
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white', boxShadow: 'var(--shadow-sm)' }}>
-      {/* Top Announcement Bar */}
-      <div style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', color: 'white', fontSize: '0.8rem', fontWeight: '600', padding: '0.45rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', letterSpacing: '0.5px' }}>
+    <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white', boxShadow: 'var(--shadow-sm)', transition: 'all 0.3s ease' }}>
+      {/* Top Announcement Bar - Hides on mobile scroll down */}
+      <div style={{
+        background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+        color: 'white',
+        fontSize: '0.8rem',
+        fontWeight: '600',
+        padding: isScrolled ? '0 1rem' : '0.45rem 1rem',
+        maxHeight: isScrolled ? '0px' : '40px',
+        opacity: isScrolled ? 0 : 1,
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        letterSpacing: '0.5px',
+        transition: 'all 0.3s ease'
+      }}>
         <div style={{ flex: 1, textAlign: 'center' }}>
           🚚 500 TL Üzeri Ücretsiz Kargo | ⚡ Ertesi Gün Hızlı Kargo | 🔒 %100 Güvenli Ödeme
         </div>
@@ -72,7 +102,16 @@ export function Header({
           </a>
         </div>
       </div>
-      <div className="container header-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1.5rem', minHeight: '4.5rem', height: 'auto', padding: '0.5rem 1rem' }}>
+      <div className="container header-content" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '1rem',
+        minHeight: isScrolled ? '3.2rem' : '4.2rem',
+        height: 'auto',
+        padding: isScrolled ? '0.25rem 0.75rem' : '0.5rem 1rem',
+        transition: 'all 0.3s ease'
+      }}>
         <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
           <Package size={28} />
           <span>Sarmal Ticaret</span>

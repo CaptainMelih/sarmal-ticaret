@@ -142,9 +142,12 @@ function App() {
           const profile = await db.getProfile(session.user.id);
           setUser({ ...session.user, ...profile });
 
-          if (session.user.email === 'sarmalticarett@gmail.com' || session.user.email === 'admin@sarmal.com') {
+          if (db.isAdminUser(session.user.email)) {
             setIsAdmin(true);
             window.localStorage.setItem('sarmal_is_admin', 'true');
+          } else {
+            setIsAdmin(false);
+            window.localStorage.setItem('sarmal_is_admin', 'false');
           }
 
           // Fetch user-specific data in parallel

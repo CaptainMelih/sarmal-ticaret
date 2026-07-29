@@ -3,6 +3,7 @@ import { Search, Package, Truck, CheckCircle2, Clock, MapPin, AlertCircle, Arrow
 import { Link } from 'react-router-dom';
 import * as db from '../lib/supabase';
 import { formatOrderCode } from '../utils/orderUtils';
+import { sanitizeInput } from '../utils/security';
 
 export function OrderTrackingPage() {
     const [orderId, setOrderId] = useState('');
@@ -13,7 +14,7 @@ export function OrderTrackingPage() {
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        const trimmed = orderId.trim();
+        const trimmed = sanitizeInput(orderId);
         if (!trimmed) return;
 
         setIsLoading(true);
