@@ -60,7 +60,7 @@ export function StickyMobileBuyBar({ product, onAddToCart }) {
                         {product.title}
                     </div>
                     <div style={{ fontSize: '0.95rem', fontWeight: '900', color: 'var(--color-primary)' }}>
-                        {product.price} TL
+                        {Number(product.price || 0).toFixed(2)} TL
                     </div>
                 </div>
             </div>

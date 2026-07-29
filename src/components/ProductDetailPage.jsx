@@ -241,15 +241,15 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
                             {product.flash_discount_rate > 0 ? (
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
                                     <span style={{ fontSize: '2.2rem', fontWeight: '900', color: 'var(--color-primary)' }}>
-                                        {(product.price * (1 - product.flash_discount_rate / 100)).toFixed(2)} TL
+                                        {(Number(product.price || 0) * (1 - (product.flash_discount_rate || 0) / 100)).toFixed(2)} TL
                                     </span>
                                     <span style={{ fontSize: '1.2rem', textDecoration: 'line-through', color: '#94a3b8' }}>
-                                        {product.price.toFixed(2)} TL
+                                        {Number(product.price || 0).toFixed(2)} TL
                                     </span>
                                 </div>
                             ) : (
                                 <div style={{ fontSize: '2.2rem', fontWeight: '900', color: 'var(--color-primary)' }}>
-                                    {product.price.toFixed(2)} TL
+                                    {Number(product.price || 0).toFixed(2)} TL
                                 </div>
                             )}
                             <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>KDV Dahildir • 500 TL Üzeri Ücretsiz Kargo</div>

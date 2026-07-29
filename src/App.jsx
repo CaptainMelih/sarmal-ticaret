@@ -52,7 +52,52 @@ function getLocalStorage(key, initialValue) {
   }
 }
 
-function App() {
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Uncaught UI Error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '4rem 1.5rem', textAlign: 'center', fontFamily: 'sans-serif' }}>
+          <h2 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem' }}>Bir şeyler ters gitti.</h2>
+          <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Lütfen sayfayı yenileyin veya ana sayfaya dönün.</p>
+          <button
+            onClick={() => {
+              this.setState({ hasError: false });
+              window.location.href = '/';
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+              color: 'white',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '25px',
+              border: 'none',
+              fontWeight: '700',
+              cursor: 'pointer'
+            }}
+          >
+            Ana Sayfaya Dön
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function AppContent() {
   const navigate = useNavigate();
   const location = useLocation();
   // Product state
@@ -1019,4 +1064,10 @@ function App() {
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <AppContent />
+    </ErrorBoundary>
+  );
+}
