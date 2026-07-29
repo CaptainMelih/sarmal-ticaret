@@ -6,8 +6,9 @@ export function StickyMobileBuyBar({ product, onAddToCart }) {
     const [isAdded, setIsAdded] = useState(false);
 
     useEffect(() => {
+        if (typeof window === 'undefined') return;
         const handleScroll = () => {
-            if (window.pageYOffset > 350) {
+            if ((window.pageYOffset || 0) > 350) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);

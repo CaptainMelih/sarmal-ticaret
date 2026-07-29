@@ -55,40 +55,64 @@ function getLocalStorage(key, initialValue) {
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("Uncaught UI Error:", error, errorInfo);
+    console.error("Uncaught UI Error caught by ErrorBoundary:", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '4rem 1.5rem', textAlign: 'center', fontFamily: 'sans-serif' }}>
-          <h2 style={{ fontSize: '1.5rem', color: '#1e293b', marginBottom: '1rem' }}>Bir şeyler ters gitti.</h2>
-          <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Lütfen sayfayı yenileyin veya ana sayfaya dönün.</p>
-          <button
-            onClick={() => {
-              this.setState({ hasError: false });
-              window.location.href = '/';
-            }}
-            style={{
-              background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
-              color: 'white',
-              padding: '0.75rem 1.5rem',
-              borderRadius: '25px',
-              border: 'none',
-              fontWeight: '700',
-              cursor: 'pointer'
-            }}
-          >
-            Ana Sayfaya Dön
-          </button>
+        <div style={{ padding: '3rem 1.5rem', textAlign: 'center', fontFamily: 'sans-serif', maxWidth: '600px', margin: '3rem auto', background: '#ffffff', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>⚡</div>
+          <h2 style={{ fontSize: '1.4rem', color: '#1e293b', marginBottom: '0.5rem', fontWeight: '800' }}>Sayfa Yüklenirken Bir Aksamalık Oluştu</h2>
+          <p style={{ color: '#64748b', fontSize: '0.95rem', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+            Merak etmeyin, verileriniz güvende. Sayfayı yenileyerek veya ana sayfaya dönerek devam edebilirsiniz.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                if (typeof window !== 'undefined') window.location.reload();
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
+                color: 'white',
+                padding: '0.65rem 1.25rem',
+                borderRadius: '25px',
+                border: 'none',
+                fontWeight: '700',
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              🔄 Sayfayı Yenile
+            </button>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false, error: null });
+                if (typeof window !== 'undefined') window.location.href = '/';
+              }}
+              style={{
+                background: '#f1f5f9',
+                color: '#334155',
+                padding: '0.65rem 1.25rem',
+                borderRadius: '25px',
+                border: '1px solid #cbd5e1',
+                fontWeight: '700',
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              🏠 Ana Sayfa
+            </button>
+          </div>
         </div>
       );
     }

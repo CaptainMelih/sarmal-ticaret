@@ -5,8 +5,9 @@ export function BackToTop() {
     const [isVisible, setIsVisible] = useState(false);
 
     React.useEffect(() => {
+        if (typeof window === 'undefined') return;
         const toggleVisibility = () => {
-            if (window.pageYOffset > 300) {
+            if ((window.pageYOffset || 0) > 300) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);
@@ -14,15 +15,16 @@ export function BackToTop() {
         };
 
         window.addEventListener('scroll', toggleVisibility);
-
         return () => window.removeEventListener('scroll', toggleVisibility);
     }, []);
 
     const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        if (typeof window !== 'undefined') {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
     };
 
     if (!isVisible) return null;

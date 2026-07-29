@@ -24,9 +24,10 @@ export function Header({
   const searchRef = useRef(null);
 
   useEffect(() => {
-    let lastScrollY = window.pageYOffset;
+    if (typeof window === 'undefined') return;
+    let lastScrollY = window.pageYOffset || 0;
     const handleScroll = () => {
-      const currentScrollY = window.pageYOffset;
+      const currentScrollY = window.pageYOffset || 0;
       if (currentScrollY > 70 && currentScrollY > lastScrollY) {
         setIsScrolled(true);
       } else if (currentScrollY < lastScrollY || currentScrollY <= 20) {
