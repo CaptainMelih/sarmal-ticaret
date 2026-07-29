@@ -29,72 +29,89 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
     const [isAdded, setIsAdded] = useState(false);
     const [isZoomed, setIsZoomed] = useState(false);
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        const targetIdStr = String(productId);
-        const currentProd = products.find(p => String(p.id) === targetIdStr);
+    const [isLoadingProduct, setIsLoadingProduct] = useState(true);
 
-        if (currentProd) {
-            setProduct(currentProd);
-            // Parse specs
-            try {
-                if (currentProd.specs) {
-                    const parsed = typeof currentProd.specs === 'string' ? JSON.parse(currentProd.specs) : currentProd.specs;
-                    setSpecs(Array.isArray(parsed) ? parsed : []);
-                } else {
-                    setSpecs([]);
-                }
-            } catch (e) {
+    const initProductData = (targetProd) => {
+        if (!targetProd) return;
+        setProduct(targetProd);
+        try {
+            if (targetProd.specs) {
+                const parsed = typeof targetProd.specs === 'string' ? JSON.parse(targetProd.specs) : targetProd.specs;
+                setSpecs(Array.isArray(parsed) ? parsed : []);
+            } else {
                 setSpecs([]);
             }
-
-            fetchGalleryImages(currentProd);
-            findRelatedProducts(currentProd);
-            document.title = `${currentProd.title} - Sarmal Ticaret`;
-        } else {
-            // Fetch directly from DB if not in initial list
-            db.getProducts().then(allProds => {
-                const found = (allProds || []).find(p => String(p.id) === targetIdStr);
-                if (found) {
-                    setProduct(found);
-                    try {
-                        if (found.specs) {
-                            const parsed = typeof found.specs === 'string' ? JSON.parse(found.specs) : found.specs;
-                            setSpecs(Array.isArray(parsed) ? parsed : []);
-                        }
-                    } catch (e) { }
-                    fetchGalleryImages(found);
-                    findRelatedProducts(found);
-                    document.title = `${found.title} - Sarmal Ticaret`;
-                }
-            }).catch(console.error);
+        } catch (e) {
+            setSpecs([]);
         }
-    }, [productId, products]);
+        fetchGalleryImages(targetProd);
+        findRelatedProducts(targetProd);
+        if (typeof document !== 'undefined') {
+            document.title = `${targetProd.title || 'Ürün'} - Sarmal Ticaret`;
+        }
+    };
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            window.scrollTo(0, 0);
+        }
+        const targetIdStr = String(id || '');
+        const currentProd = (products || []).find(p => String(p.id) === targetIdStr);
+
+        if (currentProd) {
+            initProductData(currentProd);
+            setIsLoadingProduct(false);
+        } else {
+            setIsLoadingProduct(true);
+            db.getProductById(id).then(found => {
+                if (found) {
+                    initProductData(found);
+                } else {
+                    return db.getAllProductsAdmin().then(allProds => {
+                        const adminFound = (allProds || []).find(p => String(p.id) === targetIdStr);
+                        if (adminFound) {
+                            initProductData(adminFound);
+                        }
+                    });
+                }
+            }).catch(console.error).finally(() => {
+                setIsLoadingProduct(false);
+            });
+        }
+    }, [id, products]);
 
     const fetchGalleryImages = async (prod) => {
         try {
             const extra = await db.getProductImages(prod.id);
-            const extraUrls = extra.map(img => img.url);
-            // Combine main image + extra gallery images without duplicate main image
-            const allImgs = [prod.image, ...extraUrls.filter(u => u !== prod.image)];
-            setImages(allImgs);
+            const extraUrls = (extra || []).map(img => img.url);
+            const allImgs = [prod.image, ...extraUrls.filter(u => u !== prod.image)].filter(Boolean);
+            setImages(allImgs.length > 0 ? allImgs : [prod.image]);
             setActiveImgIdx(0);
         } catch (err) {
-            setImages([prod.image]);
+            setImages([prod.image].filter(Boolean));
         }
     };
 
     const findRelatedProducts = (prod) => {
-        const related = products
-            .filter(p => p.id !== prod.id && p.category === prod.category)
+        const related = (products || [])
+            .filter(p => String(p.id) !== String(prod.id) && p.category === prod.category)
             .slice(0, 4);
         setRelatedProducts(related);
     };
 
+    if (isLoadingProduct) {
+        return (
+            <div className="container" style={{ padding: '6rem 0', textAlign: 'center' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '1rem', animation: 'spin 1s linear infinite', display: 'inline-block' }}>⏳</div>
+                <p style={{ fontSize: '1.1rem', color: '#64748b', fontWeight: '600' }}>Ürün detayları yükleniyor...</p>
+            </div>
+        );
+    }
+
     if (!product) {
         return (
             <div className="container" style={{ padding: '4rem 0', textAlign: 'center' }}>
-                <p style={{ fontSize: '1.2rem', color: '#64748b' }}>Ürün yükleniyor veya bulunamadı...</p>
+                <p style={{ fontSize: '1.2rem', color: '#64748b', fontWeight: '600' }}>Ürün yükleniyor veya bulunamadı...</p>
                 <button className="btn btn-primary" onClick={() => navigate('/')} style={{ marginTop: '1rem' }}>
                     <ArrowLeft size={18} /> Ana Sayfaya Dön
                 </button>

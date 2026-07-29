@@ -174,6 +174,25 @@ export async function getProducts() {
     return [];
 }
 
+export async function getProductById(id) {
+    if (!id) return null;
+    try {
+        const targetIdStr = String(id);
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .or(`id.eq.${targetIdStr}${!isNaN(Number(id)) ? `,id.eq.${Number(id)}` : ''}`)
+            .limit(1);
+
+        if (!error && data && data.length > 0) {
+            return data[0];
+        }
+    } catch (err) {
+        console.warn("getProductById failed:", err);
+    }
+    return null;
+}
+
 export async function getAllProductsAdmin() {
     try {
         const { data, error } = await supabase
