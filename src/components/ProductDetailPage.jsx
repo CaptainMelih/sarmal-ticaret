@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, Star, ShieldCheck, Truck, RotateCcw, Share2, Check, AlertCircle, ChevronLeft, ChevronRight, MessageSquare, List, Info, ArrowLeft } from 'lucide-react';
 import { ProductReviews } from './ProductReviews';
+import { StickyMobileBuyBar } from './StickyMobileBuyBar';
 import * as db from '../lib/supabase';
 
 const categoryNames = {
@@ -479,6 +480,11 @@ export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite
                         </div>
                     </div>
                 )}
+                {/* Recommendations */}
+                {children}
+
+                {/* Sticky Mobile Quick Buy Bar */}
+                <StickyMobileBuyBar product={product} onAddToCart={onAddToCart} />
             </div>
         </div>
     );

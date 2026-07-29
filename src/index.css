@@ -457,6 +457,13 @@ header {
     width: 100%;
   }
 
+  .product-page-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+    padding: 1rem !important;
+    width: 100% !important;
+  }
+
   .checkout-content {
     grid-template-columns: 1fr;
     gap: 1.5rem;
