@@ -61,6 +61,15 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         if (activeTab === 'reviews') fetchReviews();
     }, [activeTab]);
 
+    const fetchCoupons = async () => {
+        try {
+            const data = await db.getCoupons();
+            setCoupons(data || []);
+        } catch (err) {
+            console.error('Fetch admin coupons error:', err);
+        }
+    };
+
     const fetchReviews = async () => {
         try {
             const data = await db.getAllReviews();

@@ -4,7 +4,7 @@ import { X, Heart, ShoppingCart, Trash2 } from 'lucide-react';
 export function Favorites({ isOpen, onClose, favorites, products, onRemoveFavorite, onAddToCart, onViewDetails }) {
     if (!isOpen) return null;
 
-    const favoriteProducts = products.filter(p => favorites.includes(p.id));
+    const favoriteProducts = (products || []).filter(p => p && (favorites || []).some(fId => String(fId) === String(p.id)));
 
     return (
         <div className="modal-overlay" onClick={onClose}>

@@ -15,7 +15,9 @@ export function Cart({ isOpen, onClose, cartItems, onRemoveFromCart, onUpdateQua
         return acc;
     }, []);
 
-    const total = groupedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = groupedItems.reduce((sum, item) => sum + (Number(item.price || 0) * item.quantity), 0);
+    const shippingFee = subtotal >= 500 ? 0 : 100;
+    const grandTotal = subtotal + shippingFee;
 
     return (
         <div className="modal-overlay" onClick={onClose}>
