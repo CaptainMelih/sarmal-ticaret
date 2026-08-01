@@ -469,21 +469,33 @@ function AppContent() {
   };
 
   // Favorite handlers
-  const handleToggleFavorite = async (productId) => {
+  const isProductFavorite = (id) => {
+    if (!id) return false;
+    const targetStr = String(id);
+    return (favorites || []).some(favId => String(favId) === targetStr);
+  };
+
+  const handleToggleFavorite = async (target) => {
+    const rawId = typeof target === 'object' && target !== null ? target.id : target;
+    if (!rawId) return;
+
     if (!user) {
       showToast('Favorilere eklemek için giriş yapın', 'info');
       setIsAuthOpen(true);
       return;
     }
 
+    const targetStr = String(rawId);
+    const isFav = isProductFavorite(rawId);
+
     try {
-      if (favorites.includes(productId)) {
-        await db.removeFavorite(user.id, productId);
-        setFavorites(favorites.filter(id => id !== productId));
+      if (isFav) {
+        await db.removeFavorite(user.id, rawId);
+        setFavorites((favorites || []).filter(id => String(id) !== targetStr));
         showToast('Favorilerden çıkarıldı', 'info');
       } else {
-        await db.addFavorite(user.id, productId);
-        setFavorites([...favorites, productId]);
+        await db.addFavorite(user.id, rawId);
+        setFavorites([...(favorites || []), rawId]);
         showToast('Favorilere eklendi! ❤️', 'success');
       }
     } catch (err) {
@@ -858,8 +870,8 @@ function AppContent() {
             <ProductDetailPage
               products={products}
               onAddToCart={handleAddToCart}
-              onToggleFavorite={(p) => handleToggleFavorite(p.id)}
-              isFavorite={(id) => favorites.includes(id)}
+              onToggleFavorite={handleToggleFavorite}
+              isFavorite={isProductFavorite}
               user={user}
             />
           } />

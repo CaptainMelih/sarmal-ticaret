@@ -181,11 +181,22 @@ export async function getProductById(id) {
         const { data, error } = await supabase
             .from('products')
             .select('*')
-            .or(`id.eq.${targetIdStr}${!isNaN(Number(id)) ? `,id.eq.${Number(id)}` : ''}`)
+            .eq('id', targetIdStr)
             .limit(1);
 
         if (!error && data && data.length > 0) {
             return data[0];
+        }
+
+        if (!isNaN(Number(id))) {
+            const { data: numData, error: numErr } = await supabase
+                .from('products')
+                .select('*')
+                .eq('id', Number(id))
+                .limit(1);
+            if (!numErr && numData && numData.length > 0) {
+                return numData[0];
+            }
         }
     } catch (err) {
         console.warn("getProductById failed:", err);
