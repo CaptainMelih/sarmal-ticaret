@@ -21,10 +21,14 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
     const [isApplying, setIsApplying] = useState(false);
     const [orderNote, setOrderNote] = useState('');
     const [guestAddress, setGuestAddress] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        password: '',
         fullAddress: '',
         city: '',
         district: '',
-        phone: ''
+        acceptAccountCreation: false
     });
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [isGiftWrap, setIsGiftWrap] = useState(false);
@@ -45,7 +49,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         return acc;
     }, []);
 
-    const subtotal = groupedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = groupedItems.reduce((sum, item) => sum + (Number(item.price || 0) * item.quantity), 0);
 
     // Automatic threshold discounts (disabled)
     const autoDiscount = null;
@@ -69,7 +73,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         setCouponError('');
         setIsApplying(true);
         try {
-            const coupon = await db.getCoupon(couponCode);
+            const coupon = await db.getCouponByCode(couponCode);
             if (coupon) {
                 if (subtotal < coupon.min_purchase) {
                     setCouponError(`Bu kupon için minimum ${coupon.min_purchase} TL harcama yapmalısınız.`);
@@ -91,18 +95,50 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         if (user) {
             return selectedAddress !== null;
         } else {
-            return (guestAddress.fullAddress || '').trim() !== '' &&
-                   (guestAddress.city || '').trim() !== '' &&
-                   (guestAddress.district || '').trim() !== '' &&
-                   (guestAddress.phone || '').trim().length >= 10;
+            const hasName = (guestAddress.name || '').trim() !== '';
+            const hasPhone = (guestAddress.phone || '').trim().length >= 10;
+            const hasEmail = (guestAddress.email || '').trim().includes('@');
+            const hasPassword = (guestAddress.password || '').trim().length >= 6;
+            const hasAddress = (guestAddress.fullAddress || '').trim() !== '';
+            const hasCity = (guestAddress.city || '').trim() !== '';
+            const hasDistrict = (guestAddress.district || '').trim() !== '';
+            const hasConsent = Boolean(guestAddress.acceptAccountCreation);
+            return hasName && hasPhone && hasEmail && hasPassword && hasAddress && hasCity && hasDistrict && hasConsent;
         }
     };
 
     const handleComplete = async () => {
         if (step === 1) {
-            if (!isAddressValid()) {
-                alert(user ? 'Lütfen bir teslimat adresi seçin.' : 'Lütfen tüm adres bilgilerinizi eksiksiz doldurun.');
-                return;
+            if (user) {
+                if (!selectedAddress) {
+                    alert('Lütfen bir teslimat adresi seçin.');
+                    return;
+                }
+            } else {
+                if (!(guestAddress.name || '').trim()) {
+                    alert('Lütfen Ad ve Soyadınızı giriniz.');
+                    return;
+                }
+                if (!(guestAddress.phone || '').trim() || (guestAddress.phone || '').trim().length < 10) {
+                    alert('Lütfen geçerli bir telefon numarası giriniz (en az 10 hane).');
+                    return;
+                }
+                if (!(guestAddress.email || '').trim() || !(guestAddress.email || '').includes('@')) {
+                    alert('Lütfen geçerli bir e-posta adresi giriniz.');
+                    return;
+                }
+                if (!(guestAddress.password || '').trim() || (guestAddress.password || '').trim().length < 6) {
+                    alert('Hesap şifreniz en az 6 karakter olmalıdır.');
+                    return;
+                }
+                if (!(guestAddress.city || '').trim() || !(guestAddress.district || '').trim() || !(guestAddress.fullAddress || '').trim()) {
+                    alert('Lütfen tüm teslimat adresi bilgilerinizi (İl, İlçe, Açık Adres) eksiksiz doldurunuz.');
+                    return;
+                }
+                if (!guestAddress.acceptAccountCreation) {
+                    alert('Ödeme adımına geçebilmek için lütfen "Sipariş takibi için hesabımın oluşturulmasını kabul ediyorum" kutucuğunu işaretleyiniz.');
+                    return;
+                }
             }
             setStep(2);
         } else if (step === 2) {
@@ -253,21 +289,65 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                     <h3 style={{ marginBottom: '1.25rem', fontSize: '1.1rem' }}>Teslimat Adresi Seçin</h3>
                                     {!user ? (
                                         <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: 'var(--radius-lg)' }}>
-                                            <h4 style={{ marginBottom: '1rem' }}>Misafir Teslimat Bilgileri</h4>
-                                            <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Tam Adres *</label>
-                                                <textarea
-                                                    value={guestAddress.fullAddress}
-                                                    onChange={e => setGuestAddress({ ...guestAddress, fullAddress: e.target.value })}
-                                                    placeholder="Mahalle, sokak, bina no..."
-                                                    rows="3"
-                                                    style={{ width: '100%', minHeight: '100px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '2px solid #cbd5e1', display: 'block', background: 'white' }}
-                                                    required
-                                                />
-                                            </div>
+                                            <h4 style={{ marginBottom: '1.25rem', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                👤 Misafir Teslimat & Hesap Oluşturma Bilgileri
+                                            </h4>
+                                            
                                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                                 <div className="form-group">
-                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>İl *</label>
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>Ad Soyad *</label>
+                                                    <input
+                                                        type="text"
+                                                        value={guestAddress.name}
+                                                        onChange={e => setGuestAddress({ ...guestAddress, name: e.target.value })}
+                                                        placeholder="Adınız ve Soyadınız"
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1' }}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>Telefon *</label>
+                                                    <input
+                                                        type="tel"
+                                                        value={guestAddress.phone}
+                                                        onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
+                                                        onChange={e => setGuestAddress({ ...guestAddress, phone: e.target.value })}
+                                                        placeholder="05xxxxxxxxx"
+                                                        maxLength={11}
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1' }}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                                <div className="form-group">
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>E-posta *</label>
+                                                    <input
+                                                        type="email"
+                                                        value={guestAddress.email}
+                                                        onChange={e => setGuestAddress({ ...guestAddress, email: e.target.value })}
+                                                        placeholder="ornek@email.com"
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1' }}
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="form-group">
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>Şifre *</label>
+                                                    <input
+                                                        type="password"
+                                                        value={guestAddress.password}
+                                                        onChange={e => setGuestAddress({ ...guestAddress, password: e.target.value })}
+                                                        placeholder="En az 6 karakter"
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1' }}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                                <div className="form-group">
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>İl *</label>
                                                     <CustomSelect
                                                         value={guestAddress.city}
                                                         onChange={city => setGuestAddress({ ...guestAddress, city, district: '' })}
@@ -277,7 +357,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                                     />
                                                 </div>
                                                 <div className="form-group">
-                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>İlçe *</label>
+                                                    <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>İlçe *</label>
                                                     <CustomSelect
                                                         value={guestAddress.district}
                                                         onChange={district => setGuestAddress({ ...guestAddress, district })}
@@ -288,24 +368,47 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="form-group">
-                                                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Telefon *</label>
-                                                <input
-                                                    type="tel"
-                                                    value={guestAddress.phone}
-                                                    onInput={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
-                                                    onChange={e => setGuestAddress({ ...guestAddress, phone: e.target.value })}
-                                                    placeholder="05xxxxxxxxx"
-                                                    maxLength={11}
-                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0' }}
+
+                                            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                                                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>Açık Adres *</label>
+                                                <textarea
+                                                    value={guestAddress.fullAddress}
+                                                    onChange={e => setGuestAddress({ ...guestAddress, fullAddress: e.target.value })}
+                                                    placeholder="Mahalle, sokak, bina no..."
+                                                    rows="2"
+                                                    style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1', display: 'block', background: 'white' }}
                                                     required
                                                 />
                                             </div>
+
+                                            {/* Mandatory Consent Checkbox */}
+                                            <div style={{
+                                                background: '#eff6ff',
+                                                border: '1px solid #bfdbfe',
+                                                padding: '1rem',
+                                                borderRadius: 'var(--radius-md)',
+                                                display: 'flex',
+                                                alignItems: 'flex-start',
+                                                gap: '0.75rem',
+                                                marginBottom: '1rem'
+                                            }}>
+                                                <input
+                                                    type="checkbox"
+                                                    id="guest-accept-account"
+                                                    checked={guestAddress.acceptAccountCreation}
+                                                    onChange={e => setGuestAddress({ ...guestAddress, acceptAccountCreation: e.target.checked })}
+                                                    style={{ marginTop: '3px', width: '18px', height: '18px', cursor: 'pointer' }}
+                                                />
+                                                <label htmlFor="guest-accept-account" style={{ fontSize: '0.85rem', color: '#1e3a8a', cursor: 'pointer', lineHeight: '1.4', fontWeight: '600' }}>
+                                                    Sipariş takibi için hesabımın oluşturulmasını ve üyelik sözleşmesini kabul ediyorum. (*)
+                                                </label>
+                                            </div>
+
                                             {onAddAddress && (
-                                                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-                                                    <p style={{ color: 'var(--color-text-light)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Veya alışverişinizi daha sonra kolayca yapabilmek için</p>
-                                                    <button className="btn btn-outline" onClick={() => { onClose(); onAddAddress(); }}>
-                                                        Üye Ol / Giriş Yap
+                                                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                                                    <p style={{ color: 'var(--color-text-light)', fontSize: '0.85rem', marginBottom: '0.4rem' }}>Mevcut hesabınız var mı?</p>
+                                                    <button className="btn btn-outline" onClick={() => { onClose(); onAddAddress(); }} style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}>
+                                                        Giriş Yap
                                                     </button>
                                                 </div>
                                             )}

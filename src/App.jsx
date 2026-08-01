@@ -558,7 +558,26 @@ function AppContent() {
 
   const handleCompleteOrder = async (orderData) => {
     try {
-      // 1. Create Order
+      // 1. If guest, auto-create user account if email and password provided
+      if (!user && orderData.guestAddress?.email && orderData.guestAddress?.password) {
+        try {
+          const authRes = await db.signUp(
+            orderData.guestAddress.email,
+            orderData.guestAddress.password,
+            {
+              name: orderData.guestAddress.name,
+              phone: orderData.guestAddress.phone
+            }
+          );
+          if (authRes?.user) {
+            setUser(authRes.user);
+          }
+        } catch (signupErr) {
+          console.warn("Guest auto-signup notice:", signupErr.message);
+        }
+      }
+
+      // 2. Create Order
       let created;
       if (user) {
         created = await db.createOrder({

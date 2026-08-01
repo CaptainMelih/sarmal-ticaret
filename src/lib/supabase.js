@@ -650,6 +650,8 @@ export async function getCoupon(code) {
     return data;
 }
 
+export const getCouponByCode = getCoupon;
+
 export async function getCoupons() {
     const { data, error } = await supabase
         .from('coupons')
