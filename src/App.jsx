@@ -442,9 +442,12 @@ function AppContent() {
   };
 
   // Cart handlers
-  const handleAddToCart = (product) => {
-    setCart([...cart, product]);
-    showToast(`${product.title} sepete eklendi! 🛒`, 'success');
+  const handleAddToCart = (product, quantity = 1) => {
+    if (!product) return;
+    const addCount = Math.max(1, Number(quantity) || 1);
+    const itemsToAdd = Array(addCount).fill(product);
+    setCart(prevCart => [...(prevCart || []), ...itemsToAdd]);
+    showToast(`${product.title || 'Ürün'} sepete eklendi! 🛒`, 'success');
   };
 
   const handleRemoveFromCart = (productId) => {

@@ -1,9 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // 🔑 Supabase Project Credentials
-// Bu bilgileri .env dosyasından alıyoruz
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://mock.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'mock-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ynfecvczapkbiwdekptd.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_fG5hUgy0vkXUWr3LmamHrA_BagmSRCM';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
@@ -73,25 +72,25 @@ export async function signIn(email, password) {
     return data;
 }
 
-// Şifre Sıfırlama
-export async function resetPassword(email) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: typeof window !== 'undefined' ? window.location.origin : '',
-    });
-    if (error) throw error;
-}
-
 // Çıkış yap
 export async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
 }
 
-// Aktif oturumu al
-export async function getSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
+// Şifre sıfırlama e-postası gönder
+export async function resetPassword(email) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined,
+    });
     if (error) throw error;
-    return session;
+}
+
+// Mevcut oturumu al
+export async function getSession() {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    return data.session;
 }
 
 // Auth durumu değişikliğini dinle
@@ -103,16 +102,19 @@ export function onAuthStateChange(callback) {
 // 👤 PROFİL FONKSİYONLARI
 // ==========================================
 
-export async function getProfile(userId) {
+// Kullanıcı profilini getir
+export async function getUserProfile(userId) {
     const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error) throw error;
     return data;
 }
+
+export const getProfile = getUserProfile;
 
 export async function updateProfile(userId, updates) {
     const { data, error } = await supabase
@@ -151,15 +153,15 @@ export async function getProducts() {
         const { data, error } = await supabase
             .from('products')
             .select('*')
-            .eq('is_active', true)
             .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        if (data && data.length > 0) {
+        if (!error && data && data.length > 0) {
+            const activeProds = data.filter(p => p.is_active !== false);
+            const finalProds = activeProds.length > 0 ? activeProds : data;
             if (typeof window !== 'undefined' && window.sessionStorage) {
-                window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(data));
+                window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(finalProds));
             }
-            return data;
+            return finalProds;
         }
     } catch (err) {
         console.warn("getProducts network call failed, attempting session cache fallback:", err.message);
