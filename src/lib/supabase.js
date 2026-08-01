@@ -114,6 +114,25 @@ export async function getUserProfile(userId) {
     return data;
 }
 
+export async function checkEmailExists(email) {
+    if (!email || typeof email !== 'string') return false;
+    try {
+        const cleanEmail = email.trim().toLowerCase();
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', cleanEmail)
+            .limit(1);
+
+        if (!error && data && data.length > 0) {
+            return true;
+        }
+    } catch (err) {
+        console.warn("checkEmailExists failed:", err);
+    }
+    return false;
+}
+
 export const getProfile = getUserProfile;
 
 export async function updateProfile(userId, updates) {

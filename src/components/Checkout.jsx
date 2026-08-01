@@ -107,6 +107,18 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         }
     };
 
+    const [emailError, setEmailError] = useState('');
+
+    const handleEmailBlur = async () => {
+        if (!guestAddress.email || !guestAddress.email.includes('@')) return;
+        const exists = await db.checkEmailExists(guestAddress.email);
+        if (exists) {
+            setEmailError('Bu e-posta adresiyle zaten kayıtlı bir hesabınız var, lütfen giriş yapın.');
+        } else {
+            setEmailError('');
+        }
+    };
+
     const handleComplete = async () => {
         if (step === 1) {
             if (user) {
@@ -125,6 +137,15 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                 }
                 if (!(guestAddress.email || '').trim() || !(guestAddress.email || '').includes('@')) {
                     alert('Lütfen geçerli bir e-posta adresi giriniz.');
+                    return;
+                }
+                const emailExists = await db.checkEmailExists(guestAddress.email);
+                if (emailExists) {
+                    alert('Bu e-posta adresiyle zaten kayıtlı bir hesabınız var, lütfen giriş yapın.');
+                    if (onAddAddress) {
+                        onClose();
+                        onAddAddress();
+                    }
                     return;
                 }
                 if (!(guestAddress.password || '').trim() || (guestAddress.password || '').trim().length < 6) {
@@ -326,11 +347,20 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                                     <input
                                                         type="email"
                                                         value={guestAddress.email}
-                                                        onChange={e => setGuestAddress({ ...guestAddress, email: e.target.value })}
+                                                        onChange={e => {
+                                                            setGuestAddress({ ...guestAddress, email: e.target.value });
+                                                            if (emailError) setEmailError('');
+                                                        }}
+                                                        onBlur={handleEmailBlur}
                                                         placeholder="ornek@email.com"
-                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1' }}
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: emailError ? '2px solid #ef4444' : '1px solid #cbd5e1' }}
                                                         required
                                                     />
+                                                    {emailError && (
+                                                        <div style={{ color: '#ef4444', fontSize: '0.78rem', marginTop: '0.3rem', fontWeight: '700' }}>
+                                                            ⚠️ {emailError}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="form-group">
                                                     <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem', fontWeight: '600' }}>Şifre *</label>
