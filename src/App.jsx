@@ -169,6 +169,7 @@ function AppContent() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // New premium features states
+  const [showInitialSplash, setShowInitialSplash] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState([0, 1000]);
@@ -176,6 +177,13 @@ function AppContent() {
   const [isAdmin, setIsAdmin] = useState(() => getLocalStorage('sarmal_is_admin', false));
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [isWheelOpen, setIsWheelOpen] = useState(false);
+
+  useEffect(() => {
+    const splashTimer = setTimeout(() => {
+      setShowInitialSplash(false);
+    }, 1000);
+    return () => clearTimeout(splashTimer);
+  }, []);
 
   // Supabase sync
   useEffect(() => {
@@ -758,6 +766,42 @@ function AppContent() {
 
   return (
     <div className="App">
+      {showInitialSplash && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 99999,
+          background: '#0f172a',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          transition: 'opacity 0.4s ease'
+        }}>
+          <div style={{ position: 'relative', width: '90px', height: '90px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              border: '3px solid rgba(255, 255, 255, 0.1)',
+              borderTopColor: '#6366f1',
+              borderRightColor: '#a855f7',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
+            <img src="/sarmalticaretlogo.jpg" alt="Sarmal Ticaret" style={{ width: '74px', height: '74px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 0 25px rgba(99, 102, 241, 0.5)' }} />
+          </div>
+          <div style={{ fontSize: '1.6rem', fontWeight: '800', letterSpacing: '-0.5px', background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '0.4rem' }}>
+            Sarmal Ticaret
+          </div>
+          <div style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: '500' }}>
+            Güvenli Alışveriş Yükleniyor... 🛍️
+          </div>
+          <div style={{ width: '140px', height: '4px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '4px', overflow: 'hidden', marginTop: '1rem' }}>
+            <div style={{ height: '100%', background: 'linear-gradient(90deg, #6366f1 0%, #a855f7 100%)', animation: 'splashProgress 1.2s ease-in-out infinite' }} />
+          </div>
+        </div>
+      )}
       <Header
         cartCount={cart.length}
         favoriteCount={favorites.length}
