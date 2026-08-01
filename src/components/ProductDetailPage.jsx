@@ -14,7 +14,7 @@ const categoryNames = {
     6: '🏠 Dekoratif'
 };
 
-export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite, isFavorite, user }) {
+export function ProductDetailPage({ products = [], onAddToCart, onToggleFavorite, isFavorite, user, children }) {
     const { id } = useParams();
     const navigate = useNavigate();
     const productId = parseInt(id);
