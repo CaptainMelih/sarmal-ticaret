@@ -61,7 +61,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         }
     }
 
-    const shipping = 0; // Ücretsiz kargo
+    const shipping = subtotal >= 500 ? 0 : 100;
     const total = Math.max(0, subtotal - discount + shipping);
 
     const handleApplyCoupon = async () => {
@@ -542,7 +542,11 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                                     )}
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#64748b' }}>
                                         <span>Kargo Ücreti</span>
-                                        <span>Ücretsiz</span>
+                                        {shipping === 0 ? (
+                                            <span style={{ color: 'var(--color-success)', fontWeight: '700' }}>Ücretsiz</span>
+                                        ) : (
+                                            <span style={{ color: '#ef4444', fontWeight: '700' }}>100.00 TL</span>
+                                        )}
                                     </div>
                                     <div style={{
                                         display: 'flex',

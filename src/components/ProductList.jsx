@@ -255,7 +255,10 @@ export function ProductList({
                                     <span className="product-price">{product.price} TL</span>
                                     <button
                                         className="btn btn-primary"
-                                        onClick={() => onAddToCart(product)}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onAddToCart(product);
+                                        }}
                                         disabled={isOutOfStock}
                                         style={{
                                             opacity: isOutOfStock ? 0.6 : 1,

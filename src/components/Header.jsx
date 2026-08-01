@@ -87,14 +87,6 @@ export function Header({
           </div>
         </div>
         <div className="announcement-buttons" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexShrink: 0 }}>
-          {onOpenWheel && (
-            <button
-              onClick={onOpenWheel}
-              style={{ color: 'white', border: 'none', background: 'rgba(255,255,255,0.2)', padding: '0.15rem 0.5rem', borderRadius: '12px', fontSize: '0.7rem', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.2rem', whiteSpace: 'nowrap' }}
-            >
-              🎡 Şans Çarkı
-            </button>
-          )}
           <a
             href="https://www.instagram.com/sarmalticaret/"
             target="_blank"
