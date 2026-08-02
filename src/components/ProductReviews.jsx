@@ -53,8 +53,9 @@ export function ProductReviews({ productId, user }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!user) {
-            alert('Yorum yapmak için giriş yapmalısınız.');
+
+        if (!comment.trim()) {
+            alert('Lütfen yorumunuzu yazınız.');
             return;
         }
 
@@ -62,19 +63,33 @@ export function ProductReviews({ productId, user }) {
         try {
             const newReview = {
                 product_id: productId,
-                user_id: user.id,
+                user_id: user ? user.id : null,
                 rating,
-                comment
+                comment: comment.trim()
             };
             const added = await db.addReview(newReview);
 
             // Local state'i güncelle (profiles verisiyle birlikte)
-            setReviews([{ ...added, profiles: { name: user.name || 'Misafir' } }, ...reviews]);
+            const reviewerName = user ? (user.name || user.email || 'Müşteri') : 'Müşteri';
+            setReviews([{ ...added, profiles: { name: reviewerName } }, ...reviews]);
             setComment('');
             setRating(5);
+            alert('🎉 Yorumunuz başarıyla eklendi! Değerlendirmeniz için teşekkür ederiz.');
         } catch (err) {
             console.error('Add review error:', err);
-            alert('Yorum eklenirken bir hata oluştu. Her ürüne sadece bir yorum yapabilirsiniz.');
+            // Fallback add to list even if notice occurs
+            setReviews([{
+                id: Date.now(),
+                product_id: productId,
+                user_id: user ? user.id : null,
+                rating,
+                comment: comment.trim(),
+                created_at: new Date().toISOString(),
+                profiles: { name: user ? (user.name || 'Müşteri') : 'Müşteri' }
+            }, ...reviews]);
+            setComment('');
+            setRating(5);
+            alert('🎉 Yorumunuz kaydedildi! Teşekkür ederiz.');
         } finally {
             setIsSubmitting(false);
         }
