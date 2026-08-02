@@ -742,9 +742,9 @@ function AppContent() {
     filteredProducts = filteredProducts.filter(p => p.category === selectedCategory);
   }
 
-  // Price range filter
+  // Out of stock & HIDDEN filter for public storefront
   filteredProducts = filteredProducts.filter(p =>
-    p.price >= priceRange[0] && p.price <= priceRange[1]
+    p && p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN' && Number(p.stock || 0) > 0
   );
 
   // Sort logic

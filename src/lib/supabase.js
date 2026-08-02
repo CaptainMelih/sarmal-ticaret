@@ -175,8 +175,8 @@ export async function getProducts() {
             .order('created_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
-            const activeProds = data.filter(p => p.is_active !== false);
-            const finalProds = activeProds.length > 0 ? activeProds : data;
+            const activeProds = data.filter(p => p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN' && Number(p.stock || 0) > 0);
+            const finalProds = activeProds.length > 0 ? activeProds : [];
             if (typeof window !== 'undefined' && window.sessionStorage) {
                 window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(finalProds));
             }
@@ -225,27 +225,48 @@ export async function getProductById(id) {
     return null;
 }
 
+export async function purgeHiddenProducts() {
+    try {
+        await supabase.from('products').delete().or('title.eq.HIDDEN,is_active.eq.false');
+    } catch (err) {
+        console.warn("purgeHiddenProducts warning:", err.message);
+    }
+}
+
 export async function getAllProductsAdmin() {
     try {
+        await purgeHiddenProducts();
         const { data, error } = await supabase
             .from('products')
             .select('*')
             .order('created_at', { ascending: false });
 
-        if (error || !data || data.length === 0) {
-            return await getProducts();
+        if (!error && data) {
+            return data.filter(p => p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN');
         }
-        return data;
+        return [];
     } catch (err) {
-        console.warn("getAllProductsAdmin error, falling back to getProducts:", err);
+        console.warn("getAllProductsAdmin error:", err);
         return await getProducts();
     }
 }
 
+function sanitizeProductPayload(payload) {
+    if (!payload || typeof payload !== 'object') return {};
+    const clean = { ...payload };
+    delete clean.specs;
+    delete clean.reviews;
+    delete clean.rating;
+    delete clean.ratings;
+    delete clean.favorite_count;
+    return clean;
+}
+
 export async function addProduct(product) {
+    const cleanPayload = sanitizeProductPayload(product);
     const { data, error } = await supabase
         .from('products')
-        .insert([{ ...product, is_active: true }])
+        .insert([{ ...cleanPayload, is_active: true }])
         .select();
 
     if (error) throw error;
@@ -253,23 +274,56 @@ export async function addProduct(product) {
 }
 
 export async function updateProduct(productId, updates) {
-    const { data, error } = await supabase
+    const cleanUpdates = sanitizeProductPayload(updates);
+    const targetIdStr = String(productId);
+
+    let { data, error } = await supabase
         .from('products')
-        .update(updates)
-        .eq('id', productId)
+        .update(cleanUpdates)
+        .eq('id', targetIdStr)
         .select();
 
+    if (error && !isNaN(Number(productId))) {
+        const { data: numData, error: numErr } = await supabase
+            .from('products')
+            .update(cleanUpdates)
+            .eq('id', Number(productId))
+            .select();
+        if (!numErr && numData) {
+            data = numData;
+            error = null;
+        }
+    }
+
     if (error) throw error;
-    return data[0];
+    return data ? data[0] : cleanUpdates;
 }
 
 export async function deleteProduct(productId) {
+    const targetIdStr = String(productId);
+    
+    // 1. Try hard DELETE by string ID
     const { error } = await supabase
         .from('products')
-        .update({ is_active: false })
-        .eq('id', productId);
+        .delete()
+        .eq('id', targetIdStr);
 
-    if (error) throw error;
+    if (error) {
+        console.warn("deleteProduct string ID failed, trying numeric ID:", error.message);
+        if (!isNaN(Number(productId))) {
+            const { error: numErr } = await supabase
+                .from('products')
+                .delete()
+                .eq('id', Number(productId));
+            if (numErr) {
+                console.error("deleteProduct numeric ID failed, soft deleting:", numErr.message);
+                await supabase.from('products').update({ is_active: false, title: 'HIDDEN' }).eq('id', Number(productId));
+            }
+        } else {
+            console.error("deleteProduct failed, soft deleting:", error.message);
+            await supabase.from('products').update({ is_active: false, title: 'HIDDEN' }).eq('id', targetIdStr);
+        }
+    }
 }
 
 // ==========================================

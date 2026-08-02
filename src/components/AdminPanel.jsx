@@ -162,7 +162,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
         try {
             await db.deleteProduct(productId);
-            setProducts(products.filter(p => p.id !== productId));
+            setProducts(products.filter(p => String(p.id) !== String(productId)));
             onRefreshProducts();
         } catch (err) {
             alert('Ürün silinemedi: ' + err.message);
