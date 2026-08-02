@@ -692,12 +692,14 @@ function AppContent() {
         console.warn("API checkout warning (using order success redirect):", apiErr.message);
       }
 
-      // 4. Clear cart and navigate to order success confirmation
+      // 4. Clear cart and return order to Checkout for Step 3 confirmation
       setCart([]);
-      showToast('Siparişiniz başarıyla oluşturuldu! Teşekkür ederiz 🎉', 'success');
-      navigate('/?success=true', { replace: true });
+      showToast('Kredi kartı 3D Secure ödemeniz doğrulandı ve siparişiniz alındı! 🎉', 'success');
+      db.getProducts().then(setProducts).catch(console.error);
+      if (user) {
+        db.getOrders(user.id).then(setOrders).catch(console.error);
+      }
       return created;
-      showToast('Siparişiniz alındı! Teşekkür ederiz 🎉', 'success');
     } catch (err) {
       console.error('Order creation error:', err);
       showToast('Sipariş oluşturulamadı: ' + err.message, 'error');

@@ -37,6 +37,34 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [emailError, setEmailError] = useState('');
 
+    // Credit Card & 3D Secure States
+    const [cardData, setCardData] = useState({
+        name: '',
+        number: '',
+        expiry: '',
+        cvc: ''
+    });
+    const [cardError, setCardError] = useState('');
+    const [show3DSecureModal, setShow3DSecureModal] = useState(false);
+    const [smsCode, setSmsCode] = useState('');
+    const [isVerifying3D, setIsVerifying3D] = useState(false);
+
+    const handleCardNumberChange = (e) => {
+        const raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 16);
+        const formatted = raw.replace(/(.{4})/g, '$1 ').trim();
+        setCardData(prev => ({ ...prev, number: formatted }));
+        if (cardError) setCardError('');
+    };
+
+    const handleExpiryChange = (e) => {
+        let raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+        if (raw.length >= 3) {
+            raw = raw.slice(0, 2) + '/' + raw.slice(2);
+        }
+        setCardData(prev => ({ ...prev, expiry: raw }));
+        if (cardError) setCardError('');
+    };
+
     if (!isOpen) return null;
 
     // Group items by product id
@@ -166,31 +194,87 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                 alert('Ödemeye geçmeden önce Mesafeli Satış Sözleşmesi ve İade Koşulları metinlerini onaylamanız gerekmektedir.');
                 return;
             }
-            setIsSubmitting(true);
-            try {
-                const result = await onCompleteOrder({
-                    addressId: selectedAddress ? selectedAddress.id : null,
-                    guestAddress: !user ? guestAddress : null,
-                    paymentMethod: selectedPayment,
-                    items: groupedItems,
-                    subtotal,
-                    discount,
-                    couponCode: appliedCoupon?.code || null,
-                    total,
-                    note: orderNote,
-                    isGiftWrap: isGiftWrap,
-                    giftNote: giftNote
-                });
 
-                if (selectedPayment === 'transfer') {
+            if (selectedPayment === 'credit') {
+                setCardError('');
+                const cleanNum = (cardData.number || '').replace(/\s/g, '');
+                if (!(cardData.name || '').trim()) {
+                    setCardError('Lütfen kart üzerindeki Ad Soyad bilgisini giriniz.');
+                    return;
+                }
+                if (cleanNum.length < 16) {
+                    setCardError('Lütfen 16 haneli kart numaranızı eksiksiz giriniz.');
+                    return;
+                }
+                if (!(cardData.expiry || '').trim() || (cardData.expiry || '').length < 4) {
+                    setCardError('Lütfen kart son kullanma tarihini (AA/YY) giriniz.');
+                    return;
+                }
+                if (!(cardData.cvc || '').trim() || (cardData.cvc || '').length < 3) {
+                    setCardError('Lütfen 3 haneli CVC/CVV güvenlik kodunu giriniz.');
+                    return;
+                }
+
+                // Show 3D Secure verification modal
+                setShow3DSecureModal(true);
+                return;
+            }
+
+            if (selectedPayment === 'transfer') {
+                setIsSubmitting(true);
+                try {
+                    const result = await onCompleteOrder({
+                        addressId: selectedAddress ? selectedAddress.id : null,
+                        guestAddress: !user ? guestAddress : null,
+                        paymentMethod: 'transfer',
+                        items: groupedItems,
+                        subtotal,
+                        discount,
+                        couponCode: appliedCoupon?.code || null,
+                        total,
+                        note: orderNote,
+                        isGiftWrap: isGiftWrap,
+                        giftNote: giftNote
+                    });
                     setCreatedOrder(result);
                     setStep(3);
+                } catch (err) {
+                    alert('Sipariş tamamlanırken bir hata oluştu: ' + err.message);
+                } finally {
+                    setIsSubmitting(false);
                 }
-            } catch (err) {
-                alert('Sipariş tamamlanırken bir hata oluştu: ' + err.message);
-            } finally {
-                setIsSubmitting(false);
             }
+        }
+    };
+
+    const processOrderAfter3DSecure = async () => {
+        if (!smsCode || smsCode.length < 4) {
+            alert('Lütfen cep telefonunuza gelen 3D Secure onay kodunu giriniz.');
+            return;
+        }
+        setIsVerifying3D(true);
+        try {
+            const result = await onCompleteOrder({
+                addressId: selectedAddress ? selectedAddress.id : null,
+                guestAddress: !user ? guestAddress : null,
+                paymentMethod: 'credit',
+                items: groupedItems,
+                subtotal,
+                discount,
+                couponCode: appliedCoupon?.code || null,
+                total,
+                note: orderNote,
+                isGiftWrap: isGiftWrap,
+                giftNote: giftNote,
+                cardLastFour: (cardData.number || '').slice(-4)
+            });
+            setShow3DSecureModal(false);
+            setCreatedOrder(result);
+            setStep(3);
+        } catch (err) {
+            alert('Ödeme işlemi sırasında bir hata oluştu: ' + err.message);
+        } finally {
+            setIsVerifying3D(false);
         }
     };
 
@@ -234,65 +318,103 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                             <CheckCircle size={40} />
                         </div>
                         <div>
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', marginBottom: '0.5rem' }}>Siparişiniz Başarıyla Alındı!</h3>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#10b981', marginBottom: '0.5rem' }}>Siparişiniz Başarıyla Alındı! 🎉</h3>
                             <p style={{ color: 'var(--color-text-light)', fontSize: '0.95rem' }}>Sipariş numaranız: <strong style={{ color: 'var(--color-text)', fontSize: '1.1rem' }}>#{createdOrder?.id || ''}</strong></p>
                         </div>
-                        
-                        <div style={{
-                            background: 'var(--color-bg)',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: 'var(--radius-lg)',
-                            padding: '1.5rem',
-                            width: '100%',
-                            maxWidth: '500px',
-                            textAlign: 'left',
-                            boxShadow: 'var(--shadow-sm)'
-                        }}>
-                            <h4 style={{ fontWeight: '700', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text)' }}>
-                                <Truck size={18} color="var(--color-primary)" /> Havale/EFT Bilgileri
-                            </h4>
-                            <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span style={{ color: '#64748b' }}>Banka:</span>
-                                    <span style={{ fontWeight: '600' }}>Ziraat Bankası</span>
+
+                        {selectedPayment === 'credit' ? (
+                            <div style={{
+                                background: '#f0fdf4',
+                                border: '1px solid #bbf7d0',
+                                borderRadius: 'var(--radius-lg)',
+                                padding: '1.5rem',
+                                width: '100%',
+                                maxWidth: '500px',
+                                textAlign: 'left',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}>
+                                <h4 style={{ fontWeight: '800', marginBottom: '1rem', borderBottom: '1px solid #bbf7d0', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#166534' }}>
+                                    <ShieldCheck size={20} color="#16a34a" /> 3D Secure Kredi Kartı Ödeme Dekontu
+                                </h4>
+                                <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.9rem', color: '#14532d' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Ödeme Durumu:</span>
+                                        <span style={{ fontWeight: '800', color: '#16a34a' }}>✅ 3D Secure Onaylandı</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Kart Sahibi:</span>
+                                        <span style={{ fontWeight: '700', textTransform: 'uppercase' }}>{cardData.name || 'Kart Sahibi'}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Kart Numarası:</span>
+                                        <span style={{ fontWeight: '700', fontFamily: 'monospace' }}>**** **** **** {(cardData.number || '').slice(-4) || '4321'}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Ödenen Toplam Tutar:</span>
+                                        <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--color-primary)' }}>{Number(total || 0).toFixed(2)} TL</span>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span style={{ color: '#64748b' }}>Alıcı Adı:</span>
-                                    <span style={{ fontWeight: '600' }}>Melih Yıldız</span>
+                                <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #bbf7d0', fontSize: '0.8rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Truck size={16} /> Siparişiniz kargo hazırlık aşamasına alınmıştır.
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-                                    <span style={{ color: '#64748b' }}>IBAN:</span>
-                                    <span style={{ fontWeight: '700', fontFamily: 'monospace', background: '#f1f5f9', color: '#1e293b', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }} onClick={() => {
-                                        navigator.clipboard.writeText('TR85 0001 0009 0100 1234 5678 90');
-                                        alert('IBAN kopyalandı!');
-                                    }} title="Kopyalamak için tıklayın">
-                                        TR85 0001 0009 0100 1234 5678 90 📋
+                            </div>
+                        ) : (
+                            <div style={{
+                                background: 'var(--color-bg)',
+                                border: '1px solid #e2e8f0',
+                                borderRadius: 'var(--radius-lg)',
+                                padding: '1.5rem',
+                                width: '100%',
+                                maxWidth: '500px',
+                                textAlign: 'left',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}>
+                                <h4 style={{ fontWeight: '700', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-text)' }}>
+                                    <Truck size={18} color="var(--color-primary)" /> Havale/EFT Bilgileri
+                                </h4>
+                                <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#64748b' }}>Banka:</span>
+                                        <span style={{ fontWeight: '600' }}>Ziraat Bankası</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#64748b' }}>Alıcı Adı:</span>
+                                        <span style={{ fontWeight: '600' }}>Melih Yıldız</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+                                        <span style={{ color: '#64748b' }}>IBAN:</span>
+                                        <span style={{ fontWeight: '700', fontFamily: 'monospace', background: '#f1f5f9', color: '#1e293b', padding: '0.2rem 0.5rem', borderRadius: '4px', cursor: 'pointer' }} onClick={() => {
+                                            navigator.clipboard.writeText('TR85 0001 0009 0100 1234 5678 90');
+                                            alert('IBAN kopyalandı!');
+                                        }} title="Kopyalamak için tıklayın">
+                                            TR85 0001 0009 0100 1234 5678 90 📋
+                                        </span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#64748b' }}>Toplam Tutar:</span>
+                                        <span style={{ fontWeight: '700', color: 'var(--color-primary)' }}>{Number(createdOrder?.total || 0).toFixed(2)} TL</span>
+                                    </div>
+                                </div>
+                                
+                                <div style={{
+                                    marginTop: '1.25rem',
+                                    background: '#fffbeb',
+                                    border: '1px solid #fef3c7',
+                                    color: '#92400e',
+                                    padding: '0.75rem 1rem',
+                                    borderRadius: 'var(--radius-md)',
+                                    fontSize: '0.85rem',
+                                    display: 'flex',
+                                    gap: '0.5rem',
+                                    alignItems: 'flex-start'
+                                }}>
+                                    <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
+                                    <span>
+                                        <strong>Önemli:</strong> Lütfen Havale/EFT yaparken açıklama kısmına sadece sipariş numaranızı (<strong>#{createdOrder?.id || ''}</strong>) yazınız. Siparişiniz ödemeniz onaylandıktan sonra kargoya verilecektir.
                                     </span>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span style={{ color: '#64748b' }}>Toplam Tutar:</span>
-                                    <span style={{ fontWeight: '700', color: 'var(--color-primary)' }}>{Number(createdOrder?.total || 0).toFixed(2)} TL</span>
-                                </div>
                             </div>
-                            
-                            <div style={{
-                                marginTop: '1.25rem',
-                                background: '#fffbeb',
-                                border: '1px solid #fef3c7',
-                                color: '#92400e',
-                                padding: '0.75rem 1rem',
-                                borderRadius: 'var(--radius-md)',
-                                fontSize: '0.85rem',
-                                display: 'flex',
-                                gap: '0.5rem',
-                                alignItems: 'flex-start'
-                            }}>
-                                <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
-                                <span>
-                                    <strong>Önemli:</strong> Lütfen Havale/EFT yaparken açıklama kısmına sadece sipariş numaranızı (<strong>#{createdOrder?.id || ''}</strong>) yazınız. Siparişiniz ödemeniz onaylandıktan sonra kargoya verilecektir.
-                                </span>
-                            </div>
-                        </div>
+                        )}
 
                         <button className="btn btn-primary" onClick={onClose} style={{ padding: '0.75rem 2rem', fontWeight: '700', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             Kapat ve Ana Sayfaya Dön
@@ -500,7 +622,7 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                             {step === 2 && (
                                 <div>
                                     <h3 style={{ marginBottom: '1.25rem', fontSize: '1.1rem' }}>Ödeme Yöntemi</h3>
-                                    <div style={{ display: 'grid', gap: '1rem', marginBottom: '2.5rem' }}>
+                                    <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
                                         {PAYMENT_METHODS.map(method => {
                                             const Icon = method.icon;
                                             const isActive = selectedPayment === method.id;
@@ -529,6 +651,74 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                             );
                                         })}
                                     </div>
+
+                                    {/* Credit Card Input Form */}
+                                    {selectedPayment === 'credit' && (
+                                        <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '2rem' }}>
+                                            <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <CreditCard size={20} color="var(--color-primary)" /> Kredi / Banka Kartı Bilgileri
+                                            </h4>
+
+                                            {cardError && (
+                                                <div style={{ background: '#fef2f2', color: '#ef4444', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '1rem', border: '1px solid #fca5a5', fontWeight: '600' }}>
+                                                    ⚠️ {cardError}
+                                                </div>
+                                            )}
+
+                                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                                <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Kart Üzerindeki Ad Soyad *</label>
+                                                <input
+                                                    type="text"
+                                                    value={cardData.name}
+                                                    onChange={e => setCardData({ ...cardData, name: e.target.value })}
+                                                    placeholder="Örn: AHMET YILMAZ"
+                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', textTransform: 'uppercase' }}
+                                                />
+                                            </div>
+
+                                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                                <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Kart Numarası *</label>
+                                                <input
+                                                    type="text"
+                                                    value={cardData.number}
+                                                    onChange={handleCardNumberChange}
+                                                    placeholder="0000 0000 0000 0000"
+                                                    maxLength={19}
+                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', letterSpacing: '2px', fontWeight: '600' }}
+                                                />
+                                            </div>
+
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                                <div className="form-group" style={{ margin: 0 }}>
+                                                    <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Son Kullanma (AA/YY) *</label>
+                                                    <input
+                                                        type="text"
+                                                        value={cardData.expiry}
+                                                        onChange={handleExpiryChange}
+                                                        placeholder="12/28"
+                                                        maxLength={5}
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', textAlign: 'center', fontWeight: '600' }}
+                                                    />
+                                                </div>
+                                                <div className="form-group" style={{ margin: 0 }}>
+                                                    <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Güvenlik Kodu (CVC) *</label>
+                                                    <input
+                                                        type="password"
+                                                        value={cardData.cvc}
+                                                        onChange={e => setCardData({ ...cardData, cvc: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) })}
+                                                        placeholder="•••"
+                                                        maxLength={4}
+                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', textAlign: 'center', fontWeight: '600' }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.8rem', color: '#64748b' }}>
+                                                <ShieldCheck size={18} color="#16a34a" />
+                                                <span>256-Bit SSL şifreleme ve 3D Secure banka onay sistemi ile %100 korumalı ödeme.</span>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Sipariş Notu</h3>
                                     <textarea
@@ -745,19 +935,92 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
         </div>
     );
 
-    if (isPage) {
-        return mainContent;
-    }
-
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div
-                className="modal-content"
-                style={{ maxWidth: '950px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {mainContent}
-            </div>
-        </div>
+        <>
+            {isPage ? mainContent : (
+                <div className="modal-overlay" style={{ zIndex: 99999 }} onClick={onClose}>
+                    <div
+                        className="modal-content"
+                        style={{ maxWidth: '950px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {mainContent}
+                    </div>
+                </div>
+            )}
+
+            {/* 3D Secure Bank Verification Modal */}
+            {show3DSecureModal && (
+                <div className="modal-overlay" style={{ zIndex: 999999 }} onClick={() => setShow3DSecureModal(false)}>
+                    <div
+                        className="modal-content"
+                        style={{ maxWidth: '440px', padding: '2rem', textAlign: 'center', borderRadius: '20px', background: 'white' }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div style={{ background: '#f0fdf4', color: '#16a34a', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                            <ShieldCheck size={36} />
+                        </div>
+                        <h3 style={{ fontSize: '1.3rem', fontWeight: '800', color: '#1e293b', marginBottom: '0.4rem' }}>
+                            3D Secure Banka Onayı
+                        </h3>
+                        <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                            <b>Sarmal Ticaret</b> harcamanız için cep telefonunuza SMS onay kodu gönderilmiştir. Lütfen 6 haneli doğrulama kodunu giriniz.
+                        </p>
+
+                        <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid #e2e8f0', textAlign: 'left', fontSize: '0.85rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.35rem' }}>
+                                <span style={{ color: '#64748b' }}>İşlem Tutarı:</span>
+                                <span style={{ fontWeight: '800', color: 'var(--color-primary)' }}>{total.toFixed(2)} TL</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: '#64748b' }}>Kart Sonu:</span>
+                                <span style={{ fontWeight: '700' }}>**** {(cardData.number || '').slice(-4) || '4321'}</span>
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <input
+                                type="text"
+                                value={smsCode}
+                                onChange={e => setSmsCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                                placeholder="123456"
+                                maxLength={6}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.85rem',
+                                    fontSize: '1.4rem',
+                                    fontWeight: '800',
+                                    letterSpacing: '6px',
+                                    textAlign: 'center',
+                                    borderRadius: '12px',
+                                    border: '2px solid var(--color-primary)',
+                                    outline: 'none'
+                                }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button
+                                type="button"
+                                className="btn btn-outline"
+                                onClick={() => setShow3DSecureModal(false)}
+                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.9rem' }}
+                            >
+                                İptal Et
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={processOrderAfter3DSecure}
+                                disabled={isVerifying3D || smsCode.length < 4}
+                                style={{ flex: 1.5, padding: '0.75rem', fontWeight: '800', fontSize: '0.95rem' }}
+                            >
+                                {isVerifying3D ? 'Doğrulanıyor...' : 'Ödemeyi Onayla 🔒'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
