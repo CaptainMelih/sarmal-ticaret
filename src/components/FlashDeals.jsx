@@ -28,6 +28,16 @@ export function FlashDeals({ isOpen, onClose, products, onAddToCart, onProductCl
         return () => clearInterval(timer);
     }, [isOpen]);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && isOpen) {
+                onClose();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     // Dynamically filter flash deals from DB flag

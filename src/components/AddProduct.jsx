@@ -68,6 +68,16 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
         }
     };
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && isOpen) {
+                onClose();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     // Device File Upload Handler (Auto Compress & Resize)
@@ -163,13 +173,13 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-content" style={{ maxWidth: '720px', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>
+        <div className="modal-overlay" style={{ zIndex: 99999 }} onClick={onClose}>
+            <div className="modal-content" style={{ maxWidth: '720px', maxHeight: '88vh', overflowY: 'auto', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+                <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(4px)', display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', paddingTop: '0.25rem' }}>
                     <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: '800', color: 'var(--color-text)' }}>
                         {editProduct ? '✏️ Ürünü Düzenle' : '✨ Yeni Ürün Ekle'}
                     </h2>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={24} /></button>
+                    <button onClick={onClose} aria-label="Kapat" style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                     {/* Basic Info */}

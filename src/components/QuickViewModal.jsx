@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ShoppingCart, Heart, Star, CheckCircle, ShieldCheck, Truck, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export function QuickViewModal({ product, isOpen, onClose, onAddToCart, onToggleFavorite, isFavorite }) {
     const [quantity, setQuantity] = useState(1);
     const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+    // ESC key listener to close modal on Escape
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' && isOpen) {
+                onClose();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
 
     if (!isOpen || !product) return null;
 
