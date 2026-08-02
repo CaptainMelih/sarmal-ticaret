@@ -59,21 +59,17 @@ export function Header({
 
   return (
     <header style={{ position: 'sticky', top: 0, zIndex: 100, background: 'white', boxShadow: 'var(--shadow-sm)', transition: 'all 0.3s ease' }}>
-      {/* Top Announcement Bar - Hides on mobile scroll down */}
+      {/* Top Announcement Bar */}
       <div className="top-announcement-bar" style={{
         background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)',
         color: 'white',
         fontSize: '0.75rem',
         fontWeight: '600',
-        padding: isScrolled ? '0 0.75rem' : '0.35rem 0.75rem',
-        maxHeight: isScrolled ? '0px' : '36px',
-        opacity: isScrolled ? 0 : 1,
-        overflow: 'hidden',
+        padding: '0.35rem 0.75rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        letterSpacing: '0.3px',
-        transition: 'all 0.3s ease'
+        letterSpacing: '0.3px'
       }}>
         <div className="marquee-wrapper" style={{ flex: 1, overflow: 'hidden', whiteSpace: 'nowrap', position: 'relative' }}>
           <div className="marquee-text">
@@ -97,10 +93,9 @@ export function Header({
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: '0.75rem',
-        minHeight: isScrolled ? '3.2rem' : '4rem',
+        minHeight: '3.8rem',
         height: 'auto',
-        padding: isScrolled ? '0.25rem 0.75rem' : '0.4rem 0.75rem',
-        transition: 'all 0.3s ease'
+        padding: '0.4rem 0.75rem'
       }}>
         <Link to="/" className="logo" style={{ cursor: 'pointer', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
           <Package size={26} />

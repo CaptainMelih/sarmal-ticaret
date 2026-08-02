@@ -175,12 +175,11 @@ export async function getProducts() {
             .order('created_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
-            const activeProds = data.filter(p => p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN' && Number(p.stock || 0) > 0);
-            const finalProds = activeProds.length > 0 ? activeProds : [];
+            const activeProds = data.filter(p => p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN');
             if (typeof window !== 'undefined' && window.sessionStorage) {
-                window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(finalProds));
+                window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(activeProds));
             }
-            return finalProds;
+            return activeProds;
         }
     } catch (err) {
         console.warn("getProducts network call failed, attempting session cache fallback:", err.message);
@@ -225,17 +224,8 @@ export async function getProductById(id) {
     return null;
 }
 
-export async function purgeHiddenProducts() {
-    try {
-        await supabase.from('products').delete().or('title.eq.HIDDEN,is_active.eq.false');
-    } catch (err) {
-        console.warn("purgeHiddenProducts warning:", err.message);
-    }
-}
-
 export async function getAllProductsAdmin() {
     try {
-        await purgeHiddenProducts();
         const { data, error } = await supabase
             .from('products')
             .select('*')
