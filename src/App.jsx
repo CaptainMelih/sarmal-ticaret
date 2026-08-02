@@ -7,12 +7,15 @@ import { Categories } from './components/Categories';
 import { ProductList } from './components/ProductList';
 import { AddProduct } from './components/AddProduct';
 import { Cart } from './components/Cart';
+import { CartPage } from './components/CartPage';
 import { Toast } from './components/Toast';
 import { ProductDetail } from './components/ProductDetail';
 import { Favorites } from './components/Favorites';
 import { Auth } from './components/Auth';
+import { AuthPage } from './components/AuthPage';
 import { UserProfile } from './components/UserProfile';
 import { Checkout } from './components/Checkout';
+import { CheckoutPage } from './components/CheckoutPage';
 import { DarkModeToggle } from './components/DarkModeToggle';
 import { LiveSupport } from './components/LiveSupport';
 import { SocialProof } from './components/SocialProof';
@@ -561,7 +564,7 @@ function AppContent() {
   // Checkout handlers
   const handleInitiateCheckout = () => {
     setIsCartOpen(false);
-    setIsCheckoutOpen(true);
+    navigate('/checkout');
   };
 
   const handleCompleteOrder = async (orderData) => {
@@ -950,10 +953,51 @@ function AppContent() {
           {/* About Us Page */}
           <Route path="/hakkimizda" element={<AboutUsPage />} />
 
-          {/* Legal Pages */}
-          <Route path="/mesafeli-satis-sozlesmesi" element={<DistanceSellingContract />} />
-          <Route path="/iade-kosullari" element={<RefundPolicy />} />
-          <Route path="/gizlilik-politikasi" element={<PrivacyPolicy />} />
+          {/* Dedicated Cart Page */}
+          <Route path="/sepet" element={
+            <CartPage
+              cartItems={cart}
+              onRemoveFromCart={handleRemoveFromCart}
+              onUpdateQuantity={handleUpdateQuantity}
+            />
+          } />
+
+          {/* Dedicated Auth Pages */}
+          <Route path="/giris-yap" element={
+            <AuthPage
+              onLogin={handleLogin}
+              onRegister={handleRegister}
+              onResetPassword={handleResetPassword}
+              initialMode="login"
+              user={user}
+            />
+          } />
+          <Route path="/uye-ol" element={
+            <AuthPage
+              onLogin={handleLogin}
+              onRegister={handleRegister}
+              onResetPassword={handleResetPassword}
+              initialMode="register"
+              user={user}
+            />
+          } />
+
+          {/* Dedicated Checkout Page */}
+          <Route path="/checkout" element={
+            <CheckoutPage
+              cartItems={cart}
+              addresses={addresses}
+              onCompleteOrder={handleCompleteOrder}
+              onAddAddress={() => {
+                if (user) {
+                  setIsProfileOpen(true);
+                } else {
+                  navigate('/giris-yap', { state: { from: '/checkout' } });
+                }
+              }}
+              user={user}
+            />
+          } />
         </Routes>
       </main>
 

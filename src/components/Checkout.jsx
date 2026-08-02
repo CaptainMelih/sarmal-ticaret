@@ -11,7 +11,7 @@ const PAYMENT_METHODS = [
     { id: 'transfer', name: 'Havale/EFT', icon: Truck }
 ];
 
-export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrder, onAddAddress, user }) {
+export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses, onCompleteOrder, onAddAddress, user }) {
     const [step, setStep] = useState(1);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState('credit');
@@ -194,19 +194,16 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
         }
     };
 
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div
-                className="modal-content"
-                style={{ maxWidth: '950px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
-                onClick={(e) => e.stopPropagation()}
-            >
+    const mainContent = (
+        <div style={isPage ? { background: 'white', borderRadius: '24px', padding: '2.5rem', boxShadow: '0 10px 40px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' } : { display: 'flex', flexDirection: 'column', height: '100%' }}>
+            {!isPage && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', alignItems: 'center' }}>
-                    <h2 style={{ margin: 0 }}>Güvenli Ödeme</h2>
-                    <button onClick={onClose} style={{ background: 'none' }}>
+                    <h2 style={{ margin: 0, fontWeight: '800' }}>Güvenli Ödeme</h2>
+                    <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                         <X />
                     </button>
                 </div>
+            )}
 
                 {/* Progress Steps */}
                 <div style={{
@@ -745,6 +742,21 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
                         </div>
                     </div>
                 )}
+        </div>
+    );
+
+    if (isPage) {
+        return mainContent;
+    }
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div
+                className="modal-content"
+                style={{ maxWidth: '950px', width: '95%', maxHeight: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                {mainContent}
             </div>
         </div>
     );

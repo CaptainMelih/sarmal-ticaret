@@ -219,10 +219,10 @@ export function Header({
             <Heart size={22} />
             {favoriteCount > 0 && <span className="cart-badge">{favoriteCount}</span>}
           </button>
-          <button className="cart-btn desktop-only-btn" onClick={onOpenCart}>
+          <Link to="/sepet" className="cart-btn desktop-only-btn" style={{ textDecoration: 'none' }}>
             <ShoppingCart size={22} />
             {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-          </button>
+          </Link>
 
           {user ? (
             <button
@@ -245,14 +245,14 @@ export function Header({
               {(user.name || user.email || 'U').charAt(0).toUpperCase()}
             </button>
           ) : (
-            <button
+            <Link
+              to="/giris-yap"
               className="btn btn-primary desktop-only-btn"
-              onClick={onOpenAuth}
-              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+              style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', textDecoration: 'none' }}
             >
               <LogIn size={16} />
               Giriş
-            </button>
+            </Link>
           )}
         </div>
       </div>

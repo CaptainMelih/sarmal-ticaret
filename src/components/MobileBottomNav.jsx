@@ -32,17 +32,17 @@ export function MobileBottomNav({
                 <span>Kategoriler</span>
             </button>
 
-            <button
-                className="mobile-nav-item"
-                onClick={onOpenCart}
-                style={{ position: 'relative' }}
+            <Link
+                to="/sepet"
+                className={`mobile-nav-item ${location.pathname === '/sepet' ? 'active' : ''}`}
+                style={{ position: 'relative', textDecoration: 'none' }}
             >
                 <ShoppingBag size={22} />
                 {cartCount > 0 && (
                     <span className="mobile-nav-badge">{cartCount}</span>
                 )}
                 <span>Sepetim</span>
-            </button>
+            </Link>
 
             <button
                 className="mobile-nav-item"
@@ -56,13 +56,24 @@ export function MobileBottomNav({
                 <span>Favoriler</span>
             </button>
 
-            <button
-                className="mobile-nav-item"
-                onClick={user ? onOpenProfile : onOpenAuth}
-            >
-                <User size={22} />
-                <span>{user ? 'Hesabım' : 'Giriş'}</span>
-            </button>
+            {user ? (
+                <button
+                    className="mobile-nav-item"
+                    onClick={onOpenProfile}
+                >
+                    <User size={22} />
+                    <span>Hesabım</span>
+                </button>
+            ) : (
+                <Link
+                    to="/giris-yap"
+                    className={`mobile-nav-item ${location.pathname === '/giris-yap' || location.pathname === '/uye-ol' ? 'active' : ''}`}
+                    style={{ textDecoration: 'none' }}
+                >
+                    <User size={22} />
+                    <span>Giriş</span>
+                </Link>
+            )}
         </div>
     );
 }
