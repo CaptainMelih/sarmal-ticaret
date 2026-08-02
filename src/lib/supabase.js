@@ -264,13 +264,31 @@ function sanitizeProductPayload(payload) {
 
 export async function addProduct(product) {
     const cleanPayload = sanitizeProductPayload(product);
-    const { data, error } = await supabase
+    if (!cleanPayload.id) {
+        cleanPayload.id = Date.now();
+    }
+    let { data, error } = await supabase
         .from('products')
         .insert([{ ...cleanPayload, is_active: true }])
         .select();
 
+    if (error) {
+        console.warn("addProduct with numeric ID failed, retrying string ID:", error.message);
+        cleanPayload.id = String(Date.now());
+        const { data: retryData, error: retryError } = await supabase
+            .from('products')
+            .insert([{ ...cleanPayload, is_active: true }])
+            .select();
+        if (!retryError && retryData && retryData.length > 0) {
+            data = retryData;
+            error = null;
+        } else {
+            throw retryError || error;
+        }
+    }
+
     if (error) throw error;
-    return data[0];
+    return data ? data[0] : cleanPayload;
 }
 
 export async function updateProduct(productId, updates) {

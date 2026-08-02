@@ -25,15 +25,9 @@ export function Header({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    let lastScrollY = window.pageYOffset || 0;
     const handleScroll = () => {
       const currentScrollY = window.pageYOffset || 0;
-      if (currentScrollY > 70 && currentScrollY > lastScrollY) {
-        setIsScrolled(true);
-      } else if (currentScrollY < lastScrollY || currentScrollY <= 20) {
-        setIsScrolled(false);
-      }
-      lastScrollY = currentScrollY;
+      setIsScrolled(currentScrollY > 60);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
