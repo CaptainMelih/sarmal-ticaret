@@ -130,7 +130,26 @@ export function ProductList({
                                         TÜKENDİ
                                     </div>
                                 )}
-                                {index < 3 && !isOutOfStock && (
+                                {product.is_featured && !isOutOfStock ? (
+                                    <div style={{
+                                        position: 'absolute',
+                                        top: '0.5rem',
+                                        left: '0.5rem',
+                                        background: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                                        color: 'white',
+                                        padding: '0.25rem 0.75rem',
+                                        borderRadius: 'var(--radius-md)',
+                                        fontSize: '0.75rem',
+                                        fontWeight: '700',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem',
+                                        boxShadow: '0 2px 8px rgba(217, 119, 6, 0.4)'
+                                    }}>
+                                        <Star size={12} fill="white" />
+                                        Öne Çıkan
+                                    </div>
+                                ) : (index < 3 && !isOutOfStock && (
                                     <div style={{
                                         position: 'absolute',
                                         top: '0.5rem',
@@ -148,7 +167,7 @@ export function ProductList({
                                         <Star size={12} fill="white" />
                                         Popüler
                                     </div>
-                                )}
+                                ))}
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();

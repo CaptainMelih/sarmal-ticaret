@@ -750,20 +750,25 @@ function AppContent() {
     p && p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN' && Number(p.stock || 0) > 0
   );
 
-  // Sort logic
+  // Sort logic: Featured / Pinned products ALWAYS appear FIRST at top of storefront!
   const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy !== 'price-low' && sortBy !== 'price-high') {
+      const aPinned = Boolean(a.is_featured);
+      const bPinned = Boolean(b.is_featured);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+    }
+
     switch (sortBy) {
       case 'price-low':
-        return a.price - b.price;
+        return Number(a.price) - Number(b.price);
       case 'price-high':
-        return b.price - a.price;
+        return Number(b.price) - Number(a.price);
       case 'newest':
-        return b.id - a.id;
-      case 'rating':
-        return 0; // Would use actual ratings if available
+        return Number(b.id) - Number(a.id);
       case 'popular':
       default:
-        return a.id - b.id;
+        return Number(b.id) - Number(a.id);
     }
   });
 

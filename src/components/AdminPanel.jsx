@@ -613,17 +613,17 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                                         }
                                                     }}
                                                     style={{
-                                                        padding: '0.3rem 0.6rem',
+                                                        padding: '0.35rem 0.65rem',
                                                         fontSize: '0.8rem',
-                                                        background: product.is_featured ? '#fffbe6' : 'white',
-                                                        borderColor: product.is_featured ? '#fde68a' : '#cbd5e1',
-                                                        color: product.is_featured ? '#b45309' : 'inherit',
-                                                        fontWeight: product.is_featured ? '700' : 'normal'
+                                                        background: product.is_featured ? 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)' : 'white',
+                                                        borderColor: product.is_featured ? '#d97706' : '#cbd5e1',
+                                                        color: product.is_featured ? '#92400e' : '#475569',
+                                                        fontWeight: '800'
                                                     }}
-                                                    title={product.is_featured ? 'Öne Çıkan Ürün' : 'Öne Çıkar'}
+                                                    title={product.is_featured ? 'Ürün en başta sabitlendi' : 'Ürünü en başa sabitle'}
                                                 >
-                                                    <Star size={14} fill={product.is_featured ? '#b45309' : 'none'} color={product.is_featured ? '#b45309' : 'currentColor'} />
-                                                    {product.is_featured ? 'Öne Çıkan' : 'Öne Çıkar'}
+                                                    <Star size={14} fill={product.is_featured ? '#d97706' : 'none'} color={product.is_featured ? '#d97706' : 'currentColor'} />
+                                                    {product.is_featured ? '📌 Başa Sabitlendi' : '📌 Başa Sabitle'}
                                                 </button>
                                                 <button
                                                     className="btn btn-outline"

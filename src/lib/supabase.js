@@ -431,6 +431,10 @@ export async function getAllUsersAdmin() {
 }
 
 export async function createOrder(orderData) {
+    // Append giftNote to note field if present, preventing non-existent DB column errors
+    const giftInfo = orderData.giftNote ? ` [Hediye Notu: ${orderData.giftNote}]` : '';
+    const fullNote = `${orderData.note || ''}${giftInfo}`.trim();
+
     // Sipariş oluştur
     const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -438,9 +442,7 @@ export async function createOrder(orderData) {
             user_id: orderData.userId,
             address_id: orderData.addressId,
             payment_method: orderData.paymentMethod,
-            note: orderData.note || '',
-            is_gift_wrap: orderData.isGiftWrap || false,
-            gift_note: orderData.giftNote || '',
+            note: fullNote,
             subtotal: orderData.subtotal,
             discount: orderData.discount || 0,
             coupon_code: orderData.couponCode || null,
@@ -451,7 +453,10 @@ export async function createOrder(orderData) {
         .select()
         .single();
 
-    if (orderError) throw orderError;
+    if (orderError) {
+        console.error("Order Insertion Error:", orderError);
+        throw orderError;
+    }
 
     // Sipariş öğelerini ekle
     const orderItems = orderData.items.map(item => ({
@@ -493,6 +498,9 @@ export async function createGuestOrder(orderData, guestAddress) {
 
     if (addressError) throw addressError;
 
+    const giftInfo = orderData.giftNote ? ` [Hediye Notu: ${orderData.giftNote}]` : '';
+    const fullNote = `${orderData.note || ''}${giftInfo}`.trim();
+
     // Sipariş oluştur
     const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -500,7 +508,7 @@ export async function createGuestOrder(orderData, guestAddress) {
             user_id: null,
             address_id: address.id,
             payment_method: orderData.paymentMethod,
-            note: orderData.note || '',
+            note: fullNote,
             subtotal: orderData.subtotal,
             discount: orderData.discount || 0,
             coupon_code: orderData.couponCode || null,
