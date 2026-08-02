@@ -35,6 +35,7 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
     const [giftNote, setGiftNote] = useState('');
     const [createdOrder, setCreatedOrder] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [emailError, setEmailError] = useState('');
 
     if (!isOpen) return null;
 
@@ -106,8 +107,6 @@ export function Checkout({ isOpen, onClose, cartItems, addresses, onCompleteOrde
             return hasName && hasPhone && hasEmail && hasPassword && hasAddress && hasCity && hasDistrict && hasConsent;
         }
     };
-
-    const [emailError, setEmailError] = useState('');
 
     const handleEmailBlur = async () => {
         if (!guestAddress.email || !guestAddress.email.includes('@')) return;
