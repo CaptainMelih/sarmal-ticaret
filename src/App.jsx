@@ -38,7 +38,19 @@ import { DiscountWheelModal } from './components/DiscountWheelModal';
 import * as db from './lib/supabase';
 
 
-const INITIAL_PRODUCTS = [];
+const INITIAL_PRODUCTS = [
+  {
+    id: 1785709100000,
+    title: 'Mirumi Peluş Oyuncak - Sese ve Harekete Duyarlı',
+    price: 949.90,
+    description: `-Harekete ve sese duyarlıdır başını sevdiğinizde karşılık verir.\n-Sol taraftaki tuşuna 1 kez bastığınızda müzik çalmaya başlar. İki kez basarsanız müzik değiştirir.\n-Yine aynı tuşa basılı tutup ses ile geri bildirim aldığınız zaman söylediğiniz şeyleri tekrar etmeye başlar.\n-Pil ile çalışan modeldir şarj etme derdi bulunmamaktadır yanında pil gönderilmektedir.`,
+    image: '/mirumi_pelus_oyuncak.jpg',
+    category: 1,
+    stock: 25,
+    is_active: true,
+    created_at: new Date().toISOString()
+  }
+];
 
 function getLocalStorage(key, initialValue) {
   if (typeof window === 'undefined' || typeof localStorage === 'undefined') {

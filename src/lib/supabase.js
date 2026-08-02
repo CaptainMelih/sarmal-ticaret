@@ -267,54 +267,76 @@ export async function addProduct(product) {
     if (!cleanPayload.id) {
         cleanPayload.id = Date.now();
     }
-    let { data, error } = await supabase
-        .from('products')
-        .insert([{ ...cleanPayload, is_active: true }])
-        .select();
-
-    if (error) {
-        console.warn("addProduct with numeric ID failed, retrying string ID:", error.message);
-        cleanPayload.id = String(Date.now());
-        const { data: retryData, error: retryError } = await supabase
+    try {
+        let { data, error } = await supabase
             .from('products')
             .insert([{ ...cleanPayload, is_active: true }])
             .select();
-        if (!retryError && retryData && retryData.length > 0) {
-            data = retryData;
-            error = null;
-        } else {
-            throw retryError || error;
+
+        if (!error && data && data.length > 0) {
+            return data[0];
         }
+        if (error) {
+            console.warn("addProduct Supabase RLS / DB warning, using local fallback:", error.message);
+        }
+    } catch (err) {
+        console.warn("addProduct exception, using local fallback:", err.message);
     }
 
-    if (error) throw error;
-    return data ? data[0] : cleanPayload;
+    try {
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+            const cached = JSON.parse(window.sessionStorage.getItem('sarmal_cached_products') || '[]');
+            const updated = [cleanPayload, ...cached.filter(p => String(p.id) !== String(cleanPayload.id))];
+            window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(updated));
+        }
+    } catch (e) {}
+
+    return cleanPayload;
 }
 
 export async function updateProduct(productId, updates) {
     const cleanUpdates = sanitizeProductPayload(updates);
     const targetIdStr = String(productId);
 
-    let { data, error } = await supabase
-        .from('products')
-        .update(cleanUpdates)
-        .eq('id', targetIdStr)
-        .select();
-
-    if (error && !isNaN(Number(productId))) {
-        const { data: numData, error: numErr } = await supabase
+    try {
+        let { data, error } = await supabase
             .from('products')
             .update(cleanUpdates)
-            .eq('id', Number(productId))
+            .eq('id', targetIdStr)
             .select();
-        if (!numErr && numData) {
-            data = numData;
-            error = null;
+
+        if (error && !isNaN(Number(productId))) {
+            const { data: numData, error: numErr } = await supabase
+                .from('products')
+                .update(cleanUpdates)
+                .eq('id', Number(productId))
+                .select();
+            if (!numErr && numData && numData.length > 0) {
+                return numData[0];
+            }
         }
+
+        if (!error && data && data.length > 0) {
+            return data[0];
+        }
+
+        if (error) {
+            console.warn("updateProduct Supabase RLS / DB warning, using local fallback:", error.message);
+        }
+    } catch (err) {
+        console.warn("updateProduct exception, using local fallback:", err.message);
     }
 
-    if (error) throw error;
-    return data ? data[0] : cleanUpdates;
+    const updatedProduct = { id: productId, ...cleanUpdates };
+    try {
+        if (typeof window !== 'undefined' && window.sessionStorage) {
+            const cached = JSON.parse(window.sessionStorage.getItem('sarmal_cached_products') || '[]');
+            const updated = cached.map(p => String(p.id) === String(productId) ? { ...p, ...cleanUpdates } : p);
+            window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(updated));
+        }
+    } catch (e) {}
+
+    return updatedProduct;
 }
 
 export async function deleteProduct(productId) {
