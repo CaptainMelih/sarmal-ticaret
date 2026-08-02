@@ -20,7 +20,8 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
         image: '',
         category: 1,
         stock: 10,
-        flash_discount_rate: 0
+        flash_discount_rate: 0,
+        is_featured: false
     });
     const [extraImages, setExtraImages] = useState([]);
     const [newImageUrl, setNewImageUrl] = useState('');
@@ -36,7 +37,8 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
                 image: editProduct.image || '',
                 category: editProduct.category || 1,
                 stock: editProduct.stock || 0,
-                flash_discount_rate: editProduct.flash_discount_rate || 0
+                flash_discount_rate: editProduct.flash_discount_rate || 0,
+                is_featured: Boolean(editProduct.is_featured)
             });
             // Parse specs if available
             try {
@@ -240,6 +242,19 @@ export function AddProduct({ isOpen, onClose, onAdd, editProduct = null }) {
                                 style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #cbd5e1' }}
                             />
                         </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '1rem 0', background: 'linear-gradient(135deg, #fef3c7 0%, #fffbe6 100%)', padding: '0.85rem 1rem', borderRadius: 'var(--radius-md)', border: '1px solid #fde68a' }}>
+                        <input
+                            type="checkbox"
+                            id="is_featured_checkbox"
+                            checked={Boolean(formData.is_featured)}
+                            onChange={e => setFormData({ ...formData, is_featured: e.target.checked })}
+                            style={{ width: '1.25rem', height: '1.25rem', cursor: 'pointer', accentColor: '#d97706' }}
+                        />
+                        <label htmlFor="is_featured_checkbox" style={{ fontWeight: '700', color: '#92400e', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
+                            🌟 Öne Çıkarılan Ürün Yap (Ana Sayfa Banner Slider & Öne Çıkanlar Alanında Gösterilsin)
+                        </label>
                     </div>
 
                     {/* Image Upload Dropzone & Gallery Manager */}

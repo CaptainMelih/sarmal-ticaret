@@ -833,6 +833,8 @@ function AppContent() {
               />
               <div className="container">
                 <Banner
+                  products={products}
+                  onSelectProduct={(prod) => setSelectedProduct(prod)}
                   onOpenFlashDeals={() => setIsFlashDealsOpen(true)}
                   onCategorySelect={handleCategorySelect}
                 />

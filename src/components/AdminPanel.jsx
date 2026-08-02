@@ -603,8 +603,32 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
                                                 <button
                                                     className="btn btn-outline"
+                                                    onClick={async () => {
+                                                        try {
+                                                            const nextState = !Boolean(product.is_featured);
+                                                            await db.updateProduct(product.id, { is_featured: nextState });
+                                                            onRefreshProducts();
+                                                        } catch (err) {
+                                                            alert('Durum güncellenemedi');
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        padding: '0.3rem 0.6rem',
+                                                        fontSize: '0.8rem',
+                                                        background: product.is_featured ? '#fffbe6' : 'white',
+                                                        borderColor: product.is_featured ? '#fde68a' : '#cbd5e1',
+                                                        color: product.is_featured ? '#b45309' : 'inherit',
+                                                        fontWeight: product.is_featured ? '700' : 'normal'
+                                                    }}
+                                                    title={product.is_featured ? 'Öne Çıkan Ürün' : 'Öne Çıkar'}
+                                                >
+                                                    <Star size={14} fill={product.is_featured ? '#b45309' : 'none'} color={product.is_featured ? '#b45309' : 'currentColor'} />
+                                                    {product.is_featured ? 'Öne Çıkan' : 'Öne Çıkar'}
+                                                </button>
+                                                <button
+                                                    className="btn btn-outline"
                                                     onClick={() => onEditProduct(product)}
-                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', flex: 1 }}
+                                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}
                                                 >
                                                     <Edit2 size={14} /> Düzenle
                                                 </button>
