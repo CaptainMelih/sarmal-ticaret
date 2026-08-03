@@ -23,7 +23,7 @@ export const DistanceSellingContractContent = () => (
         <h3 style={{ marginTop: '1.25rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>MADDE 1 - TARAFLAR</h3>
         <p style={{ marginTop: '0.5rem' }}>
             <strong>SATICI:</strong><br />
-            Unvanı: <strong>Sarmal Ticaret (Melih Yıldız)</strong><br />
+            Unvanı: <strong>Sarmal Ticaret</strong><br />
             Web Adresi: www.sarmalticaret.com<br />
             E-Posta: info@sarmalticaret.com<br />
             Adres: İstanbul, Türkiye
