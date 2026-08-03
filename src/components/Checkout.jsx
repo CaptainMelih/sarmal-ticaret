@@ -195,54 +195,30 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                 return;
             }
 
-            if (selectedPayment === 'credit') {
-                setCardError('');
-                const cleanNum = (cardData.number || '').replace(/\s/g, '');
-                if (!(cardData.name || '').trim()) {
-                    setCardError('Lütfen kart üzerindeki Ad Soyad bilgisini giriniz.');
-                    return;
-                }
-                if (cleanNum.length < 16) {
-                    setCardError('Lütfen 16 haneli kart numaranızı eksiksiz giriniz.');
-                    return;
-                }
-                if (!(cardData.expiry || '').trim() || (cardData.expiry || '').length < 4) {
-                    setCardError('Lütfen kart son kullanma tarihini (AA/YY) giriniz.');
-                    return;
-                }
-                if (!(cardData.cvc || '').trim() || (cardData.cvc || '').length < 3) {
-                    setCardError('Lütfen 3 haneli CVC/CVV güvenlik kodunu giriniz.');
-                    return;
-                }
+            setIsSubmitting(true);
+            try {
+                const result = await onCompleteOrder({
+                    addressId: selectedAddress ? selectedAddress.id : null,
+                    guestAddress: !user ? guestAddress : null,
+                    paymentMethod: selectedPayment,
+                    items: groupedItems,
+                    subtotal,
+                    discount,
+                    couponCode: appliedCoupon?.code || null,
+                    total,
+                    note: orderNote,
+                    isGiftWrap: isGiftWrap,
+                    giftNote: giftNote
+                });
 
-                // Show 3D Secure verification modal
-                setShow3DSecureModal(true);
-                return;
-            }
-
-            if (selectedPayment === 'transfer') {
-                setIsSubmitting(true);
-                try {
-                    const result = await onCompleteOrder({
-                        addressId: selectedAddress ? selectedAddress.id : null,
-                        guestAddress: !user ? guestAddress : null,
-                        paymentMethod: 'transfer',
-                        items: groupedItems,
-                        subtotal,
-                        discount,
-                        couponCode: appliedCoupon?.code || null,
-                        total,
-                        note: orderNote,
-                        isGiftWrap: isGiftWrap,
-                        giftNote: giftNote
-                    });
+                if (selectedPayment === 'transfer') {
                     setCreatedOrder(result);
                     setStep(3);
-                } catch (err) {
-                    alert('Sipariş tamamlanırken bir hata oluştu: ' + err.message);
-                } finally {
-                    setIsSubmitting(false);
                 }
+            } catch (err) {
+                alert('Ödeme başlatılırken bir hata oluştu: ' + err.message);
+            } finally {
+                setIsSubmitting(false);
             }
         }
     };
@@ -652,71 +628,15 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                         })}
                                     </div>
 
-                                    {/* Credit Card Input Form */}
+                                    {/* PayTR 3D Secure Notification */}
                                     {selectedPayment === 'credit' && (
-                                        <div style={{ background: '#f8fafc', padding: '1.5rem', borderRadius: '16px', border: '1px solid #e2e8f0', marginBottom: '2rem' }}>
-                                            <h4 style={{ margin: '0 0 1.25rem', fontSize: '1rem', fontWeight: '800', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <CreditCard size={20} color="var(--color-primary)" /> Kredi / Banka Kartı Bilgileri
+                                        <div style={{ background: '#f0f9ff', padding: '1.5rem', borderRadius: '16px', border: '1px solid #bae6fd', marginBottom: '2rem' }}>
+                                            <h4 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: '800', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <ShieldCheck size={22} color="#0284c7" /> PayTR 3D Secure Güvenli Ödeme
                                             </h4>
-
-                                            {cardError && (
-                                                <div style={{ background: '#fef2f2', color: '#ef4444', padding: '0.75rem 1rem', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '1rem', border: '1px solid #fca5a5', fontWeight: '600' }}>
-                                                    ⚠️ {cardError}
-                                                </div>
-                                            )}
-
-                                            <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                                <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Kart Üzerindeki Ad Soyad *</label>
-                                                <input
-                                                    type="text"
-                                                    value={cardData.name}
-                                                    onChange={e => setCardData({ ...cardData, name: e.target.value })}
-                                                    placeholder="Örn: AHMET YILMAZ"
-                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', textTransform: 'uppercase' }}
-                                                />
-                                            </div>
-
-                                            <div className="form-group" style={{ marginBottom: '1rem' }}>
-                                                <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Kart Numarası *</label>
-                                                <input
-                                                    type="text"
-                                                    value={cardData.number}
-                                                    onChange={handleCardNumberChange}
-                                                    placeholder="0000 0000 0000 0000"
-                                                    maxLength={19}
-                                                    style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', letterSpacing: '2px', fontWeight: '600' }}
-                                                />
-                                            </div>
-
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                                                <div className="form-group" style={{ margin: 0 }}>
-                                                    <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Son Kullanma (AA/YY) *</label>
-                                                    <input
-                                                        type="text"
-                                                        value={cardData.expiry}
-                                                        onChange={handleExpiryChange}
-                                                        placeholder="12/28"
-                                                        maxLength={5}
-                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', textAlign: 'center', fontWeight: '600' }}
-                                                    />
-                                                </div>
-                                                <div className="form-group" style={{ margin: 0 }}>
-                                                    <label style={{ fontWeight: '700', fontSize: '0.85rem', marginBottom: '0.35rem', display: 'block' }}>Güvenlik Kodu (CVC) *</label>
-                                                    <input
-                                                        type="password"
-                                                        value={cardData.cvc}
-                                                        onChange={e => setCardData({ ...cardData, cvc: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) })}
-                                                        placeholder="•••"
-                                                        maxLength={4}
-                                                        style={{ width: '100%', padding: '0.75rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.95rem', textAlign: 'center', fontWeight: '600' }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #e2e8f0', fontSize: '0.8rem', color: '#64748b' }}>
-                                                <ShieldCheck size={18} color="#16a34a" />
-                                                <span>256-Bit SSL şifreleme ve 3D Secure banka onay sistemi ile %100 korumalı ödeme.</span>
-                                            </div>
+                                            <p style={{ fontSize: '0.9rem', color: '#0369a1', margin: 0, lineHeight: '1.6' }}>
+                                                "Siparişi Onayla ve Öde" butonuna tıkladığınızda kart bilgilerinizi ve bankanızın 3D Secure SMS doğrulama şifresini gireceğiniz <strong>PayTR Resmi Güvenli Ödeme Sayfasına</strong> otomatik yönlendirileceksiniz.
+                                            </p>
                                         </div>
                                     )}
 
