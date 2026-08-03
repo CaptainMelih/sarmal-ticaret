@@ -20,6 +20,7 @@ import { DarkModeToggle } from './components/DarkModeToggle';
 import { LiveSupport } from './components/LiveSupport';
 import { SocialProof } from './components/SocialProof';
 import { DistanceSellingContract, RefundPolicy, PrivacyPolicy } from './components/LegalPages';
+import { createPaytrTokenClient } from './lib/paytr';
 import { BackToTop } from './components/BackToTop';
 import { ProductFilters } from './components/ProductFilters';
 import { RecentlyViewed } from './components/RecentlyViewed';
@@ -640,55 +641,79 @@ function AppContent() {
       }
 
       if (orderData.paymentMethod === 'credit') {
-        const session = await db.getSession();
-        const headers = { 'Content-Type': 'application/json' };
-        if (session?.access_token) {
-          headers['Authorization'] = `Bearer ${session.access_token}`;
-        }
+        let checkoutResponseData = null;
 
-        const checkoutRes = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({
-            price: orderData.total,
-            paidPrice: orderData.total,
-            basketId: created.id.toString(),
-            buyer: {
-              id: user ? user.id : 'guest',
-              name: user ? user.name : (orderAddress?.name || 'Misafir'),
-              surname: user ? user.name : (orderAddress?.name || 'Kullanici'),
-              identityNumber: '11111111111',
-              email: user ? user.email : (orderAddress?.email || 'guest@sarmalticaret.com'),
-              gsmNumber: user ? user.phone : (orderAddress?.phone || '05555555555'),
-              registrationAddress: orderAddress?.full_address || orderAddress?.fullAddress || 'Test Adres',
-              city: orderAddress?.city || 'Istanbul',
-              country: 'Turkey'
-            },
-            basketItems: orderData.items.map(i => ({
-              id: i.id,
-              name: products.find(p => p.id === i.id)?.title || 'Ürün',
-              price: i.price,
-              quantity: i.quantity
-            }))
-          })
-        });
-
-        const rawText = await checkoutRes.text();
-        let checkoutResponseData = {};
         try {
-          checkoutResponseData = JSON.parse(rawText);
-        } catch (jsonErr) {
-          console.error("Non-JSON API response from /api/checkout:", rawText);
-          throw new Error(`Ödeme sunucu servisi yanıt veremedi (${checkoutRes.status}). Lütfen tekrar deneyin.`);
+          const session = await db.getSession();
+          const headers = { 'Content-Type': 'application/json' };
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+          }
+
+          const checkoutRes = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+              price: orderData.total,
+              paidPrice: orderData.total,
+              basketId: created.id.toString(),
+              buyer: {
+                id: user ? user.id : 'guest',
+                name: user ? user.name : (orderAddress?.name || 'Misafir'),
+                surname: user ? user.name : (orderAddress?.name || 'Kullanici'),
+                identityNumber: '11111111111',
+                email: user ? user.email : (orderAddress?.email || 'guest@sarmalticaret.com'),
+                gsmNumber: user ? user.phone : (orderAddress?.phone || '05555555555'),
+                registrationAddress: orderAddress?.full_address || orderAddress?.fullAddress || 'Test Adres',
+                city: orderAddress?.city || 'Istanbul',
+                country: 'Turkey'
+              },
+              basketItems: orderData.items.map(i => ({
+                id: i.id,
+                name: products.find(p => p.id === i.id)?.title || 'Ürün',
+                price: i.price,
+                quantity: i.quantity
+              }))
+            })
+          });
+
+          if (checkoutRes.ok) {
+            const rawText = await checkoutRes.text();
+            try {
+              checkoutResponseData = JSON.parse(rawText);
+            } catch (jsonErr) {
+              console.warn("Non-JSON API response from /api/checkout:", rawText);
+            }
+          }
+        } catch (apiErr) {
+          console.warn("Server API checkout error, switching to direct PayTR fallback:", apiErr);
         }
 
-        if (checkoutResponseData.status === 'success' && (checkoutResponseData.paymentPageUrl || checkoutResponseData.token)) {
+        // Fallback to client-side PayTR token generator if server API endpoint is unreached or non-ok
+        if (!checkoutResponseData || checkoutResponseData.status !== 'success') {
+          console.log("Generating PayTR token via direct Web Crypto fallback...");
+          checkoutResponseData = await createPaytrTokenClient({
+            id: created.id,
+            total: orderData.total,
+            items: orderData.items,
+            buyer: {
+              name: user ? user.name : (orderAddress?.name || 'Misafir'),
+              surname: user ? user.name : (orderAddress?.name || 'Kullanıcı'),
+              email: user ? user.email : (orderAddress?.email || 'guest@sarmalticaret.com'),
+              phone: user ? user.phone : (orderAddress?.phone || '05555555555'),
+              address: orderAddress?.full_address || orderAddress?.fullAddress || 'Adres'
+            }
+          }, products);
+        }
+
+        if (checkoutResponseData && checkoutResponseData.status === 'success' && (checkoutResponseData.paymentPageUrl || checkoutResponseData.token)) {
           const targetUrl = checkoutResponseData.paymentPageUrl || `https://www.paytr.com/odeme/guvenli/${checkoutResponseData.token}`;
           showToast('PayTR Güvenli Ödeme Sayfasına Yönlendiriliyorsunuz... 🔒', 'info');
           window.location.href = targetUrl;
           return;
         } else {
-          throw new Error(checkoutResponseData.errorMessage || checkoutResponseData.reason || 'PayTR ödeme sayfasına yönlendirilemedi.');
+          const errorMsg = checkoutResponseData?.reason || checkoutResponseData?.errorMessage || 'PayTR ödeme başlatılamadı.';
+          throw new Error(errorMsg);
         }
       }
 
