@@ -3,7 +3,7 @@ import { X, MapPin, CreditCard, Percent, ShoppingBag, Truck, CheckCircle, AlertC
 import * as db from '../lib/supabase';
 import { TURKEY_DATA } from '../data/turkey-data';
 import { CustomSelect } from './CustomSelect';
-
+import { DistanceSellingContractContent, RefundPolicyContent } from './LegalPages';
 
 const PAYMENT_METHODS = [
     { id: 'credit', name: 'Kredi Kartı', icon: CreditCard },
@@ -15,6 +15,7 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
     const [step, setStep] = useState(1);
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [selectedPayment, setSelectedPayment] = useState('credit');
+    const [activeLegalModal, setActiveLegalModal] = useState(null); // 'distance' | 'refund' | null
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [couponError, setCouponError] = useState('');
@@ -811,8 +812,18 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                             style={{ marginTop: '0.2rem', cursor: 'pointer', width: '1.2rem', height: '1.2rem', accentColor: 'var(--color-primary)' }}
                                         />
                                         <label htmlFor="terms-checkbox" style={{ fontSize: '0.85rem', color: 'var(--color-text)', cursor: 'pointer', lineHeight: '1.5' }}>
-                                            <a href="/mesafeli-satis-sozlesmesi" target="_blank" style={{ color: 'var(--color-primary)' }}>Mesafeli Satış Sözleşmesini</a>, {' '}
-                                            <a href="/iade-kosullari" target="_blank" style={{ color: 'var(--color-primary)' }}>İptal ve İade Koşullarını</a> okudum ve onaylıyorum.
+                                            <span
+                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveLegalModal('distance'); }}
+                                                style={{ color: 'var(--color-primary)', textDecoration: 'underline', fontWeight: '700', cursor: 'pointer' }}
+                                            >
+                                                Mesafeli Satış Sözleşmesini
+                                            </span>, {' '}
+                                            <span
+                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActiveLegalModal('refund'); }}
+                                                style={{ color: 'var(--color-primary)', textDecoration: 'underline', fontWeight: '700', cursor: 'pointer' }}
+                                            >
+                                                İptal ve İade Koşullarını
+                                            </span> okudum ve onaylıyorum.
                                         </label>
                                     </div>
                                 )}
@@ -936,6 +947,44 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                 style={{ flex: 1.5, padding: '0.75rem', fontWeight: '800', fontSize: '0.95rem' }}
                             >
                                 {isVerifying3D ? 'Doğrulanıyor...' : 'Ödemeyi Onayla 🔒'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Contract Modal Overlay */}
+            {activeLegalModal && (
+                <div className="modal-overlay" style={{ zIndex: 999999 }} onClick={() => setActiveLegalModal(null)}>
+                    <div
+                        className="modal-content"
+                        style={{ maxWidth: '780px', width: '92%', maxHeight: '85vh', overflowY: 'auto', padding: '2rem', borderRadius: '20px', background: 'white' }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+                            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#1e293b' }}>
+                                {activeLegalModal === 'distance' ? '📜 Mesafeli Satış Sözleşmesi' : '🔄 İptal ve İade Koşulları'}
+                            </h3>
+                            <button
+                                onClick={() => setActiveLegalModal(null)}
+                                style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div style={{ padding: '0.5rem 0 1.5rem' }}>
+                            {activeLegalModal === 'distance' ? <DistanceSellingContractContent /> : <RefundPolicyContent />}
+                        </div>
+
+                        <div style={{ textAlign: 'right', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => { setAgreedToTerms(true); setActiveLegalModal(null); }}
+                                style={{ padding: '0.65rem 1.5rem', fontWeight: '700', fontSize: '0.9rem' }}
+                            >
+                                Okudum ve Onaylıyorum ✓
                             </button>
                         </div>
                     </div>

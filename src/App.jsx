@@ -673,7 +673,14 @@ function AppContent() {
           })
         });
 
-        const checkoutResponseData = await checkoutRes.json();
+        const rawText = await checkoutRes.text();
+        let checkoutResponseData = {};
+        try {
+          checkoutResponseData = JSON.parse(rawText);
+        } catch (jsonErr) {
+          console.error("Non-JSON API response from /api/checkout:", rawText);
+          throw new Error(`Ödeme sunucu servisi yanıt veremedi (${checkoutRes.status}). Lütfen tekrar deneyin.`);
+        }
 
         if (checkoutResponseData.status === 'success' && (checkoutResponseData.paymentPageUrl || checkoutResponseData.token)) {
           const targetUrl = checkoutResponseData.paymentPageUrl || `https://www.paytr.com/odeme/guvenli/${checkoutResponseData.token}`;

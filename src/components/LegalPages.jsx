@@ -5,12 +5,12 @@ const PageLayout = ({ title, children }) => {
     const navigate = useNavigate();
     return (
         <div style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-            <div className="container" style={{ maxWidth: '800px', margin: '0 auto', lineHeight: '1.6' }}>
-                <button onClick={() => navigate(-1)} style={{ background: 'none', color: 'var(--color-primary)', fontWeight: '600', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div className="container" style={{ maxWidth: '850px', margin: '0 auto', lineHeight: '1.7' }}>
+                <button onClick={() => navigate(-1)} style={{ background: 'none', color: 'var(--color-primary)', fontWeight: '700', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                     &larr; Geri Dön
                 </button>
-                <h1 style={{ marginBottom: '2rem', color: 'var(--color-secondary)', fontSize: '2rem' }}>{title}</h1>
-                <div style={{ background: 'white', padding: '2.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)' }}>
+                <h1 style={{ marginBottom: '1.5rem', color: 'var(--color-secondary)', fontSize: '2rem', fontWeight: '800' }}>{title}</h1>
+                <div style={{ background: 'white', padding: '2.5rem', borderRadius: 'var(--radius-lg)', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: '1px solid #e2e8f0' }}>
                     {children}
                 </div>
             </div>
@@ -18,33 +18,76 @@ const PageLayout = ({ title, children }) => {
     );
 };
 
+export const DistanceSellingContractContent = () => (
+    <div style={{ fontSize: '0.95rem', color: '#334155' }}>
+        <h3 style={{ marginTop: '1.25rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>MADDE 1 - TARAFLAR</h3>
+        <p style={{ marginTop: '0.5rem' }}>
+            <strong>SATICI:</strong><br />
+            Unvanı: <strong>Sarmal Ticaret (Melih Yıldız)</strong><br />
+            Web Adresi: www.sarmalticaret.com<br />
+            E-Posta: info@sarmalticaret.com<br />
+            Adres: İstanbul, Türkiye
+        </p>
+        <p style={{ marginTop: '0.75rem' }}>
+            <strong>ALICI:</strong><br />
+            www.sarmalticaret.com e-ticaret sitesinden ürün sipariş eden ve teslimat adresi ile iletişim bilgilerini sipariş formunda belirten gerçek veya tüzel kişi.
+        </p>
+
+        <h3 style={{ marginTop: '1.5rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>MADDE 2 - KONU</h3>
+        <p style={{ marginTop: '0.5rem' }}>
+            İşbu sözleşmenin konusu, ALICI'nın SATICI'ya ait www.sarmalticaret.com internet sitesinden elektronik ortamda siparişini yaptığı ürünün satışı ve teslimi ile ilgili olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların hak ve yükümlülüklerinin saptanmasıdır.
+        </p>
+
+        <h3 style={{ marginTop: '1.5rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>MADDE 3 - SİPARİŞ VE TESLİMAT</h3>
+        <p style={{ marginTop: '0.5rem' }}>
+            Sipariş edilen ürünler, anlaşmalı kargo firmaları aracılığıyla ALICI'nın sipariş esnasında belirttiği teslimat adresine güvenli ve korunaklı ambalaj ile teslim edilir. Kargo teslimatı esnasında pakette herhangi bir darbe, yırtılma veya ezilme olması durumunda ALICI'nın kargo görevlisine "Hasar Tespit Tutanağı" tutturması gerekmektedir.
+        </p>
+
+        <h3 style={{ marginTop: '1.5rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>MADDE 4 - KİŞİYE ÖZEL ÜRÜNLERDE CAYMA HAKKI VE İADE</h3>
+        <p style={{ marginTop: '0.5rem' }}>
+            Mesafeli Sözleşmeler Yönetmeliği'nin 15. maddesinin (ğ) bendi uyarınca; <strong>"Tüketicinin istekleri veya kişisel ihtiyaçları doğrultusunda hazırlanan ürünlerde cayma hakkı kullanılamaz."</strong> Müşteriye özel isim, tarih, fotoğraf veya özelleştirme yapılan peluş oyuncaklar ve hediyelik ürünlerde keyfi iade kabul edilmemektedir. Üretim veya baskı hatası olan ürünler koşulsuz yenisi ile değiştirilir.
+        </p>
+
+        <h3 style={{ marginTop: '1.5rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>MADDE 5 - ÖDEME VE GÜVENLİK</h3>
+        <p style={{ marginTop: '0.5rem' }}>
+            Ödemeler 256-Bit SSL şifreleme ve PayTR 3D Secure banka doğrulama altyapısı ile güvence altında alınmaktadır. ALICI siparişi onayladığında işbu sözleşmenin tüm maddelerini kabul etmiş sayılır.
+        </p>
+    </div>
+);
+
 export const DistanceSellingContract = () => (
     <PageLayout title="Mesafeli Satış Sözleşmesi">
-        <h3 style={{ marginTop: '1.5rem', color: 'var(--color-secondary)' }}>1. TARAFLAR</h3>
-        <p>İşbu sözleşme, bir tarafta [SATICININ_UNVANI/İSMİ] (Bundan böyle SATICI olarak anılacaktır) ile diğer tarafta ürünü sipariş veren gerçek/tüzel kişi (Bundan böyle ALICI olarak anılacaktır) arasında kurulmuştur.</p>
-
-        <h3 style={{ marginTop: '1.5rem', color: 'var(--color-secondary)' }}>2. KONU</h3>
-        <p>Sözleşmenin konusu, ALICI'nın SATICI'ya ait internet sitesinden elektronik ortamda siparişini yaptığı ürünün satışı ve teslimi ile ilgili yasal hakların belirlenmesidir.</p>
-
-        <h3 style={{ marginTop: '1.5rem', color: 'var(--color-secondary)' }}>3. KARGO VE TESLİMAT</h3>
-        <p>Ürün, ALICI'nın belirttiği teslimat adresine, anlaşmalı kargo firması aracılığı ile ürün bilgisi kısmında belirtilen sürede hasarsız olarak teslim edilecektir.</p>
-
-        <h3 style={{ marginTop: '1.5rem', color: 'var(--color-secondary)' }}>4. KİŞİYE ÖZEL ÜRÜNLERDE İPTAL VE İADE</h3>
-        <p>Kişiye özel tasarım ve üretim aşaması içeren ürünlerde, sipariş verildikten ve tasarıma başlandıktan/ürün kargoya verildikten sonra cayma hakkı kapsamı dışında olduğu için <strong>iade/iptal söz konusu değildir</strong>, ALICI bu şartı kabul ederek alışverişini tamamlar.</p>
+        <DistanceSellingContractContent />
     </PageLayout>
+);
+
+export const RefundPolicyContent = () => (
+    <div style={{ fontSize: '0.95rem', color: '#334155' }}>
+        <h3 style={{ marginTop: '1.25rem', color: '#1e293b', fontSize: '1.1rem', borderBottom: '2px solid #e2e8f0', paddingBottom: '0.4rem' }}>İADE VE DEĞİŞİM ŞARTLARI</h3>
+        <p style={{ marginTop: '0.5rem' }}>
+            Sarmal Ticaret olarak müşteri memnuniyetini en üst düzeyde tutmayı hedefliyoruz.
+        </p>
+
+        <h4 style={{ marginTop: '1.25rem', color: 'var(--color-primary)', fontSize: '1rem', fontWeight: '700' }}>1. Kişiye Özel Ürünlerde İade Politikası</h4>
+        <p style={{ marginTop: '0.35rem' }}>
+            Üzerine isim, ses kaydı, özel mesaj veya tarih eklenen ürünler kişiye özel üretildiği için 6502 sayılı Kanun gereği keyfi iade kapsamı dışındadır.
+        </p>
+
+        <h4 style={{ marginTop: '1.25rem', color: 'var(--color-primary)', fontSize: '1rem', fontWeight: '700' }}>2. Hatalı veya Hasarlı Ürün Değişimi</h4>
+        <p style={{ marginTop: '0.35rem' }}>
+            Teslimat esnasında üretim kaynaklı bir kusur veya kargo hasarı tespit edilirse ürün ücretsiz olarak yenisi ile değiştirilir. Hasarlı kargolarda lütfen tutanak tutturunuz.
+        </p>
+
+        <h4 style={{ marginTop: '1.25rem', color: 'var(--color-primary)', fontSize: '1rem', fontWeight: '700' }}>3. İletişim ve Destek</h4>
+        <p style={{ marginTop: '0.35rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+            İade ve değişim talepleriniz için sipariş numaranız ile birlikte <strong>info@sarmalticaret.com</strong> e-posta adresinden veya WhatsApp destek hattımızdan bize ulaşabilirsiniz.
+        </p>
+    </div>
 );
 
 export const RefundPolicy = () => (
     <PageLayout title="İptal ve İade Koşulları">
-        <h3 style={{ marginTop: '1.5rem', color: 'var(--color-secondary)' }}>İade Şartları</h3>
-        <p>Almış olduğunuz ürünlerdeki üretim hataları veya üretimden/satıcıdan kaynaklı hasarlar haricinde "Kişiye Özel Üretilen Ürünler" yasalarda belirtilen "cayma hakkının geçerli olmadığı ürünler" kapsamındadır. Üzerine isim/tarih vb. size özel özelleştirme yapılarak satılan veya sizin istekleriniz doğrultusunda hazırlanan ürünlerde keyfi iade/değişim kabul edilmez.</p>
-
-        <h3 style={{ marginTop: '1.5rem', color: 'var(--color-secondary)' }}>Hasarlı Teslimat</h3>
-        <p>Kargonuzu kuryeden teslim alırken kolisini kontrol ediniz. Eğer üründe belirgin bir taşıma hasarı varsa kargo görevlisine "Hasar Tespit Tutanağı" hazırlatmanız veya ürünü hiç teslim almadan geri yollamanız gerekmektedir. İlgili tutanak tutulmadığı hallerde doğacak mağduriyetlerden kargo firması sorumlu olmaktadır.</p>
-
-        <p style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--color-bg)', borderRadius: 'var(--radius-md)' }}>
-            <strong>İletişim:</strong> Olası bir hatalı üretim vb. durumlarda iade süreçleri için lütfen sipariş numaranız ve fotoğraflarınızla birlikte <a href="mailto:info@sarmalticaret.com" style={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>info@sarmalticaret.com</a> üzerinden bizimle iletişime geçiniz.
-        </p>
+        <RefundPolicyContent />
     </PageLayout>
 );
 

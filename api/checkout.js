@@ -1,12 +1,13 @@
 import crypto from 'crypto';
 
 export default async function handler(req, res) {
+    res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') {
-        return res.status(200).end();
+        return res.status(200).json({ status: 'ok' });
     }
 
     if (req.method !== 'POST') {
@@ -120,7 +121,17 @@ export default async function handler(req, res) {
             body: params
         });
 
-        const result = await paytrRes.json();
+        const paytrText = await paytrRes.text();
+        let result = {};
+        try {
+            result = JSON.parse(paytrText);
+        } catch (parseErr) {
+            console.error("PayTR Non-JSON Response:", paytrText);
+            return res.status(500).json({
+                status: 'failure',
+                errorMessage: `PayTR yanıtı ayrıştırılamadı (${paytrRes.status}): ${paytrText || 'Boş Yanıt'}`
+            });
+        }
 
         if (result.status === 'success' && result.token) {
             return res.status(200).json({
