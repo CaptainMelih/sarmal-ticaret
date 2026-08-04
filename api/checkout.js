@@ -15,7 +15,15 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { basketId, buyer, price, basketItems } = req.body || {};
+        let body = req.body || {};
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                body = {};
+            }
+        }
+        const { basketId, buyer, price, basketItems } = body;
 
         if (!basketId) {
             return res.status(400).json({ status: 'failure', errorMessage: 'Sipariş ID (basketId) gereklidir.' });
