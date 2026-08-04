@@ -69,7 +69,7 @@ export async function createPaytrTokenClient(orderData, products = []) {
 
     const user_basket_encoded = btoa(unescape(encodeURIComponent(JSON.stringify(user_basket))));
     const user_ip = '1.1.1.1';
-    const email = (orderData.buyer?.email || 'musteri@sarmalticaret.com').trim();
+    const email = (orderData.buyer?.email || 'sarmalticarett@gmail.com').trim();
 
     let rawName = ((orderData.buyer?.name || '') + ' ' + (orderData.buyer?.surname || '')).trim();
     if (!rawName || rawName.split(' ').filter(Boolean).length < 2) {

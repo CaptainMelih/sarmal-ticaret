@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         const merchant_id = process.env.PAYTR_MERCHANT_ID || '681525';
         const merchant_key = process.env.PAYTR_MERCHANT_KEY || 'Tek69wJtdYinHs19';
         const merchant_salt = process.env.PAYTR_MERCHANT_SALT || '8Hzs3PCUu1UzQGkw';
-        const test_mode = process.env.PAYTR_TEST_MODE || '0';
+        const test_mode = '0'; // Force Live Production Mode
 
         // 1. Strict Alphanumeric merchant_oid (No special characters allowed by PayTR)
         const merchant_oid = 'ORD' + String(basketId).replace(/[^a-zA-Z0-9]/g, '');
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
 
         const user_basket_encoded = Buffer.from(JSON.stringify(user_basket)).toString('base64');
         const user_ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.headers['x-real-ip'] || req.socket?.remoteAddress || '1.1.1.1';
-        const email = (buyer?.email || 'musteri@sarmalticaret.com').trim();
+        const email = (buyer?.email || 'sarmalticarett@gmail.com').trim();
 
         // 3. User Name must have at least 2 words
         let rawName = ((buyer?.name || '') + ' ' + (buyer?.surname || '')).trim();

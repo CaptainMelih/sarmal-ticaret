@@ -1177,8 +1177,7 @@ function AppContent() {
               <h4 style={{ marginBottom: '1rem', fontWeight: '600' }}>İletişim</h4>
               <ul style={{ opacity: 0.9, fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <li>📧 sarmalticarett@gmail.com</li>
-                <li>📞 0542 317 85 96</li>
-                <li style={{ lineHeight: '1.4' }}>📍 100.Yıl Mahallesi 1006.Cadde Yıldız Life B Blok Daire:31 Merkez/Karabük</li>
+                <li style={{ lineHeight: '1.4' }}>📍 İstanbul, Türkiye</li>
               </ul>
             </div>
           </div>

@@ -25,7 +25,7 @@ export const DistanceSellingContractContent = () => (
             <strong>SATICI:</strong><br />
             Unvanı: <strong>Sarmal Ticaret</strong><br />
             Web Adresi: www.sarmalticaret.com<br />
-            E-Posta: info@sarmalticaret.com<br />
+            E-Posta: sarmalticarett@gmail.com<br />
             Adres: İstanbul, Türkiye
         </p>
         <p style={{ marginTop: '0.75rem' }}>
@@ -80,7 +80,7 @@ export const RefundPolicyContent = () => (
 
         <h4 style={{ marginTop: '1.25rem', color: 'var(--color-primary)', fontSize: '1rem', fontWeight: '700' }}>3. İletişim ve Destek</h4>
         <p style={{ marginTop: '0.35rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-            İade ve değişim talepleriniz için sipariş numaranız ile birlikte <strong>info@sarmalticaret.com</strong> e-posta adresinden veya WhatsApp destek hattımızdan bize ulaşabilirsiniz.
+            İade ve değişim talepleriniz için sipariş numaranız ile birlikte <strong>sarmalticarett@gmail.com</strong> e-posta adresinden veya WhatsApp destek hattımızdan bize ulaşabilirsiniz.
         </p>
     </div>
 );

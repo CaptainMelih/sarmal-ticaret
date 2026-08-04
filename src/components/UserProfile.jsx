@@ -452,7 +452,7 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                                     <button
                                                         className="btn btn-outline"
                                                         style={{ flex: 1, padding: '0.5rem' }}
-                                                        onClick={() => alert('İade/Değişim talebiniz için lütfen destek hattımızla (info@sarmalticaret.com) iletişime geçin. Talebiniz en kısa sürede değerlendirilecektir.')}
+                                                        onClick={() => alert('İade/Değişim talebiniz için lütfen destek hattımızla (sarmalticarett@gmail.com) iletişime geçin. Talebiniz en kısa sürede değerlendirilecektir.')}
                                                     >
                                                         İade / Değişim Talep Et
                                                     </button>

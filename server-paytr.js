@@ -4,7 +4,7 @@ export async function getPaytrToken(orderData) {
     const merchant_id = process.env.PAYTR_MERCHANT_ID || '681525';
     const merchant_key = process.env.PAYTR_MERCHANT_KEY || 'Tek69wJtdYinHs19';
     const merchant_salt = process.env.PAYTR_MERCHANT_SALT || '8Hzs3PCUu1UzQGkw';
-    const test_mode = process.env.PAYTR_TEST_MODE || '0';
+    const test_mode = '0'; // Force Live Production Mode
     const debug_on = 0;
 
     const {
