@@ -40,6 +40,7 @@ import { InstagramStories } from './components/InstagramStories';
 import { QuickViewModal } from './components/QuickViewModal';
 import { DiscountWheelModal } from './components/DiscountWheelModal';
 import * as db from './lib/supabase';
+import { trackPageView } from './lib/analytics';
 
 
 const INITIAL_PRODUCTS = [];
@@ -246,6 +247,9 @@ function AppContent() {
     } else if (location.pathname === '/') {
       setSelectedCategory(null);
     }
+
+    // Real-time Traffic & Visitor Tracking
+    trackPageView(location.pathname, document.title);
 
     // 3. Auth State Listener
     const { data: { subscription } } = db.onAuthStateChange(async (event, session) => {

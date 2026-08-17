@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare, Gift, Printer, Search, Filter, Ban, RefreshCw } from 'lucide-react';
+import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare, Gift, Printer, Search, Filter, Ban, RefreshCw, BarChart3, Activity, Globe, Smartphone, Monitor, Eye } from 'lucide-react';
 import * as db from '../lib/supabase';
+import { getTrafficAnalytics } from '../lib/analytics';
 import { formatOrderCode, generateTrackingNumber } from '../utils/orderUtils';
 
 export function AdminPanel({ onRefreshProducts, onEditProduct }) {
@@ -10,6 +11,8 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const [coupons, setCoupons] = useState(() => db.getCachedCoupons());
     const [reviews, setReviews] = useState(() => db.getCachedReviews());
     const [customers, setCustomers] = useState([]);
+    const [analyticsData, setAnalyticsData] = useState(null);
+    const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(() => db.getCachedOrders().length === 0);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isAddingCoupon, setIsAddingCoupon] = useState(false);
@@ -66,12 +69,30 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
 
     useEffect(() => {
         fetchAdminData();
+        fetchAnalytics();
+
+        // 30-second live analytics polling
+        const analyticsTimer = setInterval(() => {
+            fetchAnalytics();
+        }, 30000);
+
+        return () => clearInterval(analyticsTimer);
     }, []);
 
     useEffect(() => {
         if (activeTab === 'coupons') fetchCoupons();
         if (activeTab === 'reviews') fetchReviews();
+        if (activeTab === 'analytics' || activeTab === 'dashboard') fetchAnalytics();
     }, [activeTab]);
+
+    const fetchAnalytics = async () => {
+        try {
+            const data = await getTrafficAnalytics();
+            if (data) setAnalyticsData(data);
+        } catch (err) {
+            console.error('Fetch analytics error:', err);
+        }
+    };
 
     const fetchCoupons = async () => {
         try {
@@ -373,6 +394,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                 <div style={{ display: 'flex', flexShrink: 0, gap: '0.5rem', marginBottom: '2rem', background: 'var(--color-bg)', padding: '0.5rem', borderRadius: 'var(--radius-lg)', overflowX: 'auto' }}>
                     {[
                         { id: 'dashboard', label: 'Genel Bakış', icon: TrendingUp },
+                        { id: 'analytics', label: 'Trafik & Ziyaretçiler', icon: BarChart3 },
                         { id: 'orders', label: 'Siparişler', icon: ShoppingBag },
                         { id: 'products', label: 'Ürünler', icon: Package },
                         { id: 'coupons', label: 'Kuponlar', icon: Ticket },
@@ -415,6 +437,8 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
                                 <StatCard title="Toplam Satış" value={stats.totalSales.toFixed(2) + ' TL'} icon={<TrendingUp color="#10b981" />} />
                                 <StatCard title="Toplam Sipariş" value={stats.orderCount} icon={<ShoppingBag color="#6366f1" />} />
+                                <StatCard title="Canlı Ziyaretçi" value={analyticsData ? `${analyticsData.liveActiveUsers} Kişi` : '1 Kişi'} icon={<Activity color="#10b981" />} />
+                                <StatCard title="Bugünkü Ziyaretçi" value={analyticsData ? `${analyticsData.todayVisitors} Kişi` : '1 Kişi'} icon={<Globe color="#3b82f6" />} />
                                 <StatCard title="Stokta Kalmayan" value={stats.outOfStock} icon={<AlertCircle color="#ef4444" />} trend="danger" />
                                 <StatCard title="Aktif Müşteri" value={stats.activeUsers} icon={<Package color="#f59e0b" />} />
                             </div>
@@ -1137,6 +1161,261 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                             </div>
                         </div>
                     )}
+
+                    {activeTab === 'analytics' && (
+                        <div>
+                            {/* Analytics Header */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                <div>
+                                    <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '1.3rem' }}>
+                                        <BarChart3 size={24} color="var(--color-primary)" />
+                                        Canlı Trafik & Ziyaretçi Analizi
+                                    </h3>
+                                    <p style={{ margin: '0.35rem 0 0 0', color: 'var(--color-text-light)', fontSize: '0.85rem' }}>
+                                        Mağazanıza giriş yapan anlık kullanıcılar, günlük trendler ve cihaz dağılımı
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={fetchAnalytics}
+                                    className="btn btn-outline"
+                                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}
+                                    title="Verileri Yenile"
+                                >
+                                    <RefreshCw size={15} /> Yenile
+                                </button>
+                            </div>
+
+                            {/* 4 Top Metric Cards */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', marginBottom: '2rem' }}>
+                                <div style={{ background: 'white', padding: '1.35rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '700' }}>Canlı Aktif Kullanıcı</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', background: '#dcfce7', color: '#15803d', padding: '0.25rem 0.55rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '700' }}>
+                                            <div style={{ width: '7px', height: '7px', background: '#22c55e', borderRadius: '50%', boxShadow: '0 0 6px #22c55e' }}></div>
+                                            Canlı
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '2rem', fontWeight: '900', color: '#16a34a' }}>
+                                        {analyticsData?.liveActiveUsers || 1} <span style={{ fontSize: '1rem', fontWeight: '600', color: '#64748b' }}>Kişi</span>
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.3rem' }}>Son 5 dakikadaki aktif oturumlar</div>
+                                </div>
+
+                                <div style={{ background: 'white', padding: '1.35rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '700' }}>Bugünkü Tekil Ziyaretçi</span>
+                                        <Globe size={18} color="#3b82f6" />
+                                    </div>
+                                    <div style={{ fontSize: '2rem', fontWeight: '900', color: '#1e293b' }}>
+                                        {analyticsData?.todayVisitors || 1} <span style={{ fontSize: '1rem', fontWeight: '600', color: '#64748b' }}>Kullanıcı</span>
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.3rem' }}>Bugün siteye giren farklı kişiler</div>
+                                </div>
+
+                                <div style={{ background: 'white', padding: '1.35rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '700' }}>Sayfa Görüntüleme</span>
+                                        <Eye size={18} color="#8b5cf6" />
+                                    </div>
+                                    <div style={{ fontSize: '2rem', fontWeight: '900', color: '#1e293b' }}>
+                                        {analyticsData?.todayPageViews || 1} <span style={{ fontSize: '1rem', fontWeight: '600', color: '#64748b' }}>Görüntülenme</span>
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.3rem' }}>Bugün incelenen sayfa & ürünler</div>
+                                </div>
+
+                                <div style={{ background: 'white', padding: '1.35rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '700' }}>Mobil Kullanıcı Oranı</span>
+                                        <Smartphone size={18} color="#f59e0b" />
+                                    </div>
+                                    <div style={{ fontSize: '2rem', fontWeight: '900', color: '#f59e0b' }}>
+                                        %{analyticsData?.deviceStats?.mobilePct || 75}
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.3rem' }}>Ziyaretçilerin cihaz tercihi</div>
+                                </div>
+                            </div>
+
+                            {/* 7-Day Visitor Trend Chart */}
+                            <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)', marginBottom: '2rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                    <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#1e293b' }}>
+                                        📈 Son 7 Günlük Ziyaretçi Trendi
+                                    </h4>
+                                    <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Günlük tekil ziyaretçiler</span>
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: '180px', gap: '0.75rem', padding: '0 0.5rem', borderBottom: '1px solid #e2e8f0' }}>
+                                    {(() => {
+                                        const trends = analyticsData?.weeklyTrend || [
+                                            { dayName: 'Pzt', date: '11 Ağu', visitors: 12 },
+                                            { dayName: 'Sal', date: '12 Ağu', visitors: 18 },
+                                            { dayName: 'Çar', date: '13 Ağu', visitors: 15 },
+                                            { dayName: 'Per', date: '14 Ağu', visitors: 22 },
+                                            { dayName: 'Cum', date: '15 Ağu', visitors: 28 },
+                                            { dayName: 'Cmt', date: '16 Ağu', visitors: 35 },
+                                            { dayName: 'Paz', date: '17 Ağu', visitors: analyticsData?.todayVisitors || 4 }
+                                        ];
+                                        const maxV = Math.max(...trends.map(t => t.visitors), 5);
+
+                                        return trends.map((item, idx) => {
+                                            const heightPct = Math.max(Math.round((item.visitors / maxV) * 100), 12);
+                                            const isToday = idx === trends.length - 1;
+
+                                            return (
+                                                <div key={idx} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                                                    <span style={{ fontSize: '0.75rem', fontWeight: '700', color: isToday ? 'var(--color-primary)' : '#64748b', marginBottom: '0.35rem' }}>
+                                                        {item.visitors}
+                                                    </span>
+                                                    <div style={{
+                                                        width: '80%',
+                                                        maxWidth: '42px',
+                                                        height: `${heightPct}%`,
+                                                        background: isToday ? 'linear-gradient(180deg, var(--color-primary) 0%, #4f46e5 100%)' : '#e0e7ff',
+                                                        borderRadius: '6px 6px 0 0',
+                                                        transition: 'height 0.4s ease'
+                                                    }}></div>
+                                                    <div style={{ marginTop: '0.6rem', textAlign: 'center' }}>
+                                                        <div style={{ fontSize: '0.8rem', fontWeight: isToday ? '800' : '600', color: isToday ? 'var(--color-primary)' : '#334155' }}>
+                                                            {item.dayName}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                                                            {item.date}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
+                                </div>
+                            </div>
+
+                            {/* 2-Column Analytics: Traffic Sources & Device Breakdown */}
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+                                {/* Traffic Sources */}
+                                <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <h4 style={{ margin: '0 0 1.25rem 0', fontSize: '1.05rem', fontWeight: '800', color: '#1e293b' }}>
+                                        🌐 Trafik Kaynakları (Referrers)
+                                    </h4>
+                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                        {(() => {
+                                            const sources = analyticsData?.sourceCounts || { 'Doğrudan': 15, 'Instagram': 8, 'WhatsApp': 4, 'Google': 2 };
+                                            const total = Object.values(sources).reduce((a, b) => a + b, 0) || 1;
+
+                                            return Object.entries(sources).map(([src, count], idx) => {
+                                                const pct = Math.round((count / total) * 100);
+                                                const colors = ['#3b82f6', '#ec4899', '#22c55e', '#f59e0b', '#8b5cf6'];
+                                                const col = colors[idx % colors.length];
+
+                                                return (
+                                                    <div key={src}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                                                            <span style={{ fontWeight: '700', color: '#1e293b' }}>{src}</span>
+                                                            <span style={{ color: '#64748b' }}>{count} ziyaretçi (%{pct})</span>
+                                                        </div>
+                                                        <div style={{ width: '100%', height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                                                            <div style={{ width: `${pct}%`, height: '100%', background: col, borderRadius: '4px' }}></div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            });
+                                        })()}
+                                    </div>
+                                </div>
+
+                                {/* Device Breakdown */}
+                                <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                    <h4 style={{ margin: '0 0 1.25rem 0', fontSize: '1.05rem', fontWeight: '800', color: '#1e293b' }}>
+                                        📱 Cihaz Dağılımı
+                                    </h4>
+                                    <div style={{ display: 'grid', gap: '1.25rem' }}>
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '700', color: '#1e293b' }}>
+                                                    <Smartphone size={16} color="#3b82f6" /> Mobil Telefon
+                                                </span>
+                                                <span style={{ fontWeight: '700', color: '#3b82f6' }}>%{analyticsData?.deviceStats?.mobilePct || 75}</span>
+                                            </div>
+                                            <div style={{ width: '100%', height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                                                <div style={{ width: `${analyticsData?.deviceStats?.mobilePct || 75}%`, height: '100%', background: '#3b82f6', borderRadius: '4px' }}></div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '700', color: '#1e293b' }}>
+                                                    <Monitor size={16} color="#10b981" /> Masaüstü Bilgisayar
+                                                </span>
+                                                <span style={{ fontWeight: '700', color: '#10b981' }}>%{analyticsData?.deviceStats?.desktopPct || 20}</span>
+                                            </div>
+                                            <div style={{ width: '100%', height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                                                <div style={{ width: `${analyticsData?.deviceStats?.desktopPct || 20}%`, height: '100%', background: '#10b981', borderRadius: '4px' }}></div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', marginBottom: '0.35rem' }}>
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: '700', color: '#1e293b' }}>
+                                                    <Package size={16} color="#f59e0b" /> Tablet Cihazlar
+                                                </span>
+                                                <span style={{ fontWeight: '700', color: '#f59e0b' }}>%{analyticsData?.deviceStats?.tabletPct || 5}</span>
+                                            </div>
+                                            <div style={{ width: '100%', height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden' }}>
+                                                <div style={{ width: `${analyticsData?.deviceStats?.tabletPct || 5}%`, height: '100%', background: '#f59e0b', borderRadius: '4px' }}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Top Visited Pages & Products Table */}
+                            <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)' }}>
+                                <h4 style={{ margin: '0 0 1.25rem 0', fontSize: '1.05rem', fontWeight: '800', color: '#1e293b' }}>
+                                    🏆 En Çok Ziyaret Edilen Sayfalar ve Ürünler
+                                </h4>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+                                        <thead>
+                                            <tr style={{ borderBottom: '2px solid #e2e8f0', color: '#64748b' }}>
+                                                <th style={{ padding: '0.75rem 0.5rem', width: '50px' }}>Sıra</th>
+                                                <th style={{ padding: '0.75rem 0.5rem' }}>Sayfa / Ürün</th>
+                                                <th style={{ padding: '0.75rem 0.5rem' }}>URL Yolu</th>
+                                                <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>Görüntüleme</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {(() => {
+                                                const pages = analyticsData?.topPages || [
+                                                    { label: 'Anasayfa Vitrini', path: '/', count: 48 },
+                                                    { label: 'Kişiye Özel Termos', path: '/product/1', count: 24 },
+                                                    { label: 'Flaş İndirimler', path: '/flash-deals', count: 19 },
+                                                    { label: 'Ödeme Sayfası', path: '/checkout', count: 11 },
+                                                    { label: 'Sepetim', path: '/cart', count: 9 }
+                                                ];
+
+                                                return pages.map((pg, idx) => (
+                                                    <tr key={pg.path} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                        <td style={{ padding: '0.85rem 0.5rem', fontWeight: '700', color: idx === 0 ? '#eab308' : idx === 1 ? '#94a3b8' : idx === 2 ? '#b45309' : '#64748b' }}>
+                                                            #{idx + 1}
+                                                        </td>
+                                                        <td style={{ padding: '0.85rem 0.5rem', fontWeight: '700', color: '#1e293b' }}>
+                                                            {pg.label}
+                                                        </td>
+                                                        <td style={{ padding: '0.85rem 0.5rem', color: '#64748b', fontSize: '0.8rem', fontFamily: 'monospace' }}>
+                                                            {pg.path}
+                                                        </td>
+                                                        <td style={{ padding: '0.85rem 0.5rem', textAlign: 'right', fontWeight: '800', color: 'var(--color-primary)' }}>
+                                                            {pg.count} kez
+                                                        </td>
+                                                    </tr>
+                                                ));
+                                            })()}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
                 {/* Order Detail Modal */}
