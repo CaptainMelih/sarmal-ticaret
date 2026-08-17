@@ -164,8 +164,48 @@ export async function getAllProfiles() {
 }
 
 // ==========================================
-// 📦 ÜRÜN FONKSİYONLARI
+// 📦 ÜRÜN & ÖNBELLEK FONKSİYONLARI (SWR)
 // ==========================================
+
+export function getCachedProducts() {
+    if (typeof window !== 'undefined') {
+        try {
+            const cached = window.localStorage?.getItem('sarmal_cached_products') || window.sessionStorage?.getItem('sarmal_cached_products');
+            if (cached) return JSON.parse(cached);
+        } catch (e) {}
+    }
+    return [];
+}
+
+export function getCachedOrders() {
+    if (typeof window !== 'undefined') {
+        try {
+            const cached = window.localStorage?.getItem('sarmal_cached_admin_orders') || window.sessionStorage?.getItem('sarmal_cached_admin_orders');
+            if (cached) return JSON.parse(cached);
+        } catch (e) {}
+    }
+    return [];
+}
+
+export function getCachedCoupons() {
+    if (typeof window !== 'undefined') {
+        try {
+            const cached = window.localStorage?.getItem('sarmal_cached_coupons') || window.sessionStorage?.getItem('sarmal_cached_coupons');
+            if (cached) return JSON.parse(cached);
+        } catch (e) {}
+    }
+    return [];
+}
+
+export function getCachedReviews() {
+    if (typeof window !== 'undefined') {
+        try {
+            const cached = window.localStorage?.getItem('sarmal_cached_reviews') || window.sessionStorage?.getItem('sarmal_cached_reviews');
+            if (cached) return JSON.parse(cached);
+        } catch (e) {}
+    }
+    return [];
+}
 
 export async function getProducts() {
     try {
@@ -176,8 +216,11 @@ export async function getProducts() {
 
         if (!error && data && data.length > 0) {
             const activeProds = data.filter(p => p.is_active !== false && String(p.title || '').trim().toUpperCase() !== 'HIDDEN');
-            if (typeof window !== 'undefined' && window.sessionStorage) {
-                window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(activeProds));
+            if (typeof window !== 'undefined') {
+                try {
+                    window.localStorage?.setItem('sarmal_cached_products', JSON.stringify(activeProds));
+                    window.sessionStorage?.setItem('sarmal_cached_products', JSON.stringify(activeProds));
+                } catch (e) {}
             }
             return activeProds;
         }
@@ -185,13 +228,7 @@ export async function getProducts() {
         console.warn("getProducts network call failed, attempting session cache fallback:", err.message);
     }
 
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-        const cached = window.sessionStorage.getItem('sarmal_cached_products');
-        if (cached) {
-            try { return JSON.parse(cached); } catch (e) {}
-        }
-    }
-    return [];
+    return getCachedProducts();
 }
 
 export async function getProductById(id) {
@@ -411,10 +448,17 @@ export async function getAllOrders() {
             o.addresses = o.address_id ? (addressMap.get(o.address_id) || null) : null;
         }
 
+        if (typeof window !== 'undefined') {
+            try {
+                window.localStorage?.setItem('sarmal_cached_admin_orders', JSON.stringify(orders));
+                window.sessionStorage?.setItem('sarmal_cached_admin_orders', JSON.stringify(orders));
+            } catch (e) {}
+        }
+
         return orders;
     } catch (err) {
         console.warn("getAllOrders failed, returning safe fallback:", err.message);
-        return [];
+        return getCachedOrders();
     }
 }
 
@@ -707,6 +751,16 @@ export async function getAllReviews() {
             `)
             .order('created_at', { ascending: false });
 
+        if (!error && data) {
+            if (typeof window !== 'undefined') {
+                try {
+                    window.localStorage?.setItem('sarmal_cached_reviews', JSON.stringify(data));
+                    window.sessionStorage?.setItem('sarmal_cached_reviews', JSON.stringify(data));
+                } catch (e) {}
+            }
+            return data;
+        }
+
         if (error) throw error;
         return data || [];
     } catch (err) {
@@ -724,7 +778,7 @@ export async function getAllReviews() {
             }));
         } catch (fallbackErr) {
             console.error("getAllReviews fallback error:", fallbackErr);
-            return [];
+            return getCachedReviews();
         }
     }
 }
@@ -769,13 +823,27 @@ export async function getCoupon(code) {
 export const getCouponByCode = getCoupon;
 
 export async function getCoupons() {
-    const { data, error } = await supabase
-        .from('coupons')
-        .select('*')
-        .order('created_at', { ascending: false });
+    try {
+        const { data, error } = await supabase
+            .from('coupons')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+        if (!error && data) {
+            if (typeof window !== 'undefined') {
+                try {
+                    window.localStorage?.setItem('sarmal_cached_coupons', JSON.stringify(data));
+                    window.sessionStorage?.setItem('sarmal_cached_coupons', JSON.stringify(data));
+                } catch (e) {}
+            }
+            return data;
+        }
+
+        if (error) throw error;
+        return data || [];
+    } catch (e) {
+        return getCachedCoupons();
+    }
 }
 
 export async function addCoupon(coupon) {

@@ -5,12 +5,12 @@ import { formatOrderCode, generateTrackingNumber } from '../utils/orderUtils';
 
 export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const [activeTab, setActiveTab] = useState('orders');
-    const [orders, setOrders] = useState([]);
-    const [products, setProducts] = useState([]);
-    const [coupons, setCoupons] = useState([]);
-    const [reviews, setReviews] = useState([]);
+    const [orders, setOrders] = useState(() => db.getCachedOrders());
+    const [products, setProducts] = useState(() => db.getCachedProducts());
+    const [coupons, setCoupons] = useState(() => db.getCachedCoupons());
+    const [reviews, setReviews] = useState(() => db.getCachedReviews());
     const [customers, setCustomers] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(() => db.getCachedOrders().length === 0);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isAddingCoupon, setIsAddingCoupon] = useState(false);
     const [trackingInfo, setTrackingInfo] = useState({ carrier: '', tracking_code: '' });
@@ -36,11 +36,17 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
         comment: ''
     });
 
-    const [stats, setStats] = useState({
-        totalSales: 0,
-        orderCount: 0,
-        outOfStock: 0,
-        activeUsers: 0
+    const [stats, setStats] = useState(() => {
+        const cachedO = db.getCachedOrders();
+        const cachedP = db.getCachedProducts();
+        const total = cachedO.reduce((sum, o) => sum + (o.status !== 'cancelled' ? Number(o.total) : 0), 0);
+        const lowStock = cachedP.filter(p => p.stock <= 0).length;
+        return {
+            totalSales: total,
+            orderCount: cachedO.length,
+            outOfStock: lowStock,
+            activeUsers: 0
+        };
     });
 
     const statusNext = {

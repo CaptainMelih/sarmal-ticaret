@@ -130,13 +130,8 @@ function AppContent() {
   const location = useLocation();
   // Product state
   const [products, setProducts] = useState(() => {
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      const cached = window.sessionStorage.getItem('sarmal_cached_products');
-      if (cached) {
-        try { return JSON.parse(cached); } catch (e) {}
-      }
-    }
-    return INITIAL_PRODUCTS;
+    const cached = db.getCachedProducts();
+    return cached && cached.length > 0 ? cached : INITIAL_PRODUCTS;
   });
 
   // Cart state
@@ -168,12 +163,12 @@ function AppContent() {
   // Other states
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState({ message: '', type: 'success', isVisible: false });
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // New premium features states
-  const [showInitialSplash, setShowInitialSplash] = useState(true);
+  const [showInitialSplash, setShowInitialSplash] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [sortBy, setSortBy] = useState('popular');
   const [priceRange, setPriceRange] = useState([0, 1000]);
@@ -181,13 +176,6 @@ function AppContent() {
   const [isAdmin, setIsAdmin] = useState(() => getLocalStorage('sarmal_is_admin', false));
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [isWheelOpen, setIsWheelOpen] = useState(false);
-
-  useEffect(() => {
-    const splashTimer = setTimeout(() => {
-      setShowInitialSplash(false);
-    }, 1000);
-    return () => clearTimeout(splashTimer);
-  }, []);
 
   // Supabase sync
   useEffect(() => {
