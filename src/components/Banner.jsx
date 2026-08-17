@@ -99,8 +99,19 @@ export function Banner({ products = [], onSelectProduct, onOpenFlashDeals, onCat
                             gap: '2rem'
                         }}
                     >
-                        {/* Slide Content Left */}
-                        <div style={{ flex: 1, color: 'white', textAlign: 'left', zIndex: 2 }}>
+                        {/* Slide Content */}
+                        <div style={{
+                            flex: 1,
+                            color: 'white',
+                            textAlign: isProd && slide.image ? 'left' : 'center',
+                            zIndex: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: isProd && slide.image ? 'flex-start' : 'center',
+                            justifyContent: 'center',
+                            margin: isProd && slide.image ? '0' : '0 auto',
+                            maxWidth: isProd && slide.image ? '600px' : '750px'
+                        }}>
                             {isProd && (
                                 <div style={{
                                     display: 'inline-flex',
@@ -125,6 +136,7 @@ export function Banner({ products = [], onSelectProduct, onOpenFlashDeals, onCat
                                 fontWeight: '900',
                                 lineHeight: '1.25',
                                 marginBottom: '1rem',
+                                textAlign: isProd && slide.image ? 'left' : 'center',
                                 textShadow: '0 2px 10px rgba(0,0,0,0.2)'
                             }}>
                                 {slide.title}
@@ -134,7 +146,8 @@ export function Banner({ products = [], onSelectProduct, onOpenFlashDeals, onCat
                                 fontSize: 'clamp(0.95rem, 1.5vw, 1.15rem)',
                                 opacity: 0.92,
                                 marginBottom: '1.75rem',
-                                maxWidth: '550px',
+                                maxWidth: '650px',
+                                textAlign: isProd && slide.image ? 'left' : 'center',
                                 lineHeight: '1.5'
                             }}>
                                 {slide.subtitle}

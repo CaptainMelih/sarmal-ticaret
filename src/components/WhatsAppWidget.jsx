@@ -68,31 +68,7 @@ export function WhatsAppWidget() {
             )}
 
             {/* Floating WhatsApp Button with Breathing Pulse Glow */}
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                {!isOpen && (
-                    <div
-                        onClick={() => setIsOpen(true)}
-                        style={{
-                            background: 'white',
-                            color: '#1f2937',
-                            padding: '0.45rem 0.85rem',
-                            borderRadius: '20px',
-                            fontSize: '0.8rem',
-                            fontWeight: '700',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.12)',
-                            border: '1px solid #e2e8f0',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.35rem',
-                            animation: 'waFadeIn 0.3s ease-out',
-                            userSelect: 'none'
-                        }}
-                    >
-                        <span>WhatsApp Destek</span>
-                        <div style={{ width: '7px', height: '7px', background: '#22c55e', borderRadius: '50%' }}></div>
-                    </div>
-                )}
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
 
                 <button
                     onClick={() => setIsOpen(!isOpen)}
