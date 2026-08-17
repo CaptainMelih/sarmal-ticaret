@@ -75,7 +75,7 @@ export function ProductList({
                             onClick={() => navigate(`/product/${product.id}`)}
                             style={{ opacity: isOutOfStock ? 0.8 : 1, cursor: 'pointer' }}
                         >
-                            <div style={{ position: 'relative' }}>
+                            <div className="product-image-container">
                                 <img
                                     src={product.image}
                                     alt={product.title}
