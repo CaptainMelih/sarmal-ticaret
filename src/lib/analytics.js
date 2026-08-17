@@ -172,32 +172,28 @@ export async function getTrafficAnalytics() {
     });
     const todayVisitors = Math.max(todaySessions.size, liveActiveUsers);
 
-    // 3. Device Breakdown
+    // 3. Device Breakdown (100% Real Logs)
     const deviceCounts = { mobile: 0, desktop: 0, tablet: 0 };
     uniqueVisits.forEach(v => {
         const d = (v.device || 'mobile').toLowerCase();
         if (deviceCounts[d] !== undefined) deviceCounts[d]++;
         else deviceCounts.mobile++;
     });
-    const totalDevices = (deviceCounts.mobile + deviceCounts.desktop + deviceCounts.tablet) || 1;
+    const totalDevices = (deviceCounts.mobile + deviceCounts.desktop + deviceCounts.tablet);
     const deviceStats = {
-        mobilePct: Math.round((deviceCounts.mobile / totalDevices) * 100) || 75,
-        desktopPct: Math.round((deviceCounts.desktop / totalDevices) * 100) || 20,
-        tabletPct: Math.round((deviceCounts.tablet / totalDevices) * 100) || 5
+        mobilePct: totalDevices > 0 ? Math.round((deviceCounts.mobile / totalDevices) * 100) : 0,
+        desktopPct: totalDevices > 0 ? Math.round((deviceCounts.desktop / totalDevices) * 100) : 0,
+        tabletPct: totalDevices > 0 ? Math.round((deviceCounts.tablet / totalDevices) * 100) : 0
     };
 
-    // 4. Traffic Sources
+    // 4. Traffic Sources (100% Real Referrers)
     const sourceCounts = {};
     uniqueVisits.forEach(v => {
         const s = v.source || 'Doğrudan';
         sourceCounts[s] = (sourceCounts[s] || 0) + 1;
     });
-    if (Object.keys(sourceCounts).length === 0) {
-        sourceCounts['Doğrudan'] = 5;
-        sourceCounts['Instagram'] = 3;
-    }
 
-    // 5. 7-Day Visitor Trend (Day by Day)
+    // 5. 7-Day Visitor Trend (Day by Day Real Logs)
     const dayNames = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
     const weeklyTrend = [];
     for (let i = 6; i >= 0; i--) {
@@ -216,8 +212,7 @@ export async function getTrafficAnalytics() {
             }
         });
 
-        // Ensure natural trend baseline
-        const count = i === 0 ? todayVisitors : Math.max(daySessions.size, 0);
+        const count = i === 0 ? todayVisitors : daySessions.size;
 
         weeklyTrend.push({
             date: targetDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }),
@@ -227,7 +222,7 @@ export async function getTrafficAnalytics() {
         });
     }
 
-    // 6. Top Visited Pages & Products
+    // 6. Top Visited Pages & Products (100% Real Path Logging)
     const pageCounts = {};
     uniqueVisits.forEach(v => {
         const p = v.path || '/';
@@ -236,7 +231,7 @@ export async function getTrafficAnalytics() {
 
     const topPages = Object.entries(pageCounts)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 6)
+        .slice(0, 8)
         .map(([path, count]) => {
             let label = 'Anasayfa';
             if (path.startsWith('/product/')) label = `Ürün #${path.replace('/product/', '')}`;
