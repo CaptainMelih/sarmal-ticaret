@@ -379,7 +379,7 @@ export async function getOrders(userId) {
 
 export async function getAllOrders() {
     try {
-        const { data, error } = await supabase
+        const { data: orders, error } = await supabase
             .from('orders')
             .select(`
                 *,
@@ -391,27 +391,26 @@ export async function getAllOrders() {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        const orders = data || [];
-        
-        // Attach profiles and addresses safely
+        if (!orders || orders.length === 0) return [];
+
+        // Single-batch parallel fetch for profiles and addresses (Eliminates N+1 loop)
+        const userIds = [...new Set(orders.map(o => o.user_id).filter(Boolean))];
+        const addressIds = [...new Set(orders.map(o => o.address_id).filter(Boolean))];
+
+        const [profilesRes, addressesRes] = await Promise.all([
+            userIds.length > 0 ? supabase.from('profiles').select('id, name, email, phone').in('id', userIds) : Promise.resolve({ data: [] }),
+            addressIds.length > 0 ? supabase.from('addresses').select('*').in('id', addressIds) : Promise.resolve({ data: [] })
+        ]);
+
+        const profileMap = new Map((profilesRes.data || []).map(p => [p.id, p]));
+        const addressMap = new Map((addressesRes.data || []).map(a => [a.id, a]));
+
+        // Attach profile and address to each order in O(1) time
         for (let o of orders) {
-            if (o.user_id) {
-                try {
-                    const { data: prof } = await supabase.from('profiles').select('name, email').eq('id', o.user_id).single();
-                    o.profiles = prof || null;
-                } catch (e) {
-                    o.profiles = { name: 'Müşteri', email: '' };
-                }
-            }
-            if (o.address_id) {
-                try {
-                    const { data: addr } = await supabase.from('addresses').select('*').eq('id', o.address_id).single();
-                    o.addresses = addr || null;
-                } catch (e) {
-                    o.addresses = null;
-                }
-            }
+            o.profiles = o.user_id ? (profileMap.get(o.user_id) || { name: 'Müşteri', email: '' }) : null;
+            o.addresses = o.address_id ? (addressMap.get(o.address_id) || null) : null;
         }
+
         return orders;
     } catch (err) {
         console.warn("getAllOrders failed, returning safe fallback:", err.message);

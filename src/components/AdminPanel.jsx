@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare, Gift } from 'lucide-react';
+import { X, LayoutDashboard, ShoppingBag, Package, Trash2, Edit2, CheckCircle, Clock, Truck, TrendingUp, AlertCircle, MapPin, Phone, Mail, FileText, Ticket, Star, Image as ImageIcon, Plus, Percent, Users, MessageSquare, Gift, Printer, Search, Filter, Ban, RefreshCw } from 'lucide-react';
 import * as db from '../lib/supabase';
 import { formatOrderCode, generateTrackingNumber } from '../utils/orderUtils';
 
@@ -15,6 +15,12 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
     const [isAddingCoupon, setIsAddingCoupon] = useState(false);
     const [trackingInfo, setTrackingInfo] = useState({ carrier: '', tracking_code: '' });
     const [isShippingDialogOpen, setIsShippingDialogOpen] = useState(false);
+    const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+    const [cancelTargetOrder, setCancelTargetOrder] = useState(null);
+    const [cancelReason, setCancelReason] = useState('Müşteri Talebi');
+    const [cancelCustomReason, setCancelCustomReason] = useState('');
+    const [orderSearchQuery, setOrderSearchQuery] = useState('');
+    const [orderStatusFilter, setOrderStatusFilter] = useState('all');
     const [newCoupon, setNewCoupon] = useState({
         code: '',
         discount_type: 'percentage',
@@ -156,6 +162,136 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
             carrier: carrier
         });
         setIsShippingDialogOpen(false);
+    };
+
+    const handleOpenCancelDialog = (order) => {
+        setCancelTargetOrder(order);
+        setCancelReason('Müşteri Talebi');
+        setCancelCustomReason('');
+        setIsCancelDialogOpen(true);
+    };
+
+    const handleConfirmCancelOrder = async () => {
+        if (!cancelTargetOrder) return;
+        const finalReason = cancelReason === 'Diğer' ? (cancelCustomReason || 'Diğer') : cancelReason;
+        const updatedNote = `${cancelTargetOrder.note || ''} [İptal: ${finalReason}]`.trim();
+
+        await handleUpdateStatus(cancelTargetOrder.id, 'cancelled', {
+            note: updatedNote,
+            cancellation_reason: finalReason
+        });
+
+        setIsCancelDialogOpen(false);
+        setCancelTargetOrder(null);
+    };
+
+    const handlePrintOrder = (order) => {
+        const printWindow = window.open('', '_blank', 'width=800,height=900');
+        if (!printWindow) {
+            alert('Lütfen tarayıcınızın pop-up engelleyicisini kapatıp tekrar deneyin.');
+            return;
+        }
+
+        const itemsHtml = (order.order_items || []).map(item => `
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">${item.products?.title || 'Ürün'}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.quantity}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;">${Number(item.price).toFixed(2)} TL</td>
+                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold;">${(item.quantity * item.price).toFixed(2)} TL</td>
+            </tr>
+        `).join('');
+
+        const printHtml = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Sipariş Fişi - ${formatOrderCode(order)}</title>
+                <style>
+                    body { font-family: 'Segoe UI', Roboto, sans-serif; color: #1e293b; padding: 30px; margin: 0; }
+                    .header { display: flex; justify-content: space-between; border-bottom: 2px solid #3b82f6; padding-bottom: 15px; margin-bottom: 20px; }
+                    .title { font-size: 24px; font-weight: 800; color: #3b82f6; }
+                    .info-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                    th { background: #f1f5f9; padding: 10px; text-align: left; font-size: 13px; color: #475569; }
+                    .total-box { text-align: right; font-size: 18px; font-weight: 800; margin-top: 15px; }
+                    .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 15px; }
+                    @media print { body { padding: 10px; } button { display: none; } }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <div>
+                        <div class="title">SARMAL TİCARET</div>
+                        <div style="font-size: 13px; color: #64748b;">www.sarmalticaret.com • sarmalticarett@gmail.com</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: bold;">SİPARİŞ FİŞİ</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #3b82f6;">${formatOrderCode(order)}</div>
+                        <div style="font-size: 12px; color: #64748b;">${new Date(order.created_at).toLocaleString('tr-TR')}</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div class="info-box" style="flex: 1;">
+                        <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1e293b;">📦 ALICI BİLGİLERİ</div>
+                        <div><strong>${order.profiles?.name || 'Müşteri'}</strong></div>
+                        <div>${order.addresses?.full_address || 'Adres belirtilmemiş'}</div>
+                        <div>${order.addresses?.district || ''} / ${order.addresses?.city || ''}</div>
+                        <div>📞 ${order.addresses?.phone || 'Telefon yok'}</div>
+                    </div>
+                    <div class="info-box" style="flex: 1;">
+                        <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1e293b;">💳 ÖDEME & KARGO</div>
+                        <div>Ödeme: <strong>${order.payment_method === 'credit' ? 'Kredi Kartı (PayTR)' : 'Havale / EFT'}</strong></div>
+                        <div>Durum: <strong>${statusLabels[order.status] || order.status}</strong></div>
+                        ${order.tracking_number ? `<div>Kargo Takip: <strong>${order.carrier || 'Kargo'}: ${order.tracking_number}</strong></div>` : ''}
+                    </div>
+                </div>
+
+                ${order.is_gift_wrap ? `
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; font-size: 13px;">
+                        🎁 <strong>Hediye Paketi Talebi:</strong> ${order.gift_note ? `"${order.gift_note}"` : 'Özel hediye ambalajı'}
+                    </div>
+                ` : ''}
+
+                ${order.note ? `
+                    <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; font-size: 13px;">
+                        📝 <strong>Müşteri Notu:</strong> ${order.note}
+                    </div>
+                ` : ''}
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ürün</th>
+                            <th style="text-align: center;">Adet</th>
+                            <th style="text-align: right;">Birim Fiyat</th>
+                            <th style="text-align: right;">Toplam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+
+                <div class="total-box">
+                    ${order.discount > 0 ? `<div style="font-size: 14px; color: #10b981; font-weight: normal; margin-bottom: 5px;">İndirim: -${Number(order.discount).toFixed(2)} TL</div>` : ''}
+                    <div>GENEL TOPLAM: <span style="color: #3b82f6;">${Number(order.total).toFixed(2)} TL</span></div>
+                </div>
+
+                <div class="footer">
+                    Bizi tercih ettiğiniz için teşekkür ederiz! • www.sarmalticaret.com • sarmalticarett@gmail.com
+                </div>
+
+                <script>
+                    window.onload = function() { window.print(); }
+                </script>
+            </body>
+            </html>
+        `;
+
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
     };
 
     const handleDeleteProduct = async (productId) => {
@@ -392,108 +528,218 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                         </div>
                     )}
 
-                    {activeTab === 'orders' && (
-                        <div style={{ display: 'grid', gap: '1rem' }}>
-                            {isLoading ? <p>Yükleniyor...</p> : orders.length === 0 ? <p>Sipariş bulunmuyor.</p> : orders.map(order => (
-                                <div key={order.id} style={{ border: '1px solid #e2e8f0', borderRadius: 'var(--radius-lg)', padding: '1.25rem', background: 'white', transition: 'all 0.2s' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
-                                        <div>
-                                            <div style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--color-primary)' }}>Sipariş {formatOrderCode(order)}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)' }}>
-                                                {new Date(order.created_at).toLocaleString('tr-TR')} • {order.profiles?.name}
-                                            </div>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                            <button
-                                                onClick={() => setSelectedOrder(order)}
-                                                className="btn btn-outline"
-                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
-                                            >
-                                                Detaylar
-                                            </button>
-                                            {order.status !== 'delivered' && order.status !== 'cancelled' && (
-                                                <button
-                                                    onClick={() => handleAdvanceStatus(order)}
-                                                    className="btn btn-primary"
-                                                    style={{
-                                                        padding: '0.4rem 0.8rem',
-                                                        fontSize: '0.85rem',
-                                                        background: order.status === 'preparing' ? '#3b82f6' : '#10b981'
-                                                    }}
-                                                >
-                                                    {order.status === 'preparing' ? 'Kargoya Ver' : 'Teslim Et'}
-                                                </button>
+                    {activeTab === 'orders' && (() => {
+                        const preparingCount = orders.filter(o => o.status === 'preparing' || o.status === 'completed').length;
+                        const shippingCount = orders.filter(o => o.status === 'shipping').length;
+                        const deliveredCount = orders.filter(o => o.status === 'delivered').length;
+                        const cancelledCount = orders.filter(o => o.status === 'cancelled').length;
+
+                        const filteredOrders = orders.filter(order => {
+                            if (orderStatusFilter === 'preparing' && order.status !== 'preparing' && order.status !== 'completed') return false;
+                            if (orderStatusFilter === 'shipping' && order.status !== 'shipping') return false;
+                            if (orderStatusFilter === 'delivered' && order.status !== 'delivered') return false;
+                            if (orderStatusFilter === 'cancelled' && order.status !== 'cancelled') return false;
+
+                            if (!orderSearchQuery.trim()) return true;
+                            const q = orderSearchQuery.toLowerCase().trim();
+                            const code = formatOrderCode(order).toLowerCase();
+                            const name = (order.profiles?.name || '').toLowerCase();
+                            const phone = (order.addresses?.phone || '').toLowerCase();
+                            const city = (order.addresses?.city || '').toLowerCase();
+                            const email = (order.profiles?.email || '').toLowerCase();
+                            const note = (order.note || '').toLowerCase();
+
+                            return code.includes(q) || name.includes(q) || phone.includes(q) || city.includes(q) || email.includes(q) || note.includes(q);
+                        });
+
+                        return (
+                            <div style={{ display: 'grid', gap: '1.25rem' }}>
+                                {/* Search & Filter Toolbar */}
+                                <div style={{ background: 'white', padding: '1.25rem', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <div style={{ position: 'relative', flex: 1, minWidth: '260px' }}>
+                                            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                                            <input
+                                                type="text"
+                                                placeholder="Sipariş kodu, müşteri adı, telefon, şehir veya not ara..."
+                                                value={orderSearchQuery}
+                                                onChange={e => setOrderSearchQuery(e.target.value)}
+                                                style={{ width: '100%', padding: '0.65rem 1rem 0.65rem 2.5rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.9rem', outline: 'none' }}
+                                            />
+                                            {orderSearchQuery && (
+                                                <button onClick={() => setOrderSearchQuery('')} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '0.8rem' }}>✕</button>
                                             )}
-                                            {order.payment_method === 'transfer' && order.payment_status !== 'paid' && (
+                                        </div>
+                                        <button
+                                            onClick={fetchAdminData}
+                                            className="btn btn-outline"
+                                            style={{ padding: '0.65rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem', borderColor: '#cbd5e1' }}
+                                            title="Listeyi Yenile"
+                                        >
+                                            <RefreshCw size={15} className={isLoading ? 'spin' : ''} /> Yenile
+                                        </button>
+                                    </div>
+
+                                    {/* Status Filter Pills */}
+                                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        {[
+                                            { id: 'all', label: 'Tümü', count: orders.length, color: '#64748b' },
+                                            { id: 'preparing', label: 'Hazırlanıyor', count: preparingCount, color: '#f59e0b' },
+                                            { id: 'shipping', label: 'Kargoda', count: shippingCount, color: '#3b82f6' },
+                                            { id: 'delivered', label: 'Teslim Edildi', count: deliveredCount, color: '#10b981' },
+                                            { id: 'cancelled', label: 'İptal Edildi', count: cancelledCount, color: '#ef4444' }
+                                        ].map(pill => {
+                                            const isActive = orderStatusFilter === pill.id;
+                                            return (
                                                 <button
-                                                    onClick={async () => {
-                                                        if (confirm('Bu siparişin Havale/EFT ödemesini onaylıyor musunuz?')) {
-                                                            await handleUpdateStatus(order.id, 'preparing', { payment_status: 'paid' });
-                                                        }
-                                                    }}
-                                                    className="btn"
+                                                    key={pill.id}
+                                                    onClick={() => setOrderStatusFilter(pill.id)}
                                                     style={{
-                                                        padding: '0.4rem 0.8rem',
-                                                        fontSize: '0.85rem',
-                                                        background: '#10b981',
-                                                        color: 'white',
-                                                        border: 'none',
+                                                        padding: '0.4rem 0.85rem',
+                                                        borderRadius: '20px',
+                                                        border: isActive ? `2px solid ${pill.color}` : '1px solid #e2e8f0',
+                                                        background: isActive ? `${pill.color}15` : '#f8fafc',
+                                                        color: isActive ? pill.color : '#64748b',
+                                                        fontWeight: '700',
+                                                        fontSize: '0.8rem',
                                                         cursor: 'pointer',
-                                                        borderRadius: 'var(--radius-md)',
-                                                        fontWeight: '600'
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '0.35rem',
+                                                        transition: 'all 0.15s ease'
                                                     }}
                                                 >
-                                                    Ödemeyi Onayla
+                                                    <span>{pill.label}</span>
+                                                    <span style={{ background: isActive ? pill.color : '#e2e8f0', color: isActive ? 'white' : '#64748b', borderRadius: '10px', padding: '0.1rem 0.45rem', fontSize: '0.7rem' }}>
+                                                        {pill.count}
+                                                    </span>
                                                 </button>
-                                            )}
-                                        </div>
+                                            );
+                                        })}
                                     </div>
-
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div style={{ display: 'flex', gap: '1rem' }}>
-                                            <div style={{
-                                                fontSize: '0.75rem',
-                                                padding: '0.2rem 0.6rem',
-                                                borderRadius: '20px',
-                                                background: order.status === 'delivered' ? '#dcfce7' : order.status === 'shipping' ? '#dbeafe' : '#fef3c7',
-                                                color: order.status === 'delivered' ? '#166534' : order.status === 'shipping' ? '#1e40af' : '#92400e',
-                                                fontWeight: '700'
-                                            }}>
-                                                {statusLabels[order.status]}
-                                            </div>
-                                            <div style={{ fontSize: '0.85rem', fontWeight: '600' }}>{Number(order.total).toFixed(2)} TL</div>
-                                        </div>
-                                        <div style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>
-                                            {order.order_items?.length} Ürün {order.coupon_code && <span style={{ color: 'var(--color-primary)' }}>🏷️ {order.coupon_code}</span>}
-                                        </div>
-                                    </div>
-
-                                    {/* Wire Transfer Details on List */}
-                                    {order.payment_method === 'transfer' && (
-                                        <div style={{
-                                            marginTop: '0.75rem',
-                                            padding: '0.75rem',
-                                            background: '#f8fafc',
-                                            border: '1px dashed #cbd5e1',
-                                            borderRadius: 'var(--radius-md)',
-                                            fontSize: '0.85rem'
-                                        }}>
-                                            <strong>💰 Havale Ödemesi: </strong>
-                                            {order.payment_status === 'paid' ? (
-                                                <span style={{ color: '#10b981', fontWeight: 'bold' }}>Ödeme Onaylandı ✅</span>
-                                            ) : order.payment_status === 'notification_sent' ? (
-                                                <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>
-                                                    Bildirim Geldi! ⚠️ (Gönderen: {order.transfer_sender} - {order.transfer_bank})
-                                                </span>
-                                            ) : (
-                                                <span style={{ color: '#f59e0b' }}>Ödeme Bekleniyor ⏳</span>
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
-                            ))}
-                        </div>
-                    )}
+
+                                {isLoading ? (
+                                    <div style={{ background: 'white', padding: '2.5rem', textAlign: 'center', borderRadius: 'var(--radius-lg)', color: '#64748b' }}>
+                                        <Clock size={24} style={{ margin: '0 auto 0.5rem', display: 'block' }} />
+                                        Siparişler yükleniyor...
+                                    </div>
+                                ) : filteredOrders.length === 0 ? (
+                                    <div style={{ background: 'white', padding: '3rem 2rem', textAlign: 'center', borderRadius: 'var(--radius-lg)', border: '1px dashed #cbd5e1', color: '#64748b' }}>
+                                        <ShoppingBag size={40} style={{ margin: '0 auto 0.75rem', opacity: 0.4 }} />
+                                        <h4 style={{ margin: '0 0 0.5rem', color: '#1e293b' }}>Eşleşen Sipariş Bulunamadı</h4>
+                                        <p style={{ margin: 0, fontSize: '0.85rem' }}>{orderSearchQuery ? 'Arama kriterlerinize uygun sipariş bulunamadı.' : 'Bu filtrede henüz sipariş bulunmuyor.'}</p>
+                                    </div>
+                                ) : (
+                                    filteredOrders.map(order => (
+                                        <div key={order.id} style={{ border: '1px solid #e2e8f0', borderRadius: 'var(--radius-lg)', padding: '1.25rem', background: 'white', transition: 'all 0.2s', opacity: order.status === 'cancelled' ? 0.75 : 1 }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                                                <div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                        <span style={{ fontWeight: '700', fontSize: '1rem', color: 'var(--color-primary)' }}>Sipariş {formatOrderCode(order)}</span>
+                                                        {order.status === 'cancelled' && (
+                                                            <span style={{ background: '#fee2e2', color: '#dc2626', fontSize: '0.75rem', padding: '0.15rem 0.5rem', borderRadius: '4px', fontWeight: '700' }}>İPTAL EDİLDİ</span>
+                                                        )}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)', marginTop: '0.2rem' }}>
+                                                        {new Date(order.created_at).toLocaleString('tr-TR')} • <strong>{order.profiles?.name || 'Misafir'}</strong> ({order.addresses?.city || 'Şehir Yok'})
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                                    <button
+                                                        onClick={() => handlePrintOrder(order)}
+                                                        className="btn btn-outline"
+                                                        style={{ padding: '0.4rem 0.7rem', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem', color: '#334155' }}
+                                                        title="Sipariş Fişi / Kargo Etiketi Yazdır"
+                                                    >
+                                                        <Printer size={14} /> Fiş Yazdır
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setSelectedOrder(order)}
+                                                        className="btn btn-outline"
+                                                        style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                                                    >
+                                                        Detaylar
+                                                    </button>
+                                                    {order.status !== 'delivered' && order.status !== 'cancelled' && (
+                                                        <button
+                                                            onClick={() => handleAdvanceStatus(order)}
+                                                            className="btn btn-primary"
+                                                            style={{
+                                                                padding: '0.4rem 0.8rem',
+                                                                fontSize: '0.85rem',
+                                                                background: order.status === 'preparing' ? '#3b82f6' : '#10b981'
+                                                            }}
+                                                        >
+                                                            {order.status === 'preparing' ? 'Kargoya Ver' : 'Teslim Et'}
+                                                        </button>
+                                                    )}
+                                                    {order.status !== 'cancelled' && (
+                                                        <button
+                                                            onClick={() => handleOpenCancelDialog(order)}
+                                                            className="btn btn-outline"
+                                                            style={{ padding: '0.4rem 0.65rem', fontSize: '0.8rem', color: '#ef4444', borderColor: '#fca5a5' }}
+                                                            title="Siparişi İptal Et"
+                                                        >
+                                                            <Ban size={14} /> İptal Et
+                                                        </button>
+                                                    )}
+                                                    {order.payment_method === 'transfer' && order.payment_status !== 'paid' && order.status !== 'cancelled' && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (confirm('Bu siparişin Havale/EFT ödemesini onaylıyor musunuz?')) {
+                                                                    await handleUpdateStatus(order.id, 'preparing', { payment_status: 'paid' });
+                                                                }
+                                                            }}
+                                                            className="btn"
+                                                            style={{
+                                                                padding: '0.4rem 0.8rem',
+                                                                fontSize: '0.85rem',
+                                                                background: '#10b981',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                cursor: 'pointer',
+                                                                borderRadius: 'var(--radius-md)',
+                                                                fontWeight: '600'
+                                                            }}
+                                                        >
+                                                            Ödemeyi Onayla
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                    <div style={{
+                                                        fontSize: '0.75rem',
+                                                        padding: '0.2rem 0.6rem',
+                                                        borderRadius: '20px',
+                                                        background: order.status === 'delivered' ? '#dcfce7' : order.status === 'shipping' ? '#dbeafe' : order.status === 'cancelled' ? '#fee2e2' : '#fef3c7',
+                                                        color: order.status === 'delivered' ? '#166534' : order.status === 'shipping' ? '#1e40af' : order.status === 'cancelled' ? '#dc2626' : '#92400e',
+                                                        fontWeight: '700'
+                                                    }}>
+                                                        {statusLabels[order.status] || order.status}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.95rem', fontWeight: '800', color: order.status === 'cancelled' ? '#94a3b8' : 'inherit' }}>{Number(order.total).toFixed(2)} TL</div>
+                                                </div>
+                                                <div style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>
+                                                    {order.order_items?.length || 0} Ürün {order.coupon_code && <span style={{ color: 'var(--color-primary)' }}>🏷️ {order.coupon_code}</span>}
+                                                </div>
+                                            </div>
+
+                                            {/* Order Note or Cancellation Reason */}
+                                            {order.note && (
+                                                <div style={{ marginTop: '0.6rem', fontSize: '0.8rem', background: '#f8fafc', padding: '0.4rem 0.6rem', borderRadius: '4px', color: '#475569', borderLeft: '3px solid #cbd5e1' }}>
+                                                    {order.note}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        );
+                    })()}
 
                     {activeTab === 'products' && (
                         <div>
@@ -1007,7 +1253,14 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                     </div>
                                 )}
 
-                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                                    <button
+                                        onClick={() => handlePrintOrder(selectedOrder)}
+                                        className="btn btn-outline"
+                                        style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#334155' }}
+                                    >
+                                        <Printer size={16} /> Fiş Yazdır
+                                    </button>
                                     <button
                                         onClick={() => setSelectedOrder(null)}
                                         className="btn btn-outline"
@@ -1021,7 +1274,16 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                             className="btn btn-primary"
                                             style={{ flex: 2, background: selectedOrder.status === 'preparing' ? '#3b82f6' : '#10b981' }}
                                         >
-                                            {selectedOrder.status === 'preparing' ? 'Kargoya Ver (Durumu İlerlet)' : 'Teslim Edildi İşaretle'}
+                                            {selectedOrder.status === 'preparing' ? 'Kargoya Ver' : 'Teslim Edildi'}
+                                        </button>
+                                    )}
+                                    {selectedOrder.status !== 'cancelled' && (
+                                        <button
+                                            onClick={() => handleOpenCancelDialog(selectedOrder)}
+                                            className="btn btn-outline"
+                                            style={{ color: '#ef4444', borderColor: '#fca5a5', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                                        >
+                                            <Ban size={16} /> Siparişi İptal Et
                                         </button>
                                     )}
                                 </div>
@@ -1060,8 +1322,66 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                 />
                             </div>
                             <div style={{ display: 'flex', gap: '1rem' }}>
-                                <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsShippingDialogOpen(false)}>İptal</button>
+                                <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsShippingDialogOpen(false)}>Vazgeç</button>
                                 <button className="btn btn-primary" style={{ flex: 1 }} onClick={submitShippingInfo} disabled={!trackingInfo.carrier || !trackingInfo.tracking_code}>Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Cancel Order Confirmation Dialog */}
+                {isCancelDialogOpen && cancelTargetOrder && (
+                    <div className="modal-overlay" style={{ zIndex: 1200 }} onClick={() => setIsCancelDialogOpen(false)}>
+                        <div className="modal-content" style={{ maxWidth: '450px', width: '90%' }} onClick={e => e.stopPropagation()}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#dc2626', fontWeight: '800', fontSize: '1.1rem' }}>
+                                    <AlertCircle size={22} /> Siparişi İptal Et
+                                </div>
+                                <button onClick={() => setIsCancelDialogOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
+                            </div>
+
+                            <p style={{ fontSize: '0.9rem', color: '#475569', marginBottom: '1.25rem', lineHeight: '1.5' }}>
+                                <strong>Sipariş {formatOrderCode(cancelTargetOrder)}</strong> ({cancelTargetOrder.profiles?.name || 'Müşteri'}) iptal edilsin mi? İptal edilen siparişler satış cirosundan düşülür.
+                            </p>
+
+                            <div className="form-group" style={{ marginBottom: '1rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', color: '#1e293b' }}>İptal Nedeni</label>
+                                <select
+                                    value={cancelReason}
+                                    onChange={e => setCancelReason(e.target.value)}
+                                    style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                >
+                                    <option value="Müşteri Talebi">Müşteri Talebi</option>
+                                    <option value="Stok Yetersizliği">Stok Yetersizliği</option>
+                                    <option value="Ödeme İade / Uyuşmazlık">Ödeme İade / Uyuşmazlık</option>
+                                    <option value="Hatalı / Mükerrer Sipariş">Hatalı / Mükerrer Sipariş</option>
+                                    <option value="Adres / İletişim Ulaşılamadı">Adres / İletişim Ulaşılamadı</option>
+                                    <option value="Diğer">Diğer (Açıklama Giriniz)</option>
+                                </select>
+                            </div>
+
+                            {cancelReason === 'Diğer' && (
+                                <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '700', marginBottom: '0.4rem', color: '#1e293b' }}>Özel İptal Açıklaması</label>
+                                    <input
+                                        type="text"
+                                        placeholder="İptal sebebini yazınız..."
+                                        value={cancelCustomReason}
+                                        onChange={e => setCancelCustomReason(e.target.value)}
+                                        style={{ width: '100%', padding: '0.65rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                                    />
+                                </div>
+                            )}
+
+                            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem' }}>
+                                <button className="btn btn-outline" style={{ flex: 1 }} onClick={() => setIsCancelDialogOpen(false)}>Vazgeç</button>
+                                <button
+                                    className="btn btn-primary"
+                                    style={{ flex: 1, background: '#dc2626', borderColor: '#dc2626', color: 'white', fontWeight: '700' }}
+                                    onClick={handleConfirmCancelOrder}
+                                >
+                                    Evet, İptal Et
+                                </button>
                             </div>
                         </div>
                     </div>
