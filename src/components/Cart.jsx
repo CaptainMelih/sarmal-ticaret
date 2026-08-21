@@ -2,6 +2,12 @@ import React from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 
 export function Cart({ isOpen, onClose, cartItems, onRemoveFromCart, onUpdateQuantity, onCheckout }) {
+    React.useEffect(() => {
+        if (isOpen) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     // Group items by product id and sum quantities

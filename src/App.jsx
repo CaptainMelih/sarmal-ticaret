@@ -557,6 +557,7 @@ function AppContent() {
   // Checkout handlers
   const handleInitiateCheckout = () => {
     setIsCartOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     navigate('/checkout');
   };
 
@@ -613,10 +614,10 @@ function AppContent() {
         }
       }
 
-      // If Wire Transfer (Havale/EFT), clear cart, show toast, and return order directly
-      if (orderData.paymentMethod === 'transfer') {
+      // If Wire Transfer (Havale/EFT) or Cash on Delivery (Kapıda Ödeme), clear cart, show toast, and return order directly
+      if (orderData.paymentMethod === 'transfer' || orderData.paymentMethod === 'cash') {
         setCart([]);
-        showToast('Siparişiniz başarıyla alındı! Havale bilgileri bekleniyor. 🎉', 'success');
+        showToast(orderData.paymentMethod === 'cash' ? 'Siparişiniz başarıyla alındı! Kapıda ödeme ile kargolanacaktır 🎉' : 'Siparişiniz başarıyla alındı! Havale bilgileri bekleniyor. 🎉', 'success');
         // Refresh product inventory list from DB in background
         db.getProducts().then(setProducts).catch(console.error);
         if (user) {

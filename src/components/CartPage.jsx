@@ -5,6 +5,10 @@ import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, ArrowRight, ShieldCheck, T
 export function CartPage({ cartItems, onRemoveFromCart, onUpdateQuantity }) {
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
     // Group items by product id and sum quantities
     const groupedItems = cartItems.reduce((acc, item) => {
         const existing = acc.find(i => i.id === item.id);

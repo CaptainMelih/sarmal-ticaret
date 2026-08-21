@@ -6,6 +6,10 @@ import { ArrowLeft, ShieldCheck, ShoppingBag } from 'lucide-react';
 export function CheckoutPage({ cartItems, addresses, onCompleteOrder, onAddAddress, user }) {
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, []);
+
     return (
         <div style={{ background: '#f8fafc', minHeight: 'calc(100vh - 120px)', padding: '2rem 0 4rem' }}>
             <div className="container" style={{ maxWidth: '1100px' }}>

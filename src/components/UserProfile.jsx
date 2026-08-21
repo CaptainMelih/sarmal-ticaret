@@ -382,6 +382,26 @@ export function UserProfile({ isOpen, onClose, user, onLogout, addresses, onAddA
                                                 </div>
                                             )}
 
+                                            {/* Cash on Delivery Status */}
+                                            {order.payment_method === 'cash' && (
+                                                <div style={{
+                                                    marginTop: '1rem',
+                                                    padding: '1rem',
+                                                    background: '#f0fdf4',
+                                                    borderRadius: 'var(--radius-md)',
+                                                    border: '1px solid #bbf7d0',
+                                                    fontSize: '0.9rem',
+                                                    color: '#166534'
+                                                }}>
+                                                    <div style={{ fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                        <span>💵 Ödeme Yöntemi: Kapıda Ödeme</span>
+                                                    </div>
+                                                    <div style={{ fontSize: '0.85rem', color: '#15803d', marginTop: '0.25rem' }}>
+                                                        Sipariş kargo görevlisi tarafından adresinize teslim edildiğinde ödeme tahsil edilecektir.
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {/* Transfer Payment Status / Notification Button */}
                                             {order.payment_method === 'transfer' && (
                                                 <div style={{

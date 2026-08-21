@@ -6,9 +6,9 @@ import { CustomSelect } from './CustomSelect';
 import { DistanceSellingContractContent, RefundPolicyContent } from './LegalPages';
 
 const PAYMENT_METHODS = [
-    { id: 'credit', name: 'Kredi Kartı', icon: CreditCard },
-    // { id: 'cash', name: 'Kapıda Ödeme', icon: ShoppingBag },
-    { id: 'transfer', name: 'Havale/EFT', icon: Truck }
+    { id: 'credit', name: 'Kredi / Banka Kartı', icon: CreditCard },
+    { id: 'cash', name: 'Kapıda Ödeme', icon: ShoppingBag },
+    { id: 'transfer', name: 'Havale / EFT', icon: Truck }
 ];
 
 export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses, onCompleteOrder, onAddAddress, user }) {
@@ -37,6 +37,13 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
     const [createdOrder, setCreatedOrder] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [emailError, setEmailError] = useState('');
+
+    // Smooth scroll to top when opening checkout or changing steps
+    React.useEffect(() => {
+        if (isOpen) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [isOpen, step]);
 
     // Credit Card & 3D Secure States
     const [cardData, setCardData] = useState({
@@ -212,7 +219,7 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                     giftNote: giftNote
                 });
 
-                if (selectedPayment === 'transfer') {
+                if (selectedPayment === 'transfer' || selectedPayment === 'cash') {
                     setCreatedOrder(result);
                     setStep(3);
                 }
@@ -333,6 +340,38 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                 </div>
                                 <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #bbf7d0', fontSize: '0.8rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                     <Truck size={16} /> Siparişiniz kargo hazırlık aşamasına alınmıştır.
+                                </div>
+                            </div>
+                        ) : selectedPayment === 'cash' ? (
+                            <div style={{
+                                background: '#f0fdf4',
+                                border: '1px solid #bbf7d0',
+                                borderRadius: 'var(--radius-lg)',
+                                padding: '1.5rem',
+                                width: '100%',
+                                maxWidth: '500px',
+                                textAlign: 'left',
+                                boxShadow: 'var(--shadow-sm)'
+                            }}>
+                                <h4 style={{ fontWeight: '800', marginBottom: '1rem', borderBottom: '1px solid #bbf7d0', paddingBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#166534' }}>
+                                    <ShoppingBag size={20} color="#16a34a" /> Kapıda Ödemeli Sipariş Bilgisi
+                                </h4>
+                                <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.9rem', color: '#14532d' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Ödeme Yöntemi:</span>
+                                        <span style={{ fontWeight: '800', color: '#16a34a' }}>💵 Kapıda Ödeme</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Sipariş Durumu:</span>
+                                        <span style={{ fontWeight: '700', color: '#0284c7' }}>📦 Hazırlanıyor</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#166534' }}>Kapıda Ödenecek Tutar:</span>
+                                        <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--color-primary)' }}>{Number(total || 0).toFixed(2)} TL</span>
+                                    </div>
+                                </div>
+                                <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #bbf7d0', fontSize: '0.85rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Truck size={16} /> Siparişiniz kargoya verildiğinde kurye kapıda ödemeyi tahsil edecektir.
                                 </div>
                             </div>
                         ) : (
@@ -637,6 +676,18 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                             </h4>
                                             <p style={{ fontSize: '0.9rem', color: '#0369a1', margin: 0, lineHeight: '1.6' }}>
                                                 "Siparişi Onayla ve Öde" butonuna tıkladığınızda kart bilgilerinizi ve bankanızın 3D Secure SMS doğrulama şifresini gireceğiniz <strong>PayTR Resmi Güvenli Ödeme Sayfasına</strong> otomatik yönlendirileceksiniz.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Kapıda Ödeme Notification */}
+                                    {selectedPayment === 'cash' && (
+                                        <div style={{ background: '#f0fdf4', padding: '1.5rem', borderRadius: '16px', border: '1px solid #bbf7d0', marginBottom: '2rem' }}>
+                                            <h4 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: '800', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <ShoppingBag size={22} color="#16a34a" /> Kapıda Ödeme İle Teslimat
+                                            </h4>
+                                            <p style={{ fontSize: '0.9rem', color: '#15803d', margin: 0, lineHeight: '1.6' }}>
+                                                Siparişinizi verdiğinizde ürünleriniz hızla hazırlanır ve kargoya verilir. <strong>Kargo görevlisi kapınıza geldiğinde ödemenizi kapıda yapabilirsiniz.</strong>
                                             </p>
                                         </div>
                                     )}

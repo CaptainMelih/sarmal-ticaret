@@ -269,7 +269,7 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                     </div>
                     <div class="info-box" style="flex: 1;">
                         <div style="font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1e293b;">💳 ÖDEME & KARGO</div>
-                        <div>Ödeme: <strong>${order.payment_method === 'credit' ? 'Kredi Kartı (PayTR)' : 'Havale / EFT'}</strong></div>
+                        <div>Ödeme: <strong>${order.payment_method === 'credit' ? 'Kredi Kartı (PayTR)' : order.payment_method === 'cash' ? 'Kapıda Ödeme' : 'Havale / EFT'}</strong></div>
                         <div>Durum: <strong>${statusLabels[order.status] || order.status}</strong></div>
                         ${order.tracking_number ? `<div>Kargo Takip: <strong>${order.carrier || 'Kargo'}: ${order.tracking_number}</strong></div>` : ''}
                     </div>
@@ -1493,6 +1493,15 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                         </div>
                                     </div>
                                 </div>
+
+                                {selectedOrder.payment_method === 'cash' && (
+                                    <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #bbf7d0', fontSize: '0.9rem', marginBottom: '1rem' }}>
+                                        <div style={{ fontWeight: '700', color: '#166534', marginBottom: '0.25rem' }}>💵 Ödeme Yöntemi: Kapıda Ödeme</div>
+                                        <div style={{ color: '#15803d', fontSize: '0.85rem' }}>
+                                            Teslimat sırasında kurye tarafından <strong>{Number(selectedOrder.total).toFixed(2)} TL</strong> tahsil edilecektir.
+                                        </div>
+                                    </div>
+                                )}
 
                                 {selectedOrder.payment_method === 'transfer' && (
                                     <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', fontSize: '0.9rem' }}>
