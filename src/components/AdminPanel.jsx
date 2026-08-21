@@ -861,18 +861,23 @@ export function AdminPanel({ onRefreshProducts, onEditProduct }) {
                                                 <input
                                                     type="number"
                                                     defaultValue={product.stock}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.target.blur();
+                                                        }
+                                                    }}
                                                     onBlur={async (e) => {
                                                         const newStock = parseInt(e.target.value);
-                                                        if (newStock !== product.stock && !isNaN(newStock)) {
+                                                        if (!isNaN(newStock) && newStock !== product.stock) {
                                                             try {
                                                                 await db.updateProduct(product.id, { stock: newStock });
-                                                                onRefreshProducts();
+                                                                if (onRefreshProducts) onRefreshProducts();
                                                             } catch (err) {
-                                                                alert('Stok güncellenemedi');
+                                                                console.error('Stok güncellenemedi:', err);
                                                             }
                                                         }
                                                     }}
-                                                    style={{ width: '80px', padding: '0.2rem 0.4rem', fontSize: '0.85rem', borderRadius: '4px', border: product.stock < 5 ? '1px solid #ef4444' : '1px solid #ddd', background: product.stock < 5 ? '#fef2f2' : 'white' }}
+                                                    style={{ width: '80px', padding: '0.2rem 0.4rem', fontSize: '0.85rem', borderRadius: '4px', border: product.stock < 5 ? '1px solid #ef4444' : '1px solid #ddd', background: product.stock < 5 ? '#fef2f2' : 'white', fontWeight: '700' }}
                                                 />
                                             </div>
 

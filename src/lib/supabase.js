@@ -323,27 +323,32 @@ export async function addProduct(product) {
 
 export async function updateProduct(productId, updates) {
     const cleanUpdates = sanitizeProductPayload(updates);
-    const targetIdStr = String(productId);
+    const numericId = !isNaN(Number(productId)) ? Number(productId) : null;
+    const stringId = String(productId);
 
     try {
-        let { data, error } = await supabase
-            .from('products')
-            .update(cleanUpdates)
-            .eq('id', targetIdStr)
-            .select();
-
-        if (error && !isNaN(Number(productId))) {
+        // Try numeric ID first as primary key in Supabase is BIGINT
+        if (numericId !== null) {
             const { data: numData, error: numErr } = await supabase
                 .from('products')
                 .update(cleanUpdates)
-                .eq('id', Number(productId))
+                .eq('id', numericId)
                 .select();
             if (!numErr && numData && numData.length > 0) {
+                updateLocalProductCache(productId, cleanUpdates);
                 return numData[0];
             }
         }
 
+        // String ID fallback
+        let { data, error } = await supabase
+            .from('products')
+            .update(cleanUpdates)
+            .eq('id', stringId)
+            .select();
+
         if (!error && data && data.length > 0) {
+            updateLocalProductCache(productId, cleanUpdates);
             return data[0];
         }
 
@@ -355,6 +360,11 @@ export async function updateProduct(productId, updates) {
     }
 
     const updatedProduct = { id: productId, ...cleanUpdates };
+    updateLocalProductCache(productId, cleanUpdates);
+    return updatedProduct;
+}
+
+function updateLocalProductCache(productId, cleanUpdates) {
     try {
         if (typeof window !== 'undefined' && window.sessionStorage) {
             const cached = JSON.parse(window.sessionStorage.getItem('sarmal_cached_products') || '[]');
@@ -362,8 +372,6 @@ export async function updateProduct(productId, updates) {
             window.sessionStorage.setItem('sarmal_cached_products', JSON.stringify(updated));
         }
     } catch (e) {}
-
-    return updatedProduct;
 }
 
 export async function deleteProduct(productId) {

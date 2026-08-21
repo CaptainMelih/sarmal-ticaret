@@ -416,7 +416,7 @@ function AppContent() {
       if (productData.id) {
         // Edit mode
         targetProduct = await db.updateProduct(productData.id, cleanData);
-        setProducts(products.map(p => p.id === targetProduct.id ? targetProduct : p));
+        setProducts(prev => prev.map(p => String(p.id) === String(targetProduct.id) ? { ...p, ...targetProduct } : p));
 
         // Handle images update (clear and replace for simplicity)
         await db.deleteProductImagesByProduct(targetProduct.id);
@@ -434,7 +434,7 @@ function AppContent() {
             await db.addProductImage(targetProduct.id, extraImages[i].url, i);
           }
         }
-        setProducts([targetProduct, ...products]);
+        setProducts(prev => [targetProduct, ...prev]);
         showToast('Ürün başarıyla eklendi! 🎉', 'success');
       }
       setIsAddProductOpen(false);
@@ -454,24 +454,25 @@ function AppContent() {
     showToast(`${product.title || 'Ürün'} sepete eklendi! 🛒`, 'success');
   };
 
-  const handleRemoveFromCart = (productId) => {
-    const index = cart.findIndex(item => item.id === productId);
-    if (index !== -1) {
-      const newCart = [...cart];
-      newCart.splice(index, 1);
-      setCart(newCart);
-      showToast('Ürün sepetten çıkarıldı', 'info');
-    }
+  const handleRemoveFromCart = (index) => {
+    const newCart = [...cart];
+    newCart.splice(index, 1);
+    setCart(newCart);
   };
 
-  const handleUpdateQuantity = (productId, change) => {
-    if (change > 0) {
-      const product = products.find(p => p.id === productId);
+  const handleUpdateQuantity = (productId, delta) => {
+    if (delta < 0) {
+      const index = cart.findIndex(item => String(item.id) === String(productId));
+      if (index !== -1) {
+        const newCart = [...cart];
+        newCart.splice(index, 1);
+        setCart(newCart);
+      }
+    } else {
+      const product = products.find(p => String(p.id) === String(productId));
       if (product) {
         setCart([...cart, product]);
       }
-    } else {
-      handleRemoveFromCart(productId);
     }
   };
 
@@ -593,18 +594,22 @@ function AppContent() {
         created = await db.createGuestOrder(orderData, orderData.guestAddress);
       }
 
-      // 2. Update Stock in Supabase (with error bypass so RLS doesn't block guest checkouts)
-      try {
-        for (const item of orderData.items) {
-          const product = products.find(p => p.id === item.id);
-          if (product) {
-            const newStock = Math.max(0, product.stock - item.quantity);
-            await db.updateProduct(product.id, { stock: newStock });
+      // 3. Update Stock in Supabase asynchronously in background (Never blocks checkout flow!)
+      Promise.resolve().then(async () => {
+        try {
+          for (const item of (orderData.items || [])) {
+            const product = products.find(p => String(p.id) === String(item.id));
+            if (product) {
+              const newStock = Math.max(0, (product.stock || 0) - item.quantity);
+              await db.updateProduct(product.id, { stock: newStock });
+            }
           }
+          const fresh = await db.getProducts();
+          if (fresh && fresh.length > 0) setProducts(fresh);
+        } catch (stockErr) {
+          console.warn('Stock update background notice:', stockErr);
         }
-      } catch (stockErr) {
-        console.warn('Stock update failed (normal for guest RLS):', stockErr);
-      }
+      });
 
       // 3. Update Coupon Usage if any
       if (orderData.couponCode) {
