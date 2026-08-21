@@ -335,7 +335,7 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span style={{ color: '#166534' }}>Ödenen Toplam Tutar:</span>
-                                        <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--color-primary)' }}>{Number(total || 0).toFixed(2)} TL</span>
+                                        <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--color-primary)' }}>{Number(createdOrder?.total ?? total ?? 0).toFixed(2)} TL</span>
                                     </div>
                                 </div>
                                 <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #bbf7d0', fontSize: '0.8rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -367,7 +367,7 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span style={{ color: '#166534' }}>Kapıda Ödenecek Tutar:</span>
-                                        <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--color-primary)' }}>{Number(total || 0).toFixed(2)} TL</span>
+                                        <span style={{ fontWeight: '800', fontSize: '1.1rem', color: 'var(--color-primary)' }}>{Number(createdOrder?.total ?? total ?? 0).toFixed(2)} TL</span>
                                     </div>
                                 </div>
                                 <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #bbf7d0', fontSize: '0.85rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -408,7 +408,7 @@ export function Checkout({ isOpen, isPage = false, onClose, cartItems, addresses
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span style={{ color: '#64748b' }}>Toplam Tutar:</span>
-                                        <span style={{ fontWeight: '700', color: 'var(--color-primary)' }}>{Number(createdOrder?.total || 0).toFixed(2)} TL</span>
+                                        <span style={{ fontWeight: '700', color: 'var(--color-primary)' }}>{Number(createdOrder?.total ?? total ?? 0).toFixed(2)} TL</span>
                                     </div>
                                 </div>
                                 
