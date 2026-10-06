@@ -1,7 +1,5 @@
 /**
- * SARMAL TİCARET - GELİŞMİŞ E-TİCARET & KATEGORİ SAYFASI MOTORU (main.js)
- * Sayfa yönlendirmesi (Kategori Sayfaları), çok adımlı sipariş tamamlama süreci,
- * sözleşmeler ve tam fonksiyonel tıklama olaylarını yönetir.
+ * SARMAL TİCARET - ÇOK SAYFALI (SEPET, FAVORİLER, GİRİŞ, KAYIT, KATEGORİ) E-TİCARET MOTORU
  */
 
 // --- 1. MAĞAZA VERİLERİ ---
@@ -949,13 +947,12 @@ let userOrders = safeLocalStorageGet("sarmal_orders", []);
 let currentUser = safeLocalStorageGet("sarmal_user", null);
 let activeCoupon = safeLocalStorageGet("sarmal_coupon", null);
 
-// Kategori Sayfası Filtre Durumu
+// Kategori Sayfası Filtreleri
 let currentCategorySlug = null;
 let catSortBy = "recommended";
 let catMinPrice = null;
 let catMaxPrice = null;
 let catOnlyDiscount = false;
-let catOnlyMealCard = false;
 
 // Kuponlar
 const AVAILABLE_COUPONS = {
@@ -969,10 +966,35 @@ function formatPrice(num) {
   return safeNum.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " TL";
 }
 
-// --- 4. KATEGORİ VE SAYFA YÖNLENDİRME (ROUTER) ---
-function navigateToCategory(slug) {
-  if (!slug) return;
-  window.location.hash = "kategori=" + encodeURIComponent(slug);
+// --- 4. SAYFA ROUTING & GÖRÜNÜM GEÇİŞLERİ ---
+const ALL_VIEWS = [
+  "homeView",
+  "categoryView",
+  "cartPageView",
+  "wishlistPageView",
+  "authPageView",
+  "profilePageView",
+  "trackingPageView"
+];
+
+function hideAllViews() {
+  ALL_VIEWS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove("active");
+      if (id === "homeView") el.classList.add("hidden");
+    }
+  });
+}
+
+function showView(id) {
+  hideAllViews();
+  const el = document.getElementById(id);
+  if (el) {
+    if (id === "homeView") el.classList.remove("hidden");
+    el.classList.add("active");
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function navigateToHome() {
@@ -980,37 +1002,401 @@ function navigateToHome() {
   renderRoute();
 }
 
+function navigateToCategory(slug) {
+  window.location.hash = "kategori=" + encodeURIComponent(slug);
+}
+
+function navigateToPage(pageName) {
+  window.location.hash = pageName;
+}
+
 function renderRoute() {
-  const hash = window.location.hash.replace(/^#/, "");
-  const homeView = document.getElementById("homeView");
-  const categoryView = document.getElementById("categoryView");
+  const rawHash = window.location.hash.replace(/^#/, "");
 
-  if (!homeView || !categoryView) return;
+  if (!rawHash || rawHash === "/") {
+    showView("homeView");
+    renderProductGrids();
+    return;
+  }
 
-  if (hash.startsWith("kategori=")) {
-    const slug = decodeURIComponent(hash.split("=")[1] || "");
+  if (rawHash.startsWith("kategori=")) {
+    const slug = decodeURIComponent(rawHash.split("=")[1] || "");
     const category = CATEGORIES_DATA.find(c => c.slug === slug);
-
     if (category) {
       currentCategorySlug = slug;
-      homeView.classList.add("hidden");
-      categoryView.classList.add("active");
+      showView("categoryView");
       renderCategoryPage(category);
-      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
   }
 
-  // Ana Sayfa Görünümü
-  currentCategorySlug = null;
-  categoryView.classList.remove("active");
-  homeView.classList.remove("hidden");
-  renderProductGrids();
+  if (rawHash === "sepet") {
+    showView("cartPageView");
+    renderCartPage();
+    return;
+  }
+
+  if (rawHash === "favoriler") {
+    showView("wishlistPageView");
+    renderWishlistPage();
+    return;
+  }
+
+  if (rawHash === "giris" || rawHash === "kayit") {
+    showView("authPageView");
+    switchAuthTab(rawHash === "kayit" ? "register" : "login");
+    return;
+  }
+
+  if (rawHash === "hesabim") {
+    if (currentUser) {
+      showView("profilePageView");
+      renderProfilePage();
+    } else {
+      navigateToPage("giris");
+    }
+    return;
+  }
+
+  if (rawHash === "siparis-takip") {
+    showView("trackingPageView");
+    renderTrackingPage();
+    return;
+  }
+
+  // Fallback
+  showView("homeView");
 }
 
-// Kategori Sayfasını Render Etme
+// --- 5. TAM SAYFA SEPET (CART PAGE) RENDER ---
+function renderCartPage() {
+  const itemsContainer = document.getElementById("cartPageItemsList");
+  const emptyContainer = document.getElementById("cartPageEmptyState");
+  const contentLayout = document.getElementById("cartPageLayout");
+  const countTitle = document.getElementById("cartPageCountTitle");
+  const freeShippingText = document.getElementById("cartPageFreeShippingText");
+  const shippingProgressFill = document.getElementById("cartPageShippingFill");
+
+  const subtotalEl = document.getElementById("cartPageSubtotal");
+  const discountRow = document.getElementById("cartPageDiscountRow");
+  const discountEl = document.getElementById("cartPageDiscount");
+  const grandTotalEl = document.getElementById("cartPageGrandTotal");
+  const couponBadge = document.getElementById("cartPageCouponApplied");
+
+  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const { subtotal, discount, grandTotal } = calculateCartTotals();
+
+  if (countTitle) countTitle.textContent = "Alışveriş Sepetim (" + totalCount + " Ürün)";
+
+  if (cart.length === 0) {
+    if (contentLayout) contentLayout.style.display = "none";
+    if (emptyContainer) emptyContainer.style.display = "block";
+    return;
+  }
+
+  if (emptyContainer) emptyContainer.style.display = "none";
+  if (contentLayout) contentLayout.style.display = "grid";
+
+  // 500 TL Kargo İlerlemesi
+  const threshold = 500;
+  if (subtotal >= threshold) {
+    if (freeShippingText) freeShippingText.innerHTML = "🎉 <strong>Tebrikler!</strong> Kargonuz ÜCRETSİZ!";
+    if (shippingProgressFill) shippingProgressFill.style.width = "100%";
+  } else {
+    const diff = threshold - subtotal;
+    if (freeShippingText) freeShippingText.innerHTML = 'Ücretsiz Kargo için <strong>' + formatPrice(diff) + '</strong> daha ekleyin!';
+    const pct = Math.min(100, Math.round((subtotal / threshold) * 100));
+    if (shippingProgressFill) shippingProgressFill.style.width = pct + "%";
+  }
+
+  // Tutar Hesapları
+  if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+  if (grandTotalEl) grandTotalEl.textContent = formatPrice(grandTotal);
+
+  if (discountRow && discountEl) {
+    if (discount > 0) {
+      discountRow.style.display = "flex";
+      discountEl.textContent = "- " + formatPrice(discount);
+    } else {
+      discountRow.style.display = "none";
+    }
+  }
+
+  // Kupon Rozeti
+  if (couponBadge) {
+    if (activeCoupon && AVAILABLE_COUPONS[activeCoupon]) {
+      couponBadge.innerHTML = 
+        '<div class="coupon-applied-badge">' +
+          '<span>✓ ' + escapeHTML(activeCoupon) + ' uygulandı (' + escapeHTML(AVAILABLE_COUPONS[activeCoupon].desc) + ')</span>' +
+          '<button type="button" style="color: #b91c1c; font-weight: 800; cursor: pointer; border: none; background: none;" onclick="removeCoupon()">✕</button>' +
+        '</div>';
+      couponBadge.style.display = "block";
+    } else {
+      couponBadge.innerHTML = "";
+      couponBadge.style.display = "none";
+    }
+  }
+
+  // Ürün Satırları
+  if (itemsContainer) {
+    itemsContainer.innerHTML = cart.map(item => (
+      '<div class="cart-page-item-row">' +
+        '<div class="cart-item-product-cell">' +
+          '<img class="cart-page-img" src="' + escapeHTML(item.product.image) + '" alt="' + escapeHTML(item.product.name) + '" />' +
+          '<div class="cart-page-prod-info">' +
+            '<span class="cart-page-prod-brand">' + escapeHTML(item.product.brand) + '</span>' +
+            '<a href="javascript:void(0)" onclick="openQuickView(' + item.product.id + ')" class="cart-page-prod-title">' + escapeHTML(item.product.name) + '</a>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-weight: 700; color: var(--text-muted);">' + formatPrice(item.product.price) + '</div>' +
+        '<div>' +
+          '<div class="cart-item-controls" style="margin: 0;">' +
+            '<button class="qty-btn" onclick="changeQuantity(' + item.product.id + ', -1)">-</button>' +
+            '<span class="qty-value">' + item.quantity + '</span>' +
+            '<button class="qty-btn" onclick="changeQuantity(' + item.product.id + ', 1)">+</button>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-weight: 800; color: var(--primary);">' + formatPrice(item.product.price * item.quantity) + '</div>' +
+        '<div>' +
+          '<button type="button" class="remove-item-btn" onclick="removeFromCart(' + item.product.id + ')" title="Ürünü Sil">🗑️</button>' +
+        '</div>' +
+      '</div>'
+    )).join("");
+  }
+}
+
+// --- 6. TAM SAYFA FAVORİLER (WISHLIST PAGE) RENDER ---
+function renderWishlistPage() {
+  const grid = document.getElementById("wishlistPageGrid");
+  const emptyState = document.getElementById("wishlistPageEmptyState");
+  const titleCount = document.getElementById("wishlistPageCountTitle");
+
+  const wishlistedProducts = PRODUCTS_DATA.filter(p => wishlist.includes(p.id));
+  if (titleCount) titleCount.textContent = "Favori Ürünlerim (" + wishlistedProducts.length + " Ürün)";
+
+  if (wishlistedProducts.length === 0) {
+    if (grid) grid.style.display = "none";
+    if (emptyState) emptyState.style.display = "block";
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = "none";
+  if (grid) {
+    grid.style.display = "grid";
+    grid.innerHTML = wishlistedProducts.map(createProductCardHTML).join("");
+  }
+}
+
+// --- 7. TAM SAYFA ÜYE GİRİŞİ & KAYIT (AUTH PAGE) ---
+function switchAuthTab(tab) {
+  const loginTabBtn = document.getElementById("authTabLoginBtn");
+  const registerTabBtn = document.getElementById("authTabRegisterBtn");
+  const loginContent = document.getElementById("authLoginContent");
+  const registerContent = document.getElementById("authRegisterContent");
+
+  if (tab === "register") {
+    if (loginTabBtn) loginTabBtn.classList.remove("active");
+    if (registerTabBtn) registerTabBtn.classList.add("active");
+    if (loginContent) loginContent.classList.remove("active");
+    if (registerContent) registerContent.classList.add("active");
+  } else {
+    if (loginTabBtn) loginTabBtn.classList.add("active");
+    if (registerTabBtn) registerTabBtn.classList.remove("active");
+    if (loginContent) loginContent.classList.add("active");
+    if (registerContent) registerContent.classList.remove("active");
+  }
+}
+
+function handleLoginSubmit(e) {
+  e.preventDefault();
+  const emailInput = document.getElementById("pageAuthEmail");
+  if (!emailInput) return;
+
+  const email = emailInput.value.trim();
+  currentUser = {
+    name: email.split("@")[0] || "Melih",
+    email: email,
+    joinDate: new Date().toLocaleDateString("tr-TR")
+  };
+  safeLocalStorageSet("sarmal_user", currentUser);
+
+  updateAuthUI();
+  showToast("Hoş geldiniz, " + currentUser.name + "!");
+  navigateToPage("hesabim");
+}
+
+function handleRegisterSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById("regName")?.value.trim();
+  const email = document.getElementById("regEmail")?.value.trim();
+  const phone = document.getElementById("regPhone")?.value.trim();
+
+  if (!name || !email) {
+    showToast("Lütfen zorunlu alanları doldurun.");
+    return;
+  }
+
+  currentUser = {
+    name: name,
+    email: email,
+    phone: phone,
+    joinDate: new Date().toLocaleDateString("tr-TR")
+  };
+  safeLocalStorageSet("sarmal_user", currentUser);
+
+  updateAuthUI();
+  showToast("Hesabınız oluşturuldu! Hoş geldiniz, " + currentUser.name + "!");
+  navigateToPage("hesabim");
+}
+
+function handleLogout() {
+  currentUser = null;
+  safeLocalStorageSet("sarmal_user", null);
+  updateAuthUI();
+  showToast("Oturum kapatıldı.");
+  navigateToHome();
+}
+
+function updateAuthUI() {
+  const authTitle = document.getElementById("headerAuthTitle");
+  const authSubtitle = document.getElementById("headerAuthSubtitle");
+  if (!authTitle || !authSubtitle) return;
+
+  if (currentUser) {
+    authSubtitle.textContent = "Hesabım";
+    authTitle.textContent = currentUser.name.substring(0, 10);
+  } else {
+    authSubtitle.textContent = "Hesabım";
+    authTitle.textContent = "Giriş Yap";
+  }
+}
+
+// --- 8. TAM SAYFA KULLANICI PROFİLİ & SİPARİŞLER (PROFILE PAGE) ---
+function renderProfilePage() {
+  if (!currentUser) {
+    navigateToPage("giris");
+    return;
+  }
+
+  const nameEl = document.getElementById("profileUserName");
+  const emailEl = document.getElementById("profileUserEmail");
+  const avatarEl = document.getElementById("profileUserAvatar");
+  const ordersListEl = document.getElementById("profileOrdersList");
+
+  if (nameEl) nameEl.textContent = currentUser.name;
+  if (emailEl) emailEl.textContent = currentUser.email;
+  if (avatarEl) avatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
+
+  if (ordersListEl) {
+    if (userOrders.length === 0) {
+      ordersListEl.innerHTML = (
+        '<div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">' +
+          '<div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>' +
+          '<strong>Henüz Bir Siparişiniz Bulunmuyor</strong>' +
+          '<p style="font-size: 0.85rem; margin-top: 0.35rem;">Yemek kartınızla hemen ilk siparişinizi verebilirsiniz.</p>' +
+          '<button type="button" class="sidebar-apply-btn" style="max-width: 200px; margin: 1rem auto 0;" onclick="navigateToHome()">Alışverişe Başla</button>' +
+        '</div>'
+      );
+    } else {
+      ordersListEl.innerHTML = userOrders.map(order => (
+        '<div style="background: var(--bg-page); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1rem;">' +
+          '<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.65rem; margin-bottom: 0.75rem;">' +
+            '<div>' +
+              '<strong style="color: var(--primary-deep); font-size: 0.95rem;">' + escapeHTML(order.orderNumber) + '</strong>' +
+              '<span style="font-size: 0.78rem; color: var(--text-muted); display: block;">' + escapeHTML(order.date) + '</span>' +
+            '</div>' +
+            '<span style="background: #dcfce7; color: #166534; font-size: 0.75rem; font-weight: 800; padding: 3px 8px; border-radius: 4px;">● ' + escapeHTML(order.status) + '</span>' +
+          '</div>' +
+          '<div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">' +
+            '<div>' +
+              '<span>Ödeme: <strong>' + escapeHTML(order.paymentMethod) + '</strong></span>' +
+              '<span style="display: block; font-size: 0.78rem; color: var(--text-muted);">' + order.items.length + ' Ürün (' + escapeHTML(order.customer.city) + ')</span>' +
+            '</div>' +
+            '<div style="text-align: right;">' +
+              '<strong style="color: var(--primary); font-size: 1.1rem; display: block;">' + formatPrice(order.total) + '</strong>' +
+              '<button type="button" style="color: var(--primary); font-weight: 700; font-size: 0.82rem; text-decoration: underline; background: none; border: none; cursor: pointer; padding: 0;" onclick="navigateToPage(\'siparis-takip\'); setTimeout(() => renderTrackingResult(\'' + order.orderNumber + '\'), 100);">' +
+                'Kargoyu Takip Et →' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      )).join("");
+    }
+  }
+}
+
+// --- 9. TAM SAYFA SİPARİŞ TAKİBİ (TRACKING PAGE) ---
+function renderTrackingPage() {
+  const input = document.getElementById("pageTrackingInput");
+  const resultDiv = document.getElementById("pageTrackingResult");
+
+  if (userOrders.length > 0 && input && !input.value) {
+    input.value = userOrders[0].orderNumber;
+    renderTrackingResult(userOrders[0].orderNumber, "pageTrackingResult");
+  } else if (resultDiv && !input?.value) {
+    resultDiv.innerHTML = "";
+  }
+}
+
+function handlePageTrackingSubmit(e) {
+  e.preventDefault();
+  const input = document.getElementById("pageTrackingInput");
+  if (input) renderTrackingResult(input.value, "pageTrackingResult");
+}
+
+// Ortak Kargo Aşamaları Çıktısı
+function renderTrackingResult(code, targetId = "trackingResult") {
+  const resultDiv = document.getElementById(targetId);
+  if (!resultDiv) return;
+
+  const cleanCode = (code || "").trim().toUpperCase();
+  const foundOrder = userOrders.find(o => o.orderNumber.toUpperCase() === cleanCode);
+
+  if (foundOrder) {
+    resultDiv.innerHTML = (
+      '<div style="background: var(--bg-page); padding: 1.5rem; border-radius: 12px; margin-top: 1.25rem; border: 1px solid var(--border); text-align: left;">' +
+        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">' +
+          '<strong>Sipariş #' + escapeHTML(foundOrder.orderNumber) + '</strong>' +
+          '<span style="color: var(--success); font-weight: 800; font-size: 0.85rem;">● ' + escapeHTML(foundOrder.status) + '</span>' +
+        '</div>' +
+        '<div class="tracking-stepper">' +
+          '<div class="tracking-step done"><div class="tracking-step-dot">✓</div><span>Alındı</span></div>' +
+          '<div class="tracking-step current"><div class="tracking-step-dot">📦</div><span>Hazırlanıyor</span></div>' +
+          '<div class="tracking-step"><div class="tracking-step-dot">🚚</div><span>Kargoda</span></div>' +
+          '<div class="tracking-step"><div class="tracking-step-dot">4</div><span>Teslimat</span></div>' +
+        '</div>' +
+        '<div style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem;">' +
+          '<div>Alıcı: <strong>' + escapeHTML(foundOrder.customer.name) + '</strong> (' + escapeHTML(foundOrder.customer.phone) + ')</div>' +
+          '<div>Ödeme Yöntemi: <strong>' + escapeHTML(foundOrder.paymentMethod) + '</strong></div>' +
+          '<div>Toplam Tutar: <strong style="color: var(--primary);">' + formatPrice(foundOrder.total) + '</strong></div>' +
+          '<div>Teslimat Adresi: <strong>' + escapeHTML(foundOrder.customer.address) + ', ' + escapeHTML(foundOrder.customer.district) + ' / ' + escapeHTML(foundOrder.customer.city) + '</strong></div>' +
+          '<div>Kargo Firması: <strong>Yurtiçi Kargo (Tahmini Teslimat: 2 İş Günü)</strong></div>' +
+        '</div>' +
+      '</div>'
+    );
+  } else {
+    resultDiv.innerHTML = (
+      '<div style="background: var(--bg-page); padding: 1.5rem; border-radius: 12px; margin-top: 1.25rem; border: 1px solid var(--border); text-align: left;">' +
+        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">' +
+          '<strong>Sipariş #' + escapeHTML(cleanCode) + '</strong>' +
+          '<span style="color: var(--success); font-weight: 800; font-size: 0.85rem;">● Dağıtımda</span>' +
+        '</div>' +
+        '<div class="tracking-stepper">' +
+          '<div class="tracking-step done"><div class="tracking-step-dot">✓</div><span>Sipariş Alındı</span></div>' +
+          '<div class="tracking-step done"><div class="tracking-step-dot">✓</div><span>Hazırlandı</span></div>' +
+          '<div class="tracking-step current"><div class="tracking-step-dot">🚚</div><span>Kargoda</span></div>' +
+          '<div class="tracking-step"><div class="tracking-step-dot">4</div><span>Teslimat</span></div>' +
+        '</div>' +
+        '<p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.75rem; line-height: 1.5;">' +
+          'Paketiniz <strong>Yurtiçi Kargo</strong> güvencesiyle dağıtıma çıkarılmıştır. Tahmini teslimat: <strong>Bugün / Yarın</strong>.' +
+        '</p>' +
+      '</div>'
+    );
+  }
+}
+
+// --- 10. KATEGORİ SAYFASI RENDER & FİLTRELEME ---
 function renderCategoryPage(category) {
-  // Breadcrumb & Banner
   const breadcrumbEl = document.getElementById("catBreadcrumbCurrent");
   const bannerBadgeEl = document.getElementById("catBannerBadge");
   const bannerTitleEl = document.getElementById("catBannerTitle");
@@ -1023,7 +1409,6 @@ function renderCategoryPage(category) {
   if (bannerDescEl) bannerDescEl.textContent = category.description;
   if (bannerIconEl) bannerIconEl.textContent = category.icon;
 
-  // Sol Kenar Çubuğu Kategori Listesi
   const sidebarList = document.getElementById("catSidebarList");
   if (sidebarList) {
     sidebarList.innerHTML = CATEGORIES_DATA.map(c => {
@@ -1050,26 +1435,21 @@ function applyCategoryFiltersAndRender() {
   const countEl = document.getElementById("catProductCount");
   if (!grid) return;
 
-  // Ürün Filtresi
   let list = PRODUCTS_DATA.filter(p => {
     if (currentCategorySlug === "yemek-kartlari") return true;
     return p.categorySlug === currentCategorySlug;
   });
 
-  // Fiyat Filtresi
   if (catMinPrice !== null && !isNaN(catMinPrice)) {
     list = list.filter(p => p.price >= catMinPrice);
   }
   if (catMaxPrice !== null && !isNaN(catMaxPrice)) {
     list = list.filter(p => p.price <= catMaxPrice);
   }
-
-  // İndirim Filtresi
   if (catOnlyDiscount) {
     list = list.filter(p => p.discountPercent > 15 || p.badge.includes("İndirim"));
   }
 
-  // Sıralama
   if (catSortBy === "price-asc") {
     list.sort((a, b) => a.price - b.price);
   } else if (catSortBy === "price-desc") {
@@ -1100,7 +1480,6 @@ function resetCategoryFilters() {
   catMinPrice = null;
   catMaxPrice = null;
   catOnlyDiscount = false;
-  catOnlyMealCard = false;
   catSortBy = "recommended";
 
   const minInput = document.getElementById("catMinPriceInput");
@@ -1116,7 +1495,7 @@ function resetCategoryFilters() {
   applyCategoryFiltersAndRender();
 }
 
-// --- 5. ÜRÜN KARTLARI RENDER ETME ---
+// --- 11. ÜRÜN KARTLARI (CARD CREATION & HOMEPAGE GRIDS) ---
 function createProductCardHTML(product) {
   const isWishlisted = wishlist.includes(product.id);
   const badgeClass = product.badge.includes("İndirim") ? "badge-discount" : product.badge.includes("Yeni") ? "badge-new" : "badge-deal";
@@ -1158,7 +1537,6 @@ function createProductCardHTML(product) {
   );
 }
 
-// Ana Sayfa Izgaraları
 function renderProductGrids() {
   const dealsGrid = document.getElementById("dealsProductsGrid");
   const curatedGrid = document.getElementById("curatedProductsGrid");
@@ -1171,7 +1549,7 @@ function renderProductGrids() {
   curatedGrid.innerHTML = curatedList.map(createProductCardHTML).join("");
 }
 
-// --- 6. SEPET SİSTEMİ & KUPON ENTEGRASYONU ---
+// --- 12. SEPET VE KUPON MANTIĞI ---
 function calculateCartTotals() {
   const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   let discount = 0;
@@ -1197,22 +1575,17 @@ function calculateCartTotals() {
 function saveCart() {
   safeLocalStorageSet("sarmal_cart", cart);
   updateCartUI();
+  if (window.location.hash.replace(/^#/, "") === "sepet") {
+    renderCartPage();
+  }
 }
 
 function updateCartUI() {
   const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const { subtotal, discount, grandTotal } = calculateCartTotals();
+  const { grandTotal } = calculateCartTotals();
 
   const cartBadge = document.getElementById("cartBadge");
   const cartTotalText = document.getElementById("cartTotalText");
-  const cartSubtotalEl = document.getElementById("cartSubtotal");
-  const cartDiscountRow = document.getElementById("cartDiscountRow");
-  const cartDiscountAmount = document.getElementById("cartDiscountAmount");
-  const cartGrandTotalEl = document.getElementById("cartGrandTotal");
-  const freeShippingText = document.getElementById("freeShippingText");
-  const shippingProgressFill = document.getElementById("shippingProgressFill");
-  const cartItemsContainer = document.getElementById("cartItemsList");
-  const couponAppliedWrap = document.getElementById("couponAppliedWrap");
 
   if (cartBadge) {
     cartBadge.textContent = totalCount;
@@ -1220,73 +1593,6 @@ function updateCartUI() {
   }
 
   if (cartTotalText) cartTotalText.textContent = formatPrice(grandTotal);
-  if (cartSubtotalEl) cartSubtotalEl.textContent = formatPrice(subtotal);
-
-  if (cartDiscountRow && cartDiscountAmount) {
-    if (discount > 0) {
-      cartDiscountRow.style.display = "flex";
-      cartDiscountAmount.textContent = "- " + formatPrice(discount);
-    } else {
-      cartDiscountRow.style.display = "none";
-    }
-  }
-
-  if (cartGrandTotalEl) cartGrandTotalEl.textContent = formatPrice(grandTotal);
-
-  // 500 TL Kargo İlerlemesi
-  const threshold = 500;
-  if (subtotal >= threshold) {
-    if (freeShippingText) freeShippingText.innerHTML = "🎉 <strong>Tebrikler!</strong> Kargonuz ÜCRETSİZ!";
-    if (shippingProgressFill) shippingProgressFill.style.width = "100%";
-  } else {
-    const diff = threshold - subtotal;
-    if (freeShippingText) freeShippingText.innerHTML = 'Ücretsiz Kargo için <strong>' + formatPrice(diff) + '</strong> daha ekleyin!';
-    const pct = Math.min(100, Math.round((subtotal / threshold) * 100));
-    if (shippingProgressFill) shippingProgressFill.style.width = pct + "%";
-  }
-
-  // Kupon Rozeti
-  if (couponAppliedWrap) {
-    if (activeCoupon && AVAILABLE_COUPONS[activeCoupon]) {
-      couponAppliedWrap.innerHTML = 
-        '<div class="coupon-applied-badge">' +
-          '<span>✓ ' + escapeHTML(activeCoupon) + ' uygulandı (' + escapeHTML(AVAILABLE_COUPONS[activeCoupon].desc) + ')</span>' +
-          '<button type="button" style="color: #b91c1c; font-weight: 800; cursor: pointer; border: none; background: none;" onclick="removeCoupon()">✕</button>' +
-        '</div>';
-      couponAppliedWrap.style.display = "block";
-    } else {
-      couponAppliedWrap.innerHTML = "";
-      couponAppliedWrap.style.display = "none";
-    }
-  }
-
-  // Sepet İçi
-  if (cartItemsContainer) {
-    if (cart.length === 0) {
-      cartItemsContainer.innerHTML = 
-        '<div class="empty-cart-msg">' +
-          '<div class="empty-cart-icon">🛒</div>' +
-          '<h4>Sepetiniz Boş</h4>' +
-          '<p>Yemek kartları ve orijinal hediye setleriyle sepetinizi doldurun.</p>' +
-        '</div>';
-    } else {
-      cartItemsContainer.innerHTML = cart.map(item => (
-        '<div class="cart-item">' +
-          '<img class="cart-item-img" src="' + escapeHTML(item.product.image) + '" alt="' + escapeHTML(item.product.name) + '" />' +
-          '<div class="cart-item-info">' +
-            '<div class="cart-item-name">' + escapeHTML(item.product.name) + '</div>' +
-            '<div class="cart-item-price">' + formatPrice(item.product.price * item.quantity) + '</div>' +
-            '<div class="cart-item-controls">' +
-              '<button class="qty-btn" onclick="changeQuantity(' + item.product.id + ', -1)">-</button>' +
-              '<span class="qty-value">' + item.quantity + '</span>' +
-              '<button class="qty-btn" onclick="changeQuantity(' + item.product.id + ', 1)">+</button>' +
-              '<button class="remove-item-btn" onclick="removeFromCart(' + item.product.id + ')">Sil</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>'
-      )).join("");
-    }
-  }
 }
 
 function addToCart(productId, quantity = 1, event = null) {
@@ -1333,6 +1639,17 @@ function removeFromCart(productId) {
   showToast("Ürün sepetten kaldırıldı.");
 }
 
+function clearCart() {
+  if (cart.length === 0) return;
+  if (confirm("Sepetinizdeki tüm ürünleri silmek istediğinize emin misiniz?")) {
+    cart = [];
+    activeCoupon = null;
+    safeLocalStorageSet("sarmal_coupon", null);
+    saveCart();
+    showToast("Sepet temizlendi.");
+  }
+}
+
 function applyCoupon(code) {
   const cleanCode = (code || "").trim().toUpperCase();
   if (!cleanCode) {
@@ -1354,34 +1671,18 @@ function applyCoupon(code) {
 
   activeCoupon = cleanCode;
   safeLocalStorageSet("sarmal_coupon", activeCoupon);
-  updateCartUI();
+  saveCart();
   showToast("Kupon başarıyla uygulandı! 🎉");
 }
 
 function removeCoupon() {
   activeCoupon = null;
   safeLocalStorageSet("sarmal_coupon", null);
-  updateCartUI();
+  saveCart();
   showToast("Kupon kaldırıldı.");
 }
 
-function toggleCartDrawer(open) {
-  const cartDrawer = document.getElementById("cartDrawer");
-  const cartOverlay = document.getElementById("cartOverlay");
-  if (!cartDrawer || !cartOverlay) return;
-
-  if (open) {
-    cartDrawer.classList.add("active");
-    cartOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
-  } else {
-    cartDrawer.classList.remove("active");
-    cartOverlay.classList.remove("active");
-    document.body.style.overflow = "";
-  }
-}
-
-// --- 7. FAVORİLER (WISHLIST) SİSTEMİ ---
+// --- 13. FAVORİLER (WISHLIST) SİSTEMİ ---
 function toggleWishlist(productId, event) {
   if (event) event.stopPropagation();
   const index = wishlist.indexOf(productId);
@@ -1396,66 +1697,18 @@ function toggleWishlist(productId, event) {
   updateWishlistUI();
   renderProductGrids();
   if (currentCategorySlug) applyCategoryFiltersAndRender();
+  if (window.location.hash.replace(/^#/, "") === "favoriler") renderWishlistPage();
 }
 
 function updateWishlistUI() {
   const wishlistBadge = document.getElementById("wishlistBadge");
-  const wishlistItemsContainer = document.getElementById("wishlistItemsList");
-
   if (wishlistBadge) {
     wishlistBadge.textContent = wishlist.length;
     wishlistBadge.style.display = wishlist.length > 0 ? "flex" : "none";
   }
-
-  if (wishlistItemsContainer) {
-    const wishlistedProducts = PRODUCTS_DATA.filter(p => wishlist.includes(p.id));
-    if (wishlistedProducts.length === 0) {
-      wishlistItemsContainer.innerHTML = 
-        '<div class="empty-cart-msg">' +
-          '<div class="empty-cart-icon">🤍</div>' +
-          '<h4>Favori Listeniz Boş</h4>' +
-          '<p>Beğendiğiniz ürünlerin kalbine tıklayarak listenize ekleyebilirsiniz.</p>' +
-        '</div>';
-    } else {
-      wishlistItemsContainer.innerHTML = wishlistedProducts.map(p => (
-        '<div class="cart-item">' +
-          '<img class="cart-item-img" src="' + escapeHTML(p.image) + '" alt="' + escapeHTML(p.name) + '" />' +
-          '<div class="cart-item-info">' +
-            '<div class="cart-item-name">' + escapeHTML(p.name) + '</div>' +
-            '<div class="cart-item-price">' + formatPrice(p.price) + '</div>' +
-            '<div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">' +
-              '<button class="add-to-cart-btn" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;" onclick="addToCart(' + p.id + ', 1);">' +
-                '🛒 Sepete Ekle' +
-              '</button>' +
-              '<button class="remove-item-btn" onclick="toggleWishlist(' + p.id + ');">' +
-                'Kaldır' +
-              '</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>'
-      )).join("");
-    }
-  }
 }
 
-function toggleWishlistDrawer(open) {
-  const drawer = document.getElementById("wishlistDrawer");
-  const overlay = document.getElementById("wishlistOverlay");
-  if (!drawer || !overlay) return;
-
-  if (open) {
-    updateWishlistUI();
-    drawer.classList.add("active");
-    overlay.classList.add("active");
-    document.body.style.overflow = "hidden";
-  } else {
-    drawer.classList.remove("active");
-    overlay.classList.remove("active");
-    document.body.style.overflow = "";
-  }
-}
-
-// --- 8. ÇOK ADIMLI GELİŞMİŞ SİPARİŞ TAMAMLAMA (CHECKOUT ENGINE) ---
+// --- 14. ÇOK ADIMLI CHECKOUT SÜRECİ ---
 let currentCheckoutStep = 1;
 let checkoutFormData = {};
 
@@ -1469,7 +1722,6 @@ function openCheckoutModal() {
 
   currentCheckoutStep = 1;
   setCheckoutStep(1);
-  toggleCartDrawer(false);
   modal.classList.add("active");
   document.body.style.overflow = "hidden";
 }
@@ -1563,7 +1815,6 @@ function handleFinalOrderSubmit(e) {
   userOrders.unshift(orderRecord);
   safeLocalStorageSet("sarmal_orders", userOrders);
 
-  // Başarı Ekranını Doldur
   const successOrderNum = document.getElementById("successOrderNumber");
   const successTotal = document.getElementById("successTotalAmount");
   const successPayment = document.getElementById("successPaymentMethod");
@@ -1574,7 +1825,6 @@ function handleFinalOrderSubmit(e) {
   if (successPayment) successPayment.textContent = paymentMethodName;
   if (successAddress) successAddress.textContent = checkoutFormData.address + ", " + checkoutFormData.district + " / " + checkoutFormData.city;
 
-  // Sepeti Temizle
   cart = [];
   activeCoupon = null;
   safeLocalStorageSet("sarmal_coupon", null);
@@ -1583,80 +1833,7 @@ function handleFinalOrderSubmit(e) {
   setCheckoutStep(3);
 }
 
-// --- 9. SİPARİŞ TAKİP MOTORU ---
-function openOrderTrackingModal(prefillCode = null) {
-  const modal = document.getElementById("orderTrackingModal");
-  if (!modal) return;
-
-  const input = document.getElementById("trackingInput");
-  const resultDiv = document.getElementById("trackingResult");
-
-  if (input) {
-    input.value = prefillCode || (userOrders.length > 0 ? userOrders[0].orderNumber : "");
-  }
-
-  if (resultDiv) {
-    if (prefillCode || userOrders.length > 0) {
-      renderTrackingResult(prefillCode || userOrders[0].orderNumber);
-    } else {
-      resultDiv.innerHTML = "";
-    }
-  }
-
-  modal.classList.add("active");
-  document.body.style.overflow = "hidden";
-}
-
-function renderTrackingResult(code) {
-  const resultDiv = document.getElementById("trackingResult");
-  if (!resultDiv) return;
-
-  const cleanCode = (code || "").trim().toUpperCase();
-  const foundOrder = userOrders.find(o => o.orderNumber.toUpperCase() === cleanCode);
-
-  if (foundOrder) {
-    resultDiv.innerHTML = (
-      '<div style="background: var(--bg-page); padding: 1.25rem; border-radius: 12px; margin-top: 1.25rem; border: 1px solid var(--border); text-align: left;">' +
-        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">' +
-          '<strong>Sipariş #' + escapeHTML(foundOrder.orderNumber) + '</strong>' +
-          '<span style="color: var(--success); font-weight: 800; font-size: 0.85rem;">● ' + escapeHTML(foundOrder.status) + '</span>' +
-        '</div>' +
-        '<div class="tracking-stepper">' +
-          '<div class="tracking-step done"><div class="tracking-step-dot">✓</div><span>Alındı</span></div>' +
-          '<div class="tracking-step current"><div class="tracking-step-dot">📦</div><span>Hazırlanıyor</span></div>' +
-          '<div class="tracking-step"><div class="tracking-step-dot">🚚</div><span>Kargoda</span></div>' +
-          '<div class="tracking-step"><div class="tracking-step-dot">4</div><span>Teslimat</span></div>' +
-        '</div>' +
-        '<div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.75rem; border-top: 1px dashed var(--border); padding-top: 0.75rem;">' +
-          '<div>Alıcı: <strong>' + escapeHTML(foundOrder.customer.name) + '</strong></div>' +
-          '<div>Ödeme: <strong>' + escapeHTML(foundOrder.paymentMethod) + '</strong></div>' +
-          '<div>Tutar: <strong>' + formatPrice(foundOrder.total) + '</strong></div>' +
-          '<div>Teslimat: <strong>' + escapeHTML(foundOrder.customer.address) + '</strong></div>' +
-        '</div>' +
-      '</div>'
-    );
-  } else {
-    resultDiv.innerHTML = (
-      '<div style="background: var(--bg-page); padding: 1.25rem; border-radius: 12px; margin-top: 1.25rem; border: 1px solid var(--border); text-align: left;">' +
-        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">' +
-          '<strong>Sipariş #' + escapeHTML(cleanCode) + '</strong>' +
-          '<span style="color: var(--success); font-weight: 800; font-size: 0.85rem;">● Dağıtımda</span>' +
-        '</div>' +
-        '<div class="tracking-stepper">' +
-          '<div class="tracking-step done"><div class="tracking-step-dot">✓</div><span>Sipariş Alındı</span></div>' +
-          '<div class="tracking-step done"><div class="tracking-step-dot">✓</div><span>Hazırlandı</span></div>' +
-          '<div class="tracking-step current"><div class="tracking-step-dot">🚚</div><span>Kargoda</span></div>' +
-          '<div class="tracking-step"><div class="tracking-step-dot">4</div><span>Teslimat</span></div>' +
-        '</div>' +
-        '<p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">' +
-          'Paketiniz <strong>Yurtiçi Kargo</strong> ile dağıtıma çıkarılmıştır. Tahmini teslimat: <strong>Bugün / Yarın</strong>.' +
-        '</p>' +
-      '</div>'
-    );
-  }
-}
-
-// --- 10. YASAL SÖZLEŞMELER & POLİTİKALAR MODALI ---
+// --- 15. SÖZLEŞMELER & POLİTİKA MODALI ---
 function openPolicyModal(type) {
   const modal = document.getElementById("policyModal");
   const titleEl = document.getElementById("policyModalTitle");
@@ -1667,15 +1844,14 @@ function openPolicyModal(type) {
     titleEl.textContent = "İade ve Değişim Politikası";
     bodyEl.innerHTML = (
       '<h4>1. Cayma Hakkı ve İade Süresi</h4>' +
-      '<p>6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, alıcı ürünü teslim aldığı tarihten itibaren <strong>14 (on dört) gün</strong> içerisinde hiçbir gerekçe göstermeksizin ve cezai şart ödemeksizin sözleşmeden cayma hakkına sahiptir.</p>' +
+      '<p>6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, alıcı ürünü teslim aldığı tarihten itibaren <strong>14 (on dört) gün</strong> içerisinde gerekçe göstermeksizin iade edebilir.</p>' +
       '<h4>2. İade Koşulları</h4>' +
       '<ul>' +
-        '<li>İade edilecek ürünlerin orijinal ambalajında, koruyucu kutusunda ve faturasıyla birlikte eksiksiz gönderilmesi gerekmektedir.</li>' +
-        '<li>Kar küresi, gece lambası gibi elektronik veya cam ürünlerde kırık/hasar bulunmamalıdır.</li>' +
-        '<li>Kişiye özel hazırlanan (isme özel baskılı) ürünler mevzuat gereği cayma hakkı kapsamı dışındadır.</li>' +
+        '<li>İade edilecek ürünlerin orijinal ambalajında, koruyucu kutusunda ve faturasıyla eksiksiz gönderilmesi gerekmektedir.</li>' +
+        '<li>Cam küreler ve elektronik lambalar hasarsız olmalıdır.</li>' +
       '</ul>' +
       '<h4>3. Ücretsiz İade Anlaşması</h4>' +
-      '<p>İadelerinizi Yurtiçi Kargo anlaşma kodumuz olan <strong>540912</strong> ile Sarmal Ticaret adına ücretsiz olarak gönderebilirsiniz. Ürün tarafımıza ulaştıktan sonra 3 iş günü içinde kartınıza/yemek kartınıza iadesi yapılır.</p>'
+      '<p>İadelerinizi Yurtiçi Kargo anlaşma kodumuz olan <strong>540912</strong> ile Sarmal Ticaret adına ücretsiz gönderebilirsiniz.</p>'
     );
   } else if (type === "distance-contract") {
     titleEl.textContent = "Mesafeli Satış Sözleşmesi";
@@ -1684,26 +1860,19 @@ function openPolicyModal(type) {
       '<p><strong>SATICI:</strong> Sarmal Ticaret / Gemsa Teknoloji Ltd. Şti.<br>Adres: İstanbul / Türkiye | Tel: 0850 308 58 72 | E-Posta: destek@sarmalticaret.com</p>' +
       '<p><strong>ALICI:</strong> Sipariş formunu doldurarak ödeme yapan gerçek veya tüzel kişi.</p>' +
       '<h4>MADDE 2 – SÖZLEŞMENİN KONUSU</h4>' +
-      '<p>İşbu sözleşmenin konusu, ALICI’nın SATICI’ya ait www.sarmalticaret.com internet sitesinden elektronik ortamda siparişini yaptığı, sitede belirtilen niteliklere sahip ürünün satışı ve teslimi ile ilgili tarafların hak ve yükümlülüklerinin belirlenmesidir.</p>' +
-      '<h4>MADDE 3 – TESLİMAT VE ÖDEME</h4>' +
-      '<p>Ürünler sipariş tarihinden itibaren en geç 3 iş günü içerisinde kargoya teslim edilir. Yemek kartları (Pluxee, Ticket, Multinet, SetCard) ile yapılan ödemeler anında provizyona tabi tutulur.</p>'
+      '<p>ALICI’nın www.sarmalticaret.com üzerinden sipariş ettiği ürünlerin satışı ve teslimi ile ilgili yasal hak ve yükümlülükler.</p>'
     );
   } else if (type === "privacy") {
     titleEl.textContent = "Gizlilik ve Güvenlik Politikası";
     bodyEl.innerHTML = (
       '<h4>1. Güvenli Alışveriş ve 256-Bit SSL</h4>' +
-      '<p>Sarmal Ticaret üzerinde gerçekleştirdiğiniz tüm işlemler uluslararası güvenlik standardı olan <strong>256-Bit SSL</strong> şifreleme sertifikası ile korunmaktadır. Kredi kartı veya yemek kartı bilgileriniz sistemlerimizde kesinlikle saklanmaz.</p>' +
-      '<h4>2. 3D Secure ve Ödeme Güvenliği</h4>' +
-      '<p>Tüm online ödemeler bankanızın ve yemek kartı altyapınızın 3D Secure onay ekranı üzerinden gerçekleştirilmektedir.</p>' +
-      '<h4>3. Çerez ve Veri Güvenliği</h4>' +
-      '<p>Sepetinizin korunması ve sipariş sürecinizin sorunsuz işlemesi adına temel çerezler kullanılmaktadır. Verileriniz üçüncü taraflarla reklam amacıyla paylaşılmaz.</p>'
+      '<p>Sitemizdeki tüm işlemler <strong>256-Bit SSL</strong> şifreleme ile korunmaktadır. Kredi kartı veya yemek kartı bilgileriniz kesinlikle sunucularımızda saklanmaz.</p>'
     );
   } else if (type === "kvkk") {
     titleEl.textContent = "KVKK Aydınlatma Metni";
     bodyEl.innerHTML = (
-      '<h4>Kişisel Verilerin Korunması Kanunu (KVKK) Bilgilendirmesi</h4>' +
-      '<p>6698 sayılı Kişisel Verilerin Korunması Kanunu uyarınca, veri sorumlusu sıfatıyla Sarmal Ticaret olarak; ad, soyad, telefon, teslimat adresi ve e-posta verileriniz yalnızca siparişinizin teslimi, faturanın düzenlenmesi ve müşteri destek süreçleri amacıyla işlenmektedir.</p>' +
-      '<p>Verileriniz kanuni zorunluluklar (kargo taşıyıcıları, maliye mevzuatı) haricinde hiçbir üçüncü kuruluşa aktarılmaz. Dilediğiniz zaman verilerinizin silinmesini talep etme hakkına sahipsiniz.</p>'
+      '<h4>Kişisel Verilerin Korunması Kanunu (KVKK)</h4>' +
+      '<p>6698 sayılı kanun kapsamında; ad, telefon, adres ve e-posta verileriniz yalnızca sipariş teslimi ve fatura işlemleri için güvenle işlenir.</p>'
     );
   }
 
@@ -1711,7 +1880,7 @@ function openPolicyModal(type) {
   document.body.style.overflow = "hidden";
 }
 
-// --- 11. HIZLI İNCELEME (QUICK VIEW) & TAKSİT TABLOSU ---
+// --- 16. HIZLI İNCELEME (QUICK VIEW) & TAKSİT TABLOSU ---
 function openQuickView(productId) {
   const product = PRODUCTS_DATA.find(p => p.id === productId);
   const quickViewModal = document.getElementById("quickViewModal");
@@ -1771,7 +1940,7 @@ function openQuickView(productId) {
   document.body.style.overflow = "hidden";
 }
 
-// --- 12. CANLI ARAMA (AUTOCOMPLETE) ---
+// --- 17. CANLI ARAMA (AUTOCOMPLETE) ---
 function setupLiveSearch() {
   const searchInput = document.getElementById("searchInput");
   const searchDropdown = document.getElementById("searchResultsDropdown");
@@ -1824,16 +1993,12 @@ function setupLiveSearch() {
   });
 
   document.addEventListener("click", (e) => {
-    if (!e.target.closest(".header-search-area")) {
-      closeSearch();
-    }
+    if (!e.target.closest(".header-search-area")) closeSearch();
   });
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closeSearch();
-      toggleCartDrawer(false);
-      toggleWishlistDrawer(false);
       toggleMobileMenu(false);
       closeAllModals();
     }
@@ -1845,7 +2010,7 @@ function closeSearch() {
   if (searchDropdown) searchDropdown.classList.remove("active");
 }
 
-// --- 13. HERO SLIDER ---
+// --- 18. HERO SLIDER ---
 let currentSlide = 0;
 let slideInterval = null;
 
@@ -1907,7 +2072,7 @@ function setupHeroSlider() {
   startAutoSlide();
 }
 
-// --- 14. GERİ SAYIM SAYACI ---
+// --- 19. GERİ SAYIM SAYACI ---
 function setupCountdownTimer() {
   const hoursEl = document.getElementById("timerHours");
   const minutesEl = document.getElementById("timerMinutes");
@@ -1936,51 +2101,7 @@ function setupCountdownTimer() {
   setInterval(updateTimer, 1000);
 }
 
-// --- 15. AUTH VE KULLANICI İŞLEMLERİ ---
-function openAuthModal() {
-  const modal = document.getElementById("authModal");
-  if (modal) {
-    modal.classList.add("active");
-    document.body.style.overflow = "hidden";
-  }
-}
-
-function handleLoginSubmit(e) {
-  e.preventDefault();
-  const emailInput = document.getElementById("authEmail");
-  if (!emailInput) return;
-
-  const email = emailInput.value.trim();
-  currentUser = { name: email.split("@")[0] || "Müşteri", email: email };
-  safeLocalStorageSet("sarmal_user", currentUser);
-
-  updateAuthUI();
-  closeAllModals();
-  showToast("Hoş geldiniz, " + currentUser.name + "!");
-}
-
-function handleLogout() {
-  currentUser = null;
-  safeLocalStorageSet("sarmal_user", null);
-  updateAuthUI();
-  showToast("Çıkış yapıldı.");
-}
-
-function updateAuthUI() {
-  const authTitle = document.getElementById("headerAuthTitle");
-  const authSubtitle = document.getElementById("headerAuthSubtitle");
-  if (!authTitle || !authSubtitle) return;
-
-  if (currentUser) {
-    authSubtitle.textContent = "Hesabım";
-    authTitle.textContent = currentUser.name.substring(0, 10);
-  } else {
-    authSubtitle.textContent = "Hesabım";
-    authTitle.textContent = "Giriş Yap";
-  }
-}
-
-// --- 16. MODAL KAPATMA ---
+// --- 20. MODAL KAPATMA & TOAST ---
 function closeAllModals() {
   document.querySelectorAll(".modal-overlay").forEach(m => m.classList.remove("active"));
   document.body.style.overflow = "";
@@ -2002,7 +2123,6 @@ function toggleMobileMenu(open) {
   }
 }
 
-// --- 17. TOAST BİLDİRİMİ ---
 let toastTimeout;
 function showToast(message) {
   const toast = document.getElementById("toastNotice");
@@ -2017,7 +2137,44 @@ function showToast(message) {
   }, 2800);
 }
 
-// --- 18. SAYFA YÜKLENİNCE BAŞLAT (INITIALIZATION) ---
+// Window Global İhracı (HTML onclick ve harici çağrılar için)
+window.navigateToHome = navigateToHome;
+window.navigateToCategory = navigateToCategory;
+window.navigateToPage = navigateToPage;
+window.showView = showView;
+window.renderRoute = renderRoute;
+window.renderCartPage = renderCartPage;
+window.renderWishlistPage = renderWishlistPage;
+window.renderProfilePage = renderProfilePage;
+window.renderTrackingPage = renderTrackingPage;
+window.renderTrackingResult = renderTrackingResult;
+window.switchAuthTab = switchAuthTab;
+window.handleLoginSubmit = handleLoginSubmit;
+window.handleRegisterSubmit = handleRegisterSubmit;
+window.handleLogout = handleLogout;
+window.handleAuthClick = () => navigateToPage(currentUser ? "hesabim" : "giris");
+window.addToCart = addToCart;
+window.changeQuantity = changeQuantity;
+window.removeFromCart = removeFromCart;
+window.clearCart = clearCart;
+window.applyCoupon = applyCoupon;
+window.removeCoupon = removeCoupon;
+window.toggleWishlist = toggleWishlist;
+window.openCheckoutModal = openCheckoutModal;
+window.setCheckoutStep = setCheckoutStep;
+window.switchPaymentTab = switchPaymentTab;
+window.openPolicyModal = openPolicyModal;
+window.openQuickView = openQuickView;
+window.closeAllModals = closeAllModals;
+window.toggleMobileMenu = toggleMobileMenu;
+window.showToast = showToast;
+window.resetCategoryFilters = resetCategoryFilters;
+window.openOrderTrackingModal = () => navigateToPage("siparis-takip");
+window.openAuthModal = () => navigateToPage(currentUser ? "hesabim" : "giris");
+window.openCartDrawer = () => navigateToPage("sepet");
+window.openWishlistDrawer = () => navigateToPage("favoriler");
+
+// --- 21. BAŞLANGIÇ ÇALIŞTIRICISI ---
 document.addEventListener("DOMContentLoaded", () => {
   renderRoute();
   updateCartUI();
@@ -2029,7 +2186,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("hashchange", renderRoute);
 
-  // Kategori Sayfası Sıralama Değişimi
+  // Header Butonları
+  document.getElementById("headerAuthBtn")?.addEventListener("click", () => {
+    navigateToPage(currentUser ? "hesabim" : "giris");
+  });
+  document.getElementById("headerWishlistBtn")?.addEventListener("click", () => {
+    navigateToPage("favoriler");
+  });
+  document.getElementById("headerCartBtn")?.addEventListener("click", () => {
+    navigateToPage("sepet");
+  });
+  document.getElementById("openTrackingTopBtn")?.addEventListener("click", () => {
+    navigateToPage("siparis-takip");
+  });
+
+  // Kategori Sayfası Sıralama & Fiyat
   const catSortSelect = document.getElementById("catSortSelect");
   if (catSortSelect) {
     catSortSelect.addEventListener("change", (e) => {
@@ -2038,7 +2209,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Kategori Sayfası Fiyat Filtre Butonu
   const catApplyBtn = document.getElementById("catApplyPriceBtn");
   if (catApplyBtn) {
     catApplyBtn.addEventListener("click", () => {
@@ -2050,7 +2220,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Kategori Sayfası İndirim Checkbox
   const catDiscountCb = document.getElementById("catDiscountCb");
   if (catDiscountCb) {
     catDiscountCb.addEventListener("change", (e) => {
@@ -2059,7 +2228,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Hızlı Fiyat Çipleri
   document.querySelectorAll(".filter-chip-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const min = btn.getAttribute("data-min");
@@ -2076,12 +2244,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Kupon Formu
-  const couponForm = document.getElementById("cartCouponForm");
-  if (couponForm) {
-    couponForm.addEventListener("submit", (e) => {
+  // Sepet Sayfası Kupon Formu
+  const cartPageCouponForm = document.getElementById("cartPageCouponForm");
+  if (cartPageCouponForm) {
+    cartPageCouponForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const input = document.getElementById("cartCouponInput");
+      const input = document.getElementById("cartPageCouponInput");
       if (input) {
         applyCoupon(input.value);
         input.value = "";
@@ -2089,29 +2257,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Sipariş Takip Formu
-  const trackingForm = document.getElementById("trackingSearchForm");
-  if (trackingForm) {
-    trackingForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const input = document.getElementById("trackingInput");
-      if (input) renderTrackingResult(input.value);
-    });
-  }
+  // Sayfa Takip Formu
+  const pageTrackingForm = document.getElementById("pageTrackingForm");
+  if (pageTrackingForm) pageTrackingForm.addEventListener("submit", handlePageTrackingSubmit);
 
-  // Checkout Adım 1 Formu
+  // Checkout Formları
   const checkoutStep1Form = document.getElementById("checkoutStep1Form");
   if (checkoutStep1Form) checkoutStep1Form.addEventListener("submit", handleStep1Submit);
 
-  // Checkout Adım 2 Formu
   const checkoutStep2Form = document.getElementById("checkoutStep2Form");
   if (checkoutStep2Form) checkoutStep2Form.addEventListener("submit", handleFinalOrderSubmit);
 
-  // Giriş Formu
-  const authForm = document.getElementById("authLoginForm");
-  if (authForm) authForm.addEventListener("submit", handleLoginSubmit);
+  // Auth Formları
+  const pageLoginForm = document.getElementById("pageAuthLoginForm");
+  if (pageLoginForm) pageLoginForm.addEventListener("submit", handleLoginSubmit);
 
-  // Newsletter Formu
+  const pageRegisterForm = document.getElementById("pageAuthRegisterForm");
+  if (pageRegisterForm) pageRegisterForm.addEventListener("submit", handleRegisterSubmit);
+
+  // Newsletter
   const newsletterForm = document.getElementById("newsletterForm");
   if (newsletterForm) {
     newsletterForm.addEventListener("submit", (e) => {
@@ -2124,7 +2288,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Modal Kapatıcılar
+  // Modallar
   document.querySelectorAll(".modal-close-btn").forEach(btn => {
     btn.addEventListener("click", closeAllModals);
   });
@@ -2134,47 +2298,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Çekmece Kapatıcılar
-  const cartOverlay = document.getElementById("cartOverlay");
-  if (cartOverlay) cartOverlay.addEventListener("click", () => toggleCartDrawer(false));
-  const closeCartBtn = document.getElementById("closeCartBtn");
-  if (closeCartBtn) closeCartBtn.addEventListener("click", () => toggleCartDrawer(false));
-
-  const wishlistOverlay = document.getElementById("wishlistOverlay");
-  if (wishlistOverlay) wishlistOverlay.addEventListener("click", () => toggleWishlistDrawer(false));
-  const closeWishlistBtn = document.getElementById("closeWishlistBtn");
-  if (closeWishlistBtn) closeWishlistBtn.addEventListener("click", () => toggleWishlistDrawer(false));
-
-  const mobileDrawerOverlay = document.getElementById("mobileDrawerOverlay");
-  if (mobileDrawerOverlay) mobileDrawerOverlay.addEventListener("click", () => toggleMobileMenu(false));
-  const closeMobileMenuBtn = document.getElementById("closeMobileMenuBtn");
-  if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener("click", () => toggleMobileMenu(false));
-
-  // Üst Bar & Header Butonları
-  const headerCartBtn = document.getElementById("headerCartBtn");
-  if (headerCartBtn) headerCartBtn.addEventListener("click", () => toggleCartDrawer(true));
-
-  const headerWishlistBtn = document.getElementById("headerWishlistBtn");
-  if (headerWishlistBtn) headerWishlistBtn.addEventListener("click", () => toggleWishlistDrawer(true));
-
-  const headerAuthBtn = document.getElementById("headerAuthBtn");
-  if (headerAuthBtn) {
-    headerAuthBtn.addEventListener("click", () => {
-      if (currentUser) {
-        if (confirm(currentUser.name + " olarak giriş yapılmış. Çıkış yapmak ister misiniz?")) {
-          handleLogout();
-        }
-      } else {
-        openAuthModal();
-      }
-    });
-  }
-
+  // Mobil Menü
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   if (mobileMenuBtn) mobileMenuBtn.addEventListener("click", () => toggleMobileMenu(true));
 
-  const checkoutBtn = document.getElementById("checkoutBtn");
-  if (checkoutBtn) checkoutBtn.addEventListener("click", openCheckoutModal);
+  const mobileDrawerOverlay = document.getElementById("mobileDrawerOverlay");
+  if (mobileDrawerOverlay) mobileDrawerOverlay.addEventListener("click", () => toggleMobileMenu(false));
+
+  const closeMobileMenuBtn = document.getElementById("closeMobileMenuBtn");
+  if (closeMobileMenuBtn) closeMobileMenuBtn.addEventListener("click", () => toggleMobileMenu(false));
 
   // Yukarı Çık Butonu
   const backToTopBtn = document.getElementById("backToTopBtn");
