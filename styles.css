@@ -105,6 +105,11 @@ a {
   transition: var(--transition);
 }
 
+button, a, input, select, textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 button {
   font-family: var(--font-heading);
   cursor: pointer;
@@ -112,6 +117,7 @@ button {
   background: none;
   outline: none;
   transition: var(--transition);
+  user-select: none;
 }
 
 input, select, textarea {
@@ -2470,40 +2476,106 @@ img {
   }
 }
 
+@media (max-width: 768px) {
+  .brand-slogan {
+    display: none !important;
+  }
+
+  .search-category-select {
+    display: none !important;
+  }
+}
+
 @media (max-width: 640px) {
+  .brand-slogan {
+    display: none !important;
+  }
+
+  .brand-name {
+    font-size: 1.05rem !important;
+    white-space: nowrap;
+  }
+
+  .header-logo-area {
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .brand-logo {
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .brand-text {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .header-actions {
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+
   .action-text {
     display: none;
   }
 
   .action-btn {
-    padding: 0.5rem;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
   }
 
-  .brand-name {
-    font-size: 1.15rem;
+  .search-category-select {
+    display: none !important;
+  }
+
+  .search-form {
+    height: 42px;
+  }
+
+  .search-input {
+    font-size: 16px !important;
+    padding: 0 0.85rem;
+  }
+
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  .top-announcement {
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .brand-logo-img {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
 
   .hero-slider-container {
-    height: 250px;
+    height: 230px;
   }
 
   .slide-title {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
   }
 
   .slide-desc {
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
+    font-size: 0.82rem;
+    margin-bottom: 0.85rem;
   }
 
   .slide-btn {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.85rem;
+    padding: 0.55rem 1.15rem;
+    font-size: 0.82rem;
   }
 
   .trust-badges-grid {
@@ -2517,6 +2589,16 @@ img {
 
   .products-sort-controls {
     justify-content: space-between;
+  }
+
+  .product-content {
+    padding: 0.65rem;
+  }
+
+  .add-to-cart-btn {
+    padding: 0.55rem 0.45rem;
+    font-size: 0.8rem;
+    gap: 0.35rem;
   }
 }
 
@@ -2621,6 +2703,10 @@ img {
 @media (max-width: 992px) {
   .cat-page-layout {
     grid-template-columns: 1fr;
+  }
+  .cat-sidebar {
+    position: static !important;
+    margin-bottom: 1.5rem;
   }
 }
 
@@ -3121,11 +3207,65 @@ img {
 
 @media (max-width: 640px) {
   .cart-page-item-row {
-    grid-template-columns: 80px 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 0.75rem;
     position: relative;
-    padding: 1rem;
+    padding: 1rem 0.85rem;
   }
+
+  .cart-item-product-cell {
+    padding-right: 2.5rem;
+  }
+
+  .cart-page-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .cart-mobile-unit-price {
+    display: block !important;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 0.25rem;
+  }
+
+  .cart-col-price {
+    display: none !important;
+  }
+
+  .cart-col-qty {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--border-light);
+  }
+
+  .cart-col-total {
+    position: absolute;
+    bottom: 0.95rem;
+    right: 0.85rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+  }
+
+  .cart-col-actions {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.85rem;
+  }
+
+  .remove-item-btn {
+    font-size: 1.15rem;
+    padding: 0.25rem;
+  }
+}
+
+.cart-mobile-unit-price {
+  display: none;
 }
 
 .cart-item-product-cell {
@@ -3173,6 +3313,12 @@ img {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+@media (max-width: 992px) {
+  .cart-summary-box {
+    position: static !important;
+  }
 }
 
 .cart-summary-title {
@@ -3345,5 +3491,94 @@ img {
   color: var(--text-muted);
   max-width: 440px;
   margin: 0 auto 1.5rem;
+}
+
+/* ==========================================================================
+   23. MOBİL ALT SABİT NAVİGASYON BARI (STICKY BOTTOM NAV - REYONPLUS STİLİ)
+   ========================================================================== */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #ffffff;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+  z-index: 9999;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 0.5rem;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+
+  body {
+    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .floating-actions {
+    bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 100%;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--transition);
+  position: relative;
+}
+
+.bottom-nav-item.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.bottom-nav-item.active .bottom-nav-icon svg {
+  stroke: var(--primary);
+  stroke-width: 2.3;
+}
+
+.bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.bottom-nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 1.5px solid #ffffff;
 }
 

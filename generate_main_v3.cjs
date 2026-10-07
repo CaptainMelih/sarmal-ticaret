@@ -202,7 +202,25 @@ function showView(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function updateMobileBottomNavUI(activeTab) {
+  const tabs = {
+    home: document.getElementById("bottomNavHome"),
+    categories: document.getElementById("bottomNavCategories"),
+    cart: document.getElementById("bottomNavCart"),
+    wishlist: document.getElementById("bottomNavWishlist"),
+    auth: document.getElementById("bottomNavAuth"),
+  };
+  Object.values(tabs).forEach(el => el && el.classList.remove("active"));
+  if (tabs[activeTab]) {
+    tabs[activeTab].classList.add("active");
+  }
+}
+
 function navigateToHome() {
+  try { sessionStorage.removeItem("sarmal_explicit_auth"); } catch (e) {}
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
   window.location.hash = "";
   renderRoute();
 }
@@ -212,15 +230,39 @@ function navigateToCategory(slug) {
 }
 
 function navigateToPage(pageName) {
+  if (pageName === "giris" || pageName === "kayit" || pageName === "hesabim") {
+    try { sessionStorage.setItem("sarmal_explicit_auth", "true"); } catch (e) {}
+  }
   window.location.hash = pageName;
 }
 
 function renderRoute() {
   const rawHash = window.location.hash.replace(/^#/, "");
 
+  // İlk giriş koruması (Initial visit guard):
+  // Eğer kullanıcı doğrudan siteye girmişse ve hash "giris", "kayit" veya "hesabim" ise,
+  // ancak bu oturumda kullanıcı oturum açma linkine kasten tıklamamışsa (örn: mobil tarayıcı önbelleği/autocomplete):
+  let isExplicitAuth = false;
+  try {
+    isExplicitAuth = sessionStorage.getItem("sarmal_explicit_auth") === "true";
+  } catch (e) {}
+
+  if ((rawHash === "giris" || rawHash === "kayit" || rawHash === "hesabim") && !isExplicitAuth && !currentUser) {
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    } else {
+      window.location.hash = "";
+    }
+    showView("homeView");
+    renderProductGrids();
+    updateMobileBottomNavUI("home");
+    return;
+  }
+
   if (!rawHash || rawHash === "/") {
     showView("homeView");
     renderProductGrids();
+    updateMobileBottomNavUI("home");
     return;
   }
 
@@ -231,6 +273,7 @@ function renderRoute() {
       currentCategorySlug = slug;
       showView("categoryView");
       renderCategoryPage(category);
+      updateMobileBottomNavUI("categories");
       return;
     }
   }
@@ -238,18 +281,21 @@ function renderRoute() {
   if (rawHash === "sepet") {
     showView("cartPageView");
     renderCartPage();
+    updateMobileBottomNavUI("cart");
     return;
   }
 
   if (rawHash === "favoriler") {
     showView("wishlistPageView");
     renderWishlistPage();
+    updateMobileBottomNavUI("wishlist");
     return;
   }
 
   if (rawHash === "giris" || rawHash === "kayit") {
     showView("authPageView");
     switchAuthTab(rawHash === "kayit" ? "register" : "login");
+    updateMobileBottomNavUI("auth");
     return;
   }
 
@@ -257,6 +303,7 @@ function renderRoute() {
     if (currentUser) {
       showView("profilePageView");
       renderProfilePage();
+      updateMobileBottomNavUI("auth");
     } else {
       navigateToPage("giris");
     }
@@ -266,11 +313,14 @@ function renderRoute() {
   if (rawHash === "siparis-takip") {
     showView("trackingPageView");
     renderTrackingPage();
+    updateMobileBottomNavUI("");
     return;
   }
 
   // Fallback
   showView("homeView");
+  renderProductGrids();
+  updateMobileBottomNavUI("home");
 }
 
 // --- 5. TAM SAYFA SEPET (CART PAGE) RENDER ---
@@ -351,18 +401,19 @@ function renderCartPage() {
           '<div class="cart-page-prod-info">' +
             '<span class="cart-page-prod-brand">' + escapeHTML(item.product.brand) + '</span>' +
             '<a href="javascript:void(0)" onclick="openQuickView(' + item.product.id + ')" class="cart-page-prod-title">' + escapeHTML(item.product.name) + '</a>' +
+            '<span class="cart-mobile-unit-price">' + formatPrice(item.product.price) + ' / adet</span>' +
           '</div>' +
         '</div>' +
-        '<div style="font-weight: 700; color: var(--text-muted);">' + formatPrice(item.product.price) + '</div>' +
-        '<div>' +
+        '<div class="cart-col-price" style="font-weight: 700; color: var(--text-muted);">' + formatPrice(item.product.price) + '</div>' +
+        '<div class="cart-col-qty">' +
           '<div class="cart-item-controls" style="margin: 0;">' +
-            '<button class="qty-btn" onclick="changeQuantity(' + item.product.id + ', -1)">-</button>' +
+            '<button class="qty-btn" type="button" onclick="changeQuantity(' + item.product.id + ', -1)">-</button>' +
             '<span class="qty-value">' + item.quantity + '</span>' +
-            '<button class="qty-btn" onclick="changeQuantity(' + item.product.id + ', 1)">+</button>' +
+            '<button class="qty-btn" type="button" onclick="changeQuantity(' + item.product.id + ', 1)">+</button>' +
           '</div>' +
         '</div>' +
-        '<div style="font-weight: 800; color: var(--primary);">' + formatPrice(item.product.price * item.quantity) + '</div>' +
-        '<div>' +
+        '<div class="cart-col-total" style="font-weight: 800; color: var(--primary);">' + formatPrice(item.product.price * item.quantity) + '</div>' +
+        '<div class="cart-col-actions">' +
           '<button type="button" class="remove-item-btn" onclick="removeFromCart(' + item.product.id + ')" title="Ürünü Sil">🗑️</button>' +
         '</div>' +
       '</div>'
@@ -457,6 +508,7 @@ function handleRegisterSubmit(e) {
 function handleLogout() {
   currentUser = null;
   safeLocalStorageSet("sarmal_user", null);
+  try { sessionStorage.removeItem("sarmal_explicit_auth"); } catch (e) {}
   updateAuthUI();
   showToast("Oturum kapatıldı.");
   navigateToHome();
@@ -465,14 +517,16 @@ function handleLogout() {
 function updateAuthUI() {
   const authTitle = document.getElementById("headerAuthTitle");
   const authSubtitle = document.getElementById("headerAuthSubtitle");
-  if (!authTitle || !authSubtitle) return;
+  const bottomNavAuthLabel = document.getElementById("bottomNavAuthLabel");
 
   if (currentUser) {
-    authSubtitle.textContent = "Hesabım";
-    authTitle.textContent = currentUser.name.substring(0, 10);
+    if (authSubtitle) authSubtitle.textContent = "Hesabım";
+    if (authTitle) authTitle.textContent = currentUser.name.substring(0, 10);
+    if (bottomNavAuthLabel) bottomNavAuthLabel.textContent = "Hesabım";
   } else {
-    authSubtitle.textContent = "Hesabım";
-    authTitle.textContent = "Giriş Yap";
+    if (authSubtitle) authSubtitle.textContent = "Hesabım";
+    if (authTitle) authTitle.textContent = "Giriş Yap";
+    if (bottomNavAuthLabel) bottomNavAuthLabel.textContent = "Giriş Yap";
   }
 }
 
@@ -790,11 +844,17 @@ function updateCartUI() {
   const { grandTotal } = calculateCartTotals();
 
   const cartBadge = document.getElementById("cartBadge");
+  const bottomNavCartBadge = document.getElementById("bottomNavCartBadge");
   const cartTotalText = document.getElementById("cartTotalText");
 
   if (cartBadge) {
     cartBadge.textContent = totalCount;
     cartBadge.style.display = totalCount > 0 ? "flex" : "none";
+  }
+
+  if (bottomNavCartBadge) {
+    bottomNavCartBadge.textContent = totalCount;
+    bottomNavCartBadge.style.display = totalCount > 0 ? "inline-flex" : "none";
   }
 
   if (cartTotalText) cartTotalText.textContent = formatPrice(grandTotal);
@@ -907,9 +967,14 @@ function toggleWishlist(productId, event) {
 
 function updateWishlistUI() {
   const wishlistBadge = document.getElementById("wishlistBadge");
+  const bottomNavWishlistBadge = document.getElementById("bottomNavWishlistBadge");
   if (wishlistBadge) {
     wishlistBadge.textContent = wishlist.length;
     wishlistBadge.style.display = wishlist.length > 0 ? "flex" : "none";
+  }
+  if (bottomNavWishlistBadge) {
+    bottomNavWishlistBadge.textContent = wishlist.length;
+    bottomNavWishlistBadge.style.display = wishlist.length > 0 ? "inline-flex" : "none";
   }
 }
 
@@ -1494,21 +1559,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setupHeroSlider();
   setupCountdownTimer();
 
+  // Hash değişikliklerini dinle
   window.addEventListener("hashchange", renderRoute);
-
-  // Header Butonları
-  document.getElementById("headerAuthBtn")?.addEventListener("click", () => {
-    navigateToPage(currentUser ? "hesabim" : "giris");
-  });
-  document.getElementById("headerWishlistBtn")?.addEventListener("click", () => {
-    navigateToPage("favoriler");
-  });
-  document.getElementById("headerCartBtn")?.addEventListener("click", () => {
-    navigateToPage("sepet");
-  });
-  document.getElementById("openTrackingTopBtn")?.addEventListener("click", () => {
-    navigateToPage("siparis-takip");
-  });
 
   // Kategori Sayfası Sıralama & Fiyat
   const catSortSelect = document.getElementById("catSortSelect");

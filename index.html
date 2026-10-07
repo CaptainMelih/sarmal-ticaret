@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Ana Stil Dosyası -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2.2" />
 </head>
 <body>
 
@@ -51,7 +51,7 @@
       
       <!-- Sütun 1: Logo & Marka -->
       <div class="header-logo-area">
-        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Menüyü Aç">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Menüyü Aç" onclick="toggleMobileMenu(true)">
           ☰
         </button>
         <a href="javascript:void(0)" onclick="navigateToHome()" class="brand-logo">
@@ -1131,11 +1131,11 @@
   <!-- ======================================================================
        MOBİL MENÜ ÇEKMECESİ (OFF-CANVAS DRAWER)
        ====================================================================== -->
-  <div id="mobileDrawerOverlay" class="mobile-drawer-overlay"></div>
+  <div id="mobileDrawerOverlay" class="mobile-drawer-overlay" onclick="toggleMobileMenu(false)"></div>
   <nav id="mobileDrawer" class="mobile-drawer">
     <div class="mobile-drawer-header">
       <div class="mobile-drawer-title">Sarmal Ticaret Menü</div>
-      <button id="closeMobileMenuBtn" class="mobile-drawer-close" type="button" aria-label="Kapat">✕</button>
+      <button id="closeMobileMenuBtn" class="mobile-drawer-close" type="button" aria-label="Kapat" onclick="toggleMobileMenu(false)">✕</button>
     </div>
     <div class="mobile-drawer-body">
       <div class="mobile-cat-group">
@@ -1529,8 +1529,50 @@
     </a>
   </div>
 
+  <!-- ======================================================================
+       MOBİL ALT SABİT NAVİGASYON BARI (STICKY BOTTOM NAV - REYONPLUS STİLİ)
+       ====================================================================== -->
+  <nav id="mobileBottomNav" class="mobile-bottom-nav">
+    <button type="button" class="bottom-nav-item active" id="bottomNavHome" onclick="navigateToHome()">
+      <div class="bottom-nav-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <span class="bottom-nav-label">Ana Sayfa</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavCategories" onclick="toggleMobileMenu(true)">
+      <div class="bottom-nav-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+      </div>
+      <span class="bottom-nav-label">Reyonlar</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavCart" onclick="navigateToPage('sepet')">
+      <div class="bottom-nav-icon" style="position: relative;">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span id="bottomNavCartBadge" class="bottom-nav-badge" style="display: none;">0</span>
+      </div>
+      <span class="bottom-nav-label">Sepetim</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavWishlist" onclick="navigateToPage('favoriler')">
+      <div class="bottom-nav-icon" style="position: relative;">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span id="bottomNavWishlistBadge" class="bottom-nav-badge" style="display: none;">0</span>
+      </div>
+      <span class="bottom-nav-label">Favoriler</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavAuth" onclick="handleAuthClick()">
+      <div class="bottom-nav-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
+      <span id="bottomNavAuthLabel" class="bottom-nav-label">Giriş Yap</span>
+    </button>
+  </nav>
+
   <!-- Ana JavaScript Dosyası -->
-  <script type="module" src="/main.js"></script>
+  <script type="module" src="/main.js?v=2.2"></script>
 
 </body>
 </html>
