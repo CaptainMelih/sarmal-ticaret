@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 
 export function WhatsAppWidget() {
     const [isOpen, setIsOpen] = useState(false);
-    const phoneNumber = '905423178596';
+    const phoneNumber = '905378715517';
     const message = 'Merhaba Sarmal Ticaret! Ürünleriniz ve siparişim hakkında bilgi almak istiyorum.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 

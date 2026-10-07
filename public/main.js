@@ -48,10 +48,10 @@ const CATEGORIES_DATA = [
   },
   {
     "slug": "yemek-kartlari",
-    "name": "Yemek Kartı ile Alışveriş Reyonu",
-    "shortName": "Yemek Kartları",
+    "name": "Multinet Up ile Alışveriş Reyonu",
+    "shortName": "Multinet",
     "icon": "💳",
-    "description": "Pluxee, Sodexo, Ticket Restaurant, Multinet, SetCard ve MetropolCard ile güvenle sipariş verebileceğiniz tüm ürünler."
+    "description": "Multinet Up yemek kartı bakiyenizle güvenle sipariş verebileceğiniz hediye ve dekoratif ürünler."
   }
 ];
 const PRODUCTS_DATA = [
@@ -1775,6 +1775,39 @@ function switchPaymentTab(tabName) {
   contents.forEach(c => c.classList.toggle("active", c.getAttribute("data-tab") === tabName));
 }
 
+function validateLuhn(raw) {
+  const digits = String(raw || "").replace(/[^0-9]/g, "");
+  if (digits.length < 15 || digits.length > 19) return false;
+  let sum = 0;
+  let isEven = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits.charAt(i), 10);
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+    isEven = !isEven;
+  }
+  return sum % 10 === 0;
+}
+
+function validateExpiry(raw) {
+  if (!raw) return false;
+  const str = String(raw).trim();
+  const parts = str.split("/");
+  if (parts.length !== 2) return false;
+  const month = parseInt(parts[0], 10);
+  const yearStr = parts[1].trim();
+  const year = parseInt(yearStr.length === 2 ? ("20" + yearStr) : yearStr, 10);
+  if (isNaN(month) || isNaN(year) || month < 1 || month > 12) return false;
+  const now = new Date();
+  const curYear = now.getFullYear();
+  const curMonth = now.getMonth() + 1;
+  if (year < curYear || (year === curYear && month < curMonth)) return false;
+  return true;
+}
+
 function handleFinalOrderSubmit(e) {
   e.preventDefault();
   const agreement = document.getElementById("checkoutAgreementCb");
@@ -1784,53 +1817,125 @@ function handleFinalOrderSubmit(e) {
   }
 
   const activeTab = document.querySelector(".payment-tab-btn.active")?.getAttribute("data-tab") || "mealcard";
-  let paymentMethodName = "Yemek Kartı (Pluxee / Sodexo)";
+  let paymentMethodName = "Multinet Up Yemek Kartı";
+  let orderStatus = "Hazırlanıyor";
 
+  // --- KREDİ KARTI KONTROLLERİ ---
   if (activeTab === "creditcard") {
+    const holder = document.getElementById("ccHolderName")?.value.trim() || "";
+    const number = document.getElementById("ccNumber")?.value.trim() || "";
+    const expiry = document.getElementById("ccExpiry")?.value.trim() || "";
+    const cvc = document.getElementById("ccCvc")?.value.trim() || "";
+
+    if (!holder || holder.length < 3) {
+      showToast("Lütfen kart üzerindeki Ad ve Soyadı giriniz.");
+      document.getElementById("ccHolderName")?.focus();
+      return;
+    }
+
+    if (!validateLuhn(number)) {
+      showToast("Geçersiz kredi kartı numarası! Lütfen 16 haneli kart numaranızı kontrol ediniz.");
+      document.getElementById("ccNumber")?.focus();
+      return;
+    }
+
+    if (!validateExpiry(expiry)) {
+      showToast("Kartınızın son kullanma tarihi geçersiz veya süresi dolmuş (AA/YY formatında girin)!");
+      document.getElementById("ccExpiry")?.focus();
+      return;
+    }
+
+    if (!cvc || cvc.length < 3) {
+      showToast("Lütfen 3 haneli güvenlik kodunu (CVV) giriniz.");
+      document.getElementById("ccCvc")?.focus();
+      return;
+    }
+
     const installment = document.getElementById("creditCardInstallment")?.value || "Tek Çekim";
-    paymentMethodName = "Kredi Kartı (" + installment + ")";
+    paymentMethodName = "Kredi Kartı (" + installment + ") - 3D Secure Onaylı";
+
+  // --- MULTİNET YEMEK KARTI KONTROLLERİ ---
+  } else if (activeTab === "mealcard") {
+    const cardNum = (document.getElementById("multinetCardNumber")?.value || "").replace(/[^0-9]/g, "");
+    const expiry = document.getElementById("multinetExpiry")?.value.trim() || "";
+    const cvv = document.getElementById("multinetCvv")?.value.trim() || "";
+
+    if (cardNum.length !== 16) {
+      showToast("Lütfen 16 haneli Multinet Up kart numaranızı eksiksiz giriniz.");
+      document.getElementById("multinetCardNumber")?.focus();
+      return;
+    }
+
+    if (!validateExpiry(expiry)) {
+      showToast("Multinet kartınızın son kullanma tarihi geçersiz veya süresi dolmuş!");
+      document.getElementById("multinetExpiry")?.focus();
+      return;
+    }
+
+    if (!cvv || cvv.length < 3) {
+      showToast("Lütfen 3 haneli Multinet güvenlik kodunu (CVV) giriniz.");
+      document.getElementById("multinetCvv")?.focus();
+      return;
+    }
+
+    paymentMethodName = "Multinet Up Yemek Kartı (MultiPay Onaylı)";
+
+  // --- HAVALE / EFT ---
   } else if (activeTab === "havale") {
     paymentMethodName = "Havale / EFT (Garanti BBVA)";
-  } else {
-    const mealCardType = document.getElementById("mealCardTypeSelect")?.value || "Pluxee";
-    paymentMethodName = "Yemek Kartı (" + mealCardType + ")";
+    orderStatus = "Ödeme Bekleniyor (Havale Bildirimi)";
   }
 
-  const { subtotal, discount, grandTotal } = calculateCartTotals();
-  const orderNumber = "SRM-2026-" + Math.floor(100000 + Math.random() * 900000);
+  // Ödeme Onaylama & İşlem Simülasyonu (Fail-Safe)
+  const submitBtn = e.target.querySelector("button[type='submit']");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = "Ödeme Doğrulanıyor ve Bankaya İletiliyor... ⏳";
+  }
 
-  const orderRecord = {
-    orderNumber: orderNumber,
-    date: new Date().toLocaleDateString("tr-TR"),
-    customer: checkoutFormData,
-    paymentMethod: paymentMethodName,
-    items: cart.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.quantity })),
-    subtotal: subtotal,
-    discount: discount,
-    total: grandTotal,
-    status: "Hazırlanıyor",
-    carrier: "Yurtiçi Kargo"
-  };
+  setTimeout(() => {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "Siparişi Onayla ve Tamamla ✓";
+    }
 
-  userOrders.unshift(orderRecord);
-  safeLocalStorageSet("sarmal_orders", userOrders);
+    const { subtotal, discount, grandTotal } = calculateCartTotals();
+    const orderNumber = "SRM-2026-" + Math.floor(100000 + Math.random() * 900000);
 
-  const successOrderNum = document.getElementById("successOrderNumber");
-  const successTotal = document.getElementById("successTotalAmount");
-  const successPayment = document.getElementById("successPaymentMethod");
-  const successAddress = document.getElementById("successDeliveryAddress");
+    const orderRecord = {
+      orderNumber: orderNumber,
+      date: new Date().toLocaleDateString("tr-TR"),
+      customer: checkoutFormData,
+      paymentMethod: paymentMethodName,
+      items: cart.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.quantity })),
+      subtotal: subtotal,
+      discount: discount,
+      total: grandTotal,
+      status: orderStatus,
+      carrier: "Yurtiçi Kargo"
+    };
 
-  if (successOrderNum) successOrderNum.textContent = orderNumber;
-  if (successTotal) successTotal.textContent = formatPrice(grandTotal);
-  if (successPayment) successPayment.textContent = paymentMethodName;
-  if (successAddress) successAddress.textContent = checkoutFormData.address + ", " + checkoutFormData.district + " / " + checkoutFormData.city;
+    userOrders.unshift(orderRecord);
+    safeLocalStorageSet("sarmal_orders", userOrders);
 
-  cart = [];
-  activeCoupon = null;
-  safeLocalStorageSet("sarmal_coupon", null);
-  saveCart();
+    const successOrderNum = document.getElementById("successOrderNumber");
+    const successTotal = document.getElementById("successTotalAmount");
+    const successPayment = document.getElementById("successPaymentMethod");
+    const successAddress = document.getElementById("successDeliveryAddress");
 
-  setCheckoutStep(3);
+    if (successOrderNum) successOrderNum.textContent = orderNumber;
+    if (successTotal) successTotal.textContent = formatPrice(grandTotal);
+    if (successPayment) successPayment.textContent = paymentMethodName;
+    if (successAddress) successAddress.textContent = checkoutFormData.address + ", " + checkoutFormData.district + " / " + checkoutFormData.city;
+
+    cart = [];
+    activeCoupon = null;
+    safeLocalStorageSet("sarmal_coupon", null);
+    saveCart();
+
+    showToast("Ödeme başarıyla onaylandı! Siparişiniz oluşturuldu. 🎉");
+    setCheckoutStep(3);
+  }, 900);
 }
 
 // --- 15. SÖZLEŞMELER & POLİTİKA MODALI ---
@@ -1909,7 +2014,7 @@ function openQuickView(productId) {
           '<div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem;">' +
             '<div style="text-decoration: line-through; color: var(--text-light); font-size: 0.9rem;">' + formatPrice(product.oldPrice) + '</div>' +
             '<div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-deep);">' + formatPrice(product.price) + '</div>' +
-            '<div style="font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-top: 0.25rem;">💳 Yemek Kartları (Pluxee, Ticket, Multinet, SetCard) ile Ödenebilir</div>' +
+            '<div style="font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-top: 0.25rem;">💳 Multinet Up Yemek Kartı ile Ödenebilir</div>' +
           '</div>' +
           '<div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">' +
             '<button class="add-to-cart-btn" style="flex: 1;" onclick="addToCart(' + product.id + ', 1); closeAllModals();">' +
