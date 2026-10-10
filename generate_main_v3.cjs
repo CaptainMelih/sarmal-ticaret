@@ -1,8 +1,13 @@
 const fs = require('fs');
 
+// ==========================================================================
+// GEÇİCİ OLARAK GİZLENEN ESKİ ÜRÜN VE KATEGORİ TANIMLARI
+// MULTİNET ONAYI ALINDIKTAN SONRA TEKRAR AKTİF EDİLECEKTİR. KODLARI SİLMEYİN!
+// ==========================================================================
+/*
 const rawData = JSON.parse(fs.readFileSync('sevgiliye_ozel_full.json', 'utf8'));
 
-const CATEGORIES_DEF = [
+const ORIGINAL_CATEGORIES_DEF = [
   {
     slug: 'kar-kureleri',
     name: 'Kar Küreleri & 3D Cam Küreler',
@@ -54,7 +59,7 @@ const CATEGORIES_DEF = [
   }
 ];
 
-const products = rawData.map((p, idx) => {
+const originalProducts = rawData.map((p, idx) => {
   const name = (p["Ürün Adı"] || "").trim();
   let slug = "ozel-hediyelikler";
   let catName = "Özel Hediye & Müzik Kutuları";
@@ -101,6 +106,186 @@ const products = rawData.map((p, idx) => {
     barcode: p["Barkod"] || ("45067" + (1000 + idx))
   };
 });
+*/
+
+// ==========================================================================
+// AKTİF REYON: MULTİNET ONAYI İÇİN GEÇİCİ OLARAK SADECE MARKET
+// ==========================================================================
+const CATEGORIES_DEF = [
+  {
+    slug: 'market',
+    name: 'Market & Temel Gıda',
+    shortName: 'Market',
+    icon: '🛒',
+    description: 'Doğal bal, ev yapımı reçeller, taş baskı zeytinyağı, kahvaltılık ve gurme market ürünleri. Multinet Up (MultiPay) yemek kartı ile güvenli alışveriş.'
+  }
+];
+
+// ==========================================================================
+// AKTİF 10 ADET GURME MARKET & GIDA ÜRÜNÜ (MULTİNET ONAY SÜRECİ İÇİN)
+// ==========================================================================
+const products = [
+  {
+    id: 1,
+    name: "Doğal Karakovan Süzme Çiçek Balı (850g)",
+    brand: "Sarmal Gurme",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 349.90,
+    oldPrice: 420.00,
+    discountPercent: 17,
+    badge: "%17 İndirim",
+    rating: "4.9",
+    reviews: 42,
+    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100101"
+  },
+  {
+    id: 2,
+    name: "Ev Yapımı Doğal Çilek Reçeli (380g)",
+    brand: "Sarmal Gurme",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 139.90,
+    oldPrice: 175.00,
+    discountPercent: 20,
+    badge: "Yeni",
+    rating: "4.8",
+    reviews: 28,
+    image: "https://images.unsplash.com/photo-1568644396922-5c3bfae12521?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100102"
+  },
+  {
+    id: 3,
+    name: "Geleneksel Doğal Vişne Reçeli (380g)",
+    brand: "Sarmal Gurme",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 139.90,
+    oldPrice: 175.00,
+    discountPercent: 20,
+    badge: "Fırsat",
+    rating: "4.9",
+    reviews: 35,
+    image: "https://images.unsplash.com/photo-1506806732259-39c2d0268443?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100103"
+  },
+  {
+    id: 4,
+    name: "Taş Baskı Soğuk Sıkım Naturel Sızma Zeytinyağı (1 Litre)",
+    brand: "Ege Bahçesi",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 389.90,
+    oldPrice: 460.00,
+    discountPercent: 15,
+    badge: "Çok Satan",
+    rating: "5.0",
+    reviews: 64,
+    image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100104"
+  },
+  {
+    id: 5,
+    name: "Köy Tipi Doğal Yayla Tereyağı (500g)",
+    brand: "Trabzon Çiftliği",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 269.90,
+    oldPrice: 320.00,
+    discountPercent: 16,
+    badge: "Taze",
+    rating: "4.9",
+    reviews: 38,
+    image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100105"
+  },
+  {
+    id: 6,
+    name: "Gemlik Doğal Yağlı Sele Siyah Zeytin (750g)",
+    brand: "Gemlik Yöresel",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 199.90,
+    oldPrice: 245.00,
+    discountPercent: 18,
+    badge: "%18 İndirim",
+    rating: "4.8",
+    reviews: 51,
+    image: "https://images.unsplash.com/photo-1596797882870-8c33deeac224?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100106"
+  },
+  {
+    id: 7,
+    name: "Tam Yağlı Olgunlaştırılmış Ezine İnek Peyniri (500g)",
+    brand: "Ezine Mandıra",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 229.90,
+    oldPrice: 275.00,
+    discountPercent: 16,
+    badge: "Geleneksel",
+    rating: "4.9",
+    reviews: 47,
+    image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100107"
+  },
+  {
+    id: 8,
+    name: "Giresun Doğal Fındık Ezmesi %70 Fındık (350g)",
+    brand: "Sarmal Gurme",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 189.90,
+    oldPrice: 230.00,
+    discountPercent: 17,
+    badge: "Doğal",
+    rating: "4.9",
+    reviews: 33,
+    image: "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100108"
+  },
+  {
+    id: 9,
+    name: "Taş Değirmen Çifte Kavrulmuş Tahin & Üzüm Pekmezi Seti (300g + 350g)",
+    brand: "Antalya Yöresel",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 219.90,
+    oldPrice: 265.00,
+    discountPercent: 17,
+    badge: "İkili Set",
+    rating: "4.8",
+    reviews: 29,
+    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100109"
+  },
+  {
+    id: 10,
+    name: "Rize Organik İlk Hasat Mayıslık Siyah Çay (500g)",
+    brand: "Çaykara Çiftliği",
+    categorySlug: "market",
+    category: "Market & Temel Gıda",
+    price: 179.90,
+    oldPrice: 215.00,
+    discountPercent: 16,
+    badge: "Organik",
+    rating: "5.0",
+    reviews: 58,
+    image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80",
+    inStock: true,
+    barcode: "869000100110"
+  }
+];
 
 const jsContent = `/**
  * SARMAL TİCARET - ÇOK SAYFALI (SEPET, FAVORİLER, GİRİŞ, KAYIT, KATEGORİ) E-TİCARET MOTORU
@@ -801,10 +986,10 @@ function renderProductGrids() {
   const curatedGrid = document.getElementById("curatedProductsGrid");
   if (!dealsGrid || !curatedGrid) return;
 
-  const dealsList = PRODUCTS_DATA.slice(0, 10);
+  const dealsList = PRODUCTS_DATA.slice(0, 6);
   dealsGrid.innerHTML = dealsList.map(createProductCardHTML).join("");
 
-  const curatedList = PRODUCTS_DATA.slice(10, 25);
+  const curatedList = PRODUCTS_DATA;
   curatedGrid.innerHTML = curatedList.map(createProductCardHTML).join("");
 }
 

@@ -27,13 +27,13 @@
     <div class="container top-bar-inner">
       <div class="top-announcement">
         <span>🚚</span>
-        <span><strong>500 TL ve üzeri alışverişlerde</strong> <span class="highlight">ÜCRETSİZ KARGO</span> | 💳 <strong>Multinet Up</strong> Yemek Kartı ile Güvenli Alışveriş!</span>
+        <span><strong>500 TL ve üzeri market alışverişlerinde</strong> <span class="highlight">ÜCRETSİZ KARGO</span> | 💳 <strong>Multinet Up</strong> Yemek Kartı ile Güvenli Market Alışverişi!</span>
       </div>
       <div class="top-links">
         <a href="tel:08503085872" class="top-link-btn">
           <span>📞</span> 0850 308 58 72
         </a>
-        <button type="button" class="top-link-btn" onclick="navigateToCategory('yemek-kartlari')">
+        <button type="button" class="top-link-btn" onclick="navigateToCategory('market')">
           <span>⚡</span> Günün Fırsatları
         </button>
         <button id="openTrackingTopBtn" type="button" class="top-link-btn" onclick="navigateToPage('siparis-takip')">
@@ -68,6 +68,8 @@
         <form class="search-form" onsubmit="event.preventDefault();">
           <select id="searchCategorySelect" class="search-category-select" aria-label="Kategori Seç">
             <option value="all">Tüm Reyonlar</option>
+            <option value="market" selected>Market & Temel Gıda</option>
+            <!-- GEÇİCİ OLARAK GİZLENEN KATEGORİLER (MULTİNET ONAYI SONRASI AÇILACAK)
             <option value="kar-kureleri">Kar Küreleri</option>
             <option value="batmayan-gemi">Batmayan Gemi</option>
             <option value="cicek-buket">Çiçek & Buket</option>
@@ -75,12 +77,13 @@
             <option value="gece-lambalari">Gece Lambaları</option>
             <option value="ozel-hediyelikler">Özel Hediyelikler</option>
             <option value="yemek-kartlari">Yemek Kartları</option>
+            -->
           </select>
           <input
             id="searchInput"
             type="text"
             class="search-input"
-            placeholder="Aradığınız hediyeyi veya ürünü yazın (örn: Kar Küresi, Batmayan Gemi...)"
+            placeholder="Aradığınız market ürününü yazın (örn: Karakovan Balı, Çilek Reçeli, Zeytinyağı...)"
             autocomplete="off"
             maxlength="100"
           />
@@ -149,6 +152,27 @@
         </button>
 
         <div class="desktop-mega-dropdown">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item" style="color: var(--primary); font-weight: 700;">
+            <span><span class="mega-cat-icon">🛒</span> Market & Temel Gıda Reyonu</span>
+            <span>★</span>
+          </a>
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
+            <span><span class="mega-cat-icon">🍯</span> Doğal Karakovan & Çiçek Balı</span>
+            <span>›</span>
+          </a>
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
+            <span><span class="mega-cat-icon">🍓</span> Ev Yapımı Doğal Reçeller</span>
+            <span>›</span>
+          </a>
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
+            <span><span class="mega-cat-icon">🫒</span> Taş Baskı Sızma Zeytinyağı</span>
+            <span>›</span>
+          </a>
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
+            <span><span class="mega-cat-icon">🧀</span> Şarküteri, Tereyağı & Peynir</span>
+            <span>›</span>
+          </a>
+          <!-- GEÇİCİ OLARAK GİZLENEN KATEGORİLER (MULTİNET ONAYI SONRASI AÇILACAK)
           <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')" class="mega-cat-item">
             <span><span class="mega-cat-icon">🔮</span> Kar Küreleri & 3D Cam Küreler</span>
             <span>›</span>
@@ -177,16 +201,43 @@
             <span><span class="mega-cat-icon">💳</span> Yemek Kartı ile Ödeme Reyonu</span>
             <span>★</span>
           </a>
+          -->
         </div>
       </div>
 
       <!-- Yatay Kategori Linkleri -->
       <ul class="horizontal-nav-links">
         <li class="nav-link-item deal">
-          <a href="javascript:void(0)" onclick="navigateToCategory('yemek-kartlari')">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
             <span>🔥</span> Günün Fırsatları
           </a>
         </li>
+        <li class="nav-link-item">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
+            <span>🛒</span> Market & Temel Gıda
+          </a>
+        </li>
+        <li class="nav-link-item">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
+            <span>🍯</span> Bal & Reçel
+          </a>
+        </li>
+        <li class="nav-link-item">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
+            <span>🫒</span> Zeytin & Zeytinyağı
+          </a>
+        </li>
+        <li class="nav-link-item">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
+            <span>🧀</span> Şarküteri & Kahvaltılık
+          </a>
+        </li>
+        <li class="nav-link-item">
+          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
+            <span>💳</span> Multinet Up Geçerlidir
+          </a>
+        </li>
+        <!-- GEÇİCİ OLARAK GİZLENEN KATEGORİLER (MULTİNET ONAYI SONRASI AÇILACAK)
         <li class="nav-link-item">
           <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')">
             <span>🔮</span> Kar Küreleri
@@ -217,10 +268,11 @@
             <span>💳</span> Yemek Kartları
           </a>
         </li>
+        -->
       </ul>
 
       <!-- Sağ Kampanya Rozeti -->
-      <a href="javascript:void(0)" onclick="navigateToCategory('yemek-kartlari')" class="nav-badge-link">
+      <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="nav-badge-link">
         <span>⚡</span> %40'a Varan Net İndirimler
       </a>
 
@@ -347,10 +399,10 @@
               <!-- Slide 1 -->
               <div class="slide-item" style="background-image: url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=1400&auto=format&fit=crop&q=80');">
                 <div class="slide-content">
-                  <span class="slide-tag">💳 MULTİNET UP İLE ALIŞVERİŞ</span>
-                  <h1 class="slide-title">Multinet Up Yemek Kartı Sarmal Ticaret'te!</h1>
-                  <p class="slide-desc">Multinet Up bakiyenizle binlerce hediye, dekorasyon ve kişiye özel ürünü güvenle satın alın.</p>
-                  <button type="button" class="slide-btn" onclick="navigateToCategory('yemek-kartlari')">
+                  <span class="slide-tag">💳 MULTİNET UP İLE MARKET ALIŞVERİŞİ</span>
+                  <h1 class="slide-title">Multinet Up Yemek Kartı ile Market Alışverişi Sarmal Ticaret'te!</h1>
+                  <p class="slide-desc">Multinet Up bakiyenizle doğal karakovan balı, ev yapımı reçeller, taş baskı zeytinyağı ve temel market ürünlerini güvenle satın alın.</p>
+                  <button type="button" class="slide-btn" onclick="navigateToCategory('market')">
                     Hemen Alışverişe Başla
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
@@ -358,6 +410,18 @@
               </div>
 
               <!-- Slide 2 -->
+              <div class="slide-item" style="background-image: url('https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=1400&auto=format&fit=crop&q=80');">
+                <div class="slide-content">
+                  <span class="slide-tag">🍯 DOĞAL KAHVALTILIK & ŞARKÜTERİ</span>
+                  <h2 class="slide-title">Doğal Karakovan Balı, Reçeller ve Sızma Zeytinyağında İndirim</h2>
+                  <p class="slide-desc">Katkısız yayla balı, ev yapımı çilek ve vişne reçelleri ile sofralarınıza doğallık ve lezzet katın.</p>
+                  <button type="button" class="slide-btn" onclick="navigateToCategory('market')">
+                    Fırsatları Keşfet
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                  </button>
+                </div>
+              </div>
+              <!-- GEÇİCİ OLARAK GİZLENEN SLIDE 2 (MULTİNET ONAYI SONRASI AÇILACAK)
               <div class="slide-item" style="background-image: url('https://images.unsplash.com/photo-1512909006721-3d6018887383?w=1400&auto=format&fit=crop&q=80');">
                 <div class="slide-content">
                   <span class="slide-tag">✨ ÖZEL HEDİYE KOLEKSİYONU</span>
@@ -365,18 +429,18 @@
                   <p class="slide-desc">Işıklı sokak lambalı kar küreleri ve masaüstü batmayan gemi akvaryumları ile sevdiklerinizi mutlu edin.</p>
                   <button type="button" class="slide-btn" onclick="navigateToCategory('kar-kureleri')">
                     Fırsatları Keşfet
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
                 </div>
               </div>
+              -->
 
               <!-- Slide 3 -->
-              <div class="slide-item" style="background-image: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1400&auto=format&fit=crop&q=80');">
+              <div class="slide-item" style="background-image: url('https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1400&auto=format&fit=crop&q=80');">
                 <div class="slide-content">
                   <span class="slide-tag">🎟️ "SARMAL10" KUPON KODU</span>
                   <h2 class="slide-title">500 TL Üzerine Ücretsiz Kargo & Ekstra %10 İndirim</h2>
-                  <p class="slide-desc">Sepetinizde kupon kodu alanına SARMAL10 yazarak anında ek indirim kazanın.</p>
-                  <button type="button" class="slide-btn" onclick="navigateToCategory('yemek-kartlari')">
+                  <p class="slide-desc">Sepetinizde kupon kodu alanına SARMAL10 yazarak market siparişlerinizde anında ek indirim kazanın.</p>
+                  <button type="button" class="slide-btn" onclick="navigateToCategory('market')">
                     Sepeti Doldur
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
@@ -407,40 +471,66 @@
           </div>
 
           <div class="category-scroll-container">
+            <div class="category-circle-card" onclick="navigateToCategory('market')">
+              <div class="category-icon-box">🛒</div>
+              <span class="category-card-name">Tüm Market</span>
+            </div>
+
+            <div class="category-circle-card" onclick="navigateToCategory('market')">
+              <div class="category-icon-box">🍯</div>
+              <span class="category-card-name">Bal & Reçel</span>
+            </div>
+
+            <div class="category-circle-card" onclick="navigateToCategory('market')">
+              <div class="category-icon-box">🫒</div>
+              <span class="category-card-name">Zeytinyağı</span>
+            </div>
+
+            <div class="category-circle-card" onclick="navigateToCategory('market')">
+              <div class="category-icon-box">🧀</div>
+              <span class="category-card-name">Peynir & Tereyağı</span>
+            </div>
+
+            <div class="category-circle-card" onclick="navigateToCategory('market')">
+              <div class="category-icon-box">🫖</div>
+              <span class="category-card-name">Organik Çay</span>
+            </div>
+
+            <div class="category-circle-card" onclick="navigateToCategory('market')">
+              <div class="category-icon-box" style="background: #ede9fe; color: var(--primary);">💳</div>
+              <span class="category-card-name">Multinet Up</span>
+            </div>
+
+            <!-- GEÇİCİ OLARAK GİZLENEN REYON KARTLARI (MULTİNET ONAYI SONRASI AÇILACAK)
             <div class="category-circle-card" onclick="navigateToCategory('kar-kureleri')">
               <div class="category-icon-box">🔮</div>
               <span class="category-card-name">Kar Küreleri</span>
             </div>
-
             <div class="category-circle-card" onclick="navigateToCategory('batmayan-gemi')">
               <div class="category-icon-box">🚢</div>
               <span class="category-card-name">Batmayan Gemi</span>
             </div>
-
             <div class="category-circle-card" onclick="navigateToCategory('cicek-buket')">
               <div class="category-icon-box">💐</div>
               <span class="category-card-name">Çiçek & Buket</span>
             </div>
-
             <div class="category-circle-card" onclick="navigateToCategory('taki-mucevher')">
               <div class="category-icon-box">💎</div>
               <span class="category-card-name">Takı & Kolye</span>
             </div>
-
             <div class="category-circle-card" onclick="navigateToCategory('gece-lambalari')">
               <div class="category-icon-box">💡</div>
               <span class="category-card-name">Gece Lambaları</span>
             </div>
-
             <div class="category-circle-card" onclick="navigateToCategory('ozel-hediyelikler')">
               <div class="category-icon-box">🎁</div>
               <span class="category-card-name">Özel Hediyeler</span>
             </div>
-
             <div class="category-circle-card" onclick="navigateToCategory('yemek-kartlari')">
               <div class="category-icon-box" style="background: #ede9fe; color: var(--primary);">💳</div>
               <span class="category-card-name">Yemek Kartları</span>
             </div>
+            -->
           </div>
         </div>
       </section>
@@ -492,7 +582,7 @@
               <span class="section-title-icon">🔥</span>
               <h2 class="section-title">Günün Fırsat Ürünleri</h2>
             </div>
-            <button type="button" class="nav-badge-link" onclick="navigateToCategory('yemek-kartlari')">
+            <button type="button" class="nav-badge-link" onclick="navigateToCategory('market')">
               Tüm Fırsatları Gör →
             </button>
           </div>
@@ -508,12 +598,22 @@
             <div class="promo-banner-card promo-banner-1">
               <span class="promo-tag">SARMAL TİCARET & YEMEK KARTLARI</span>
               <h3 class="promo-title">Yemek Kartı Bakiyenizle Alışveriş Keyfi</h3>
-              <p style="font-size: 0.95rem; opacity: 0.9;">Pluxee, Ticket Restaurant, Multinet, SetCard ile hemen sipariş verin.</p>
-              <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('yemek-kartlari')">
+              <p style="font-size: 0.95rem; opacity: 0.9;">Multinet Up yemek kartınızla taze ve doğal market ürünlerini hemen sipariş verin.</p>
+              <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('market')">
                 Kart Avantajlarını İncele →
               </button>
             </div>
 
+            <div class="promo-banner-card promo-banner-2" style="background: linear-gradient(135deg, #15803d, #14532d);">
+              <span class="promo-tag">DOĞAL & KATKISIZ LEZZETLER</span>
+              <h3 class="promo-title">Taş Baskı Naturel Sızma Zeytinyağı ve Gurme Reçeller</h3>
+              <p style="font-size: 0.95rem; opacity: 0.9;">Soğuk sıkım zeytinyağı ve katkısız geleneksel reçellerle sofralarınıza sağlık katın.</p>
+              <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('market')">
+                Market Ürünlerini İncele →
+              </button>
+            </div>
+
+            <!-- GEÇİCİ OLARAK GİZLENEN PROMOSYON AFİŞİ (MULTİNET ONAYI SONRASI AÇILACAK)
             <div class="promo-banner-card promo-banner-2">
               <span class="promo-tag">SÜRPRİZ HEDİYE SEÇENEKLERİ</span>
               <h3 class="promo-title">Gerçek İstiridye İçinden Çıkan Sürpriz İnci Kolye</h3>
@@ -522,6 +622,7 @@
                 Ürünü Hemen İncele →
               </button>
             </div>
+            -->
           </div>
         </div>
       </section>
@@ -596,6 +697,34 @@
           <div class="reviews-grid">
             <div class="review-card">
               <div class="review-stars">★★★★★</div>
+              <p class="review-text">"Karakovan süzme çiçek balı gerçekten muazzam lezzetli ve katkısız. Multinet Up yemek kartımla kolayca sipariş verdim, 1 günde teslim edildi!"</p>
+              <div class="reviewer-meta">
+                <span class="reviewer-name">Ayşe K.</span>
+                <span class="reviewer-badge">✓ Onaylı Alıcı (İstanbul)</span>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="review-stars">★★★★★</div>
+              <p class="review-text">"Taş baskı soğuk sıkım zeytinyağı ve ev yapımı çilek reçeli aldık. Kahvaltılarda vazgeçilmezimiz oldu. Paketleme ve tazelik 10 numara."</p>
+              <div class="reviewer-meta">
+                <span class="reviewer-name">Murat D.</span>
+                <span class="reviewer-badge">✓ Onaylı Alıcı (Ankara)</span>
+              </div>
+            </div>
+
+            <div class="review-card">
+              <div class="review-stars">★★★★★</div>
+              <p class="review-text">"Ezine peyniri ve yayla tereyağı çok taze ve özenli soğuk zincir ambalajında ulaştı. SARMAL10 kuponuyla ekstra indirim aldım, teşekkürler!"</p>
+              <div class="reviewer-meta">
+                <span class="reviewer-name">Emre S.</span>
+                <span class="reviewer-badge">✓ Onaylı Alıcı (İzmir)</span>
+              </div>
+            </div>
+
+            <!-- GEÇİCİ OLARAK GİZLENEN ESKİ YORUMLAR (MULTİNET ONAYI SONRASI AÇILACAK)
+            <div class="review-card">
+              <div class="review-stars">★★★★★</div>
               <p class="review-text">"Sokak lambalı kar küresi sipariş verdim. Paketleme mükemmeldi ve 1 gün sonra elime ulaştı. Pluxee yemek kartımla rahatça ödedim!"</p>
               <div class="reviewer-meta">
                 <span class="reviewer-name">Ayşe K.</span>
@@ -620,6 +749,7 @@
                 <span class="reviewer-badge">✓ Onaylı Alıcı (İzmir)</span>
               </div>
             </div>
+            -->
           </div>
         </div>
       </section>
@@ -1066,6 +1196,14 @@
         <div class="footer-col">
           <h4>Reyonlar</h4>
           <ul class="footer-links">
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🛒 Market & Temel Gıda</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🍯 Doğal Bal & Reçeller</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🫒 Soğuk Sıkım Zeytinyağı</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🧀 Kahvaltılık & Şarküteri</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">💳 Multinet Up ile Ödeme</button></li>
+          </ul>
+          <!-- GEÇİCİ OLARAK GİZLENEN FOOTER REYONLARI (MULTİNET ONAYI SONRASI AÇILACAK)
+          <ul class="footer-links" style="display:none;">
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('kar-kureleri')">🔮 Kar Küreleri</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('batmayan-gemi')">🚢 Batmayan Gemi & Akvaryum</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('cicek-buket')">💐 Çiçek & Buketler</button></li>
@@ -1073,6 +1211,7 @@
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('gece-lambalari')">💡 Dekoratif Lambalar</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('yemek-kartlari')">💳 Yemek Kartı Ürünleri</button></li>
           </ul>
+          -->
         </div>
 
         <!-- Sütun 3: Müşteri Hizmetleri & Yasal Sözleşmeler -->
@@ -1140,6 +1279,24 @@
     <div class="mobile-drawer-body">
       <div class="mobile-cat-group">
         <div class="mobile-cat-heading">Reyonlar</div>
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
+          <span>🛒 Market & Temel Gıda</span>
+          <span>›</span>
+        </button>
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
+          <span>🍯 Doğal Bal & Reçeller</span>
+          <span>›</span>
+        </button>
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
+          <span>🫒 Soğuk Sıkım Zeytinyağı</span>
+          <span>›</span>
+        </button>
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left; color: var(--primary); font-weight: 700;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
+          <span>💳 Multinet Up ile Ödeme</span>
+          <span>★</span>
+        </button>
+
+        <!-- GEÇİCİ OLARAK GİZLENEN MOBİL REYONLAR (MULTİNET ONAYI SONRASI AÇILACAK)
         <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('kar-kureleri');">
           <span>🔮 Kar Küreleri & 3D Cam Küreler</span>
           <span>›</span>
@@ -1164,6 +1321,7 @@
           <span>💳 Yemek Kartları İle Ödeme</span>
           <span>★</span>
         </button>
+        -->
       </div>
 
       <div class="mobile-cat-group" style="margin-top: 1.5rem;">
