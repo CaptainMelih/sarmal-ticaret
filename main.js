@@ -408,12 +408,15 @@ function renderCartPage() {
 
   if (countTitle) countTitle.textContent = "Alışveriş Sepetim (" + totalCount + " Ürün)";
 
+  const shippingWrap = document.querySelector("#cartPageView .free-shipping-bar-wrap");
   if (cart.length === 0) {
     if (contentLayout) contentLayout.style.display = "none";
+    if (shippingWrap) shippingWrap.style.display = "none";
     if (emptyContainer) emptyContainer.style.display = "block";
     return;
   }
 
+  if (shippingWrap) shippingWrap.style.display = "block";
   if (emptyContainer) emptyContainer.style.display = "none";
   if (contentLayout) contentLayout.style.display = "grid";
 
