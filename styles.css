@@ -3965,4 +3965,383 @@ img {
   color: var(--primary-dark);
 }
 
+/* ==========================================================================
+   DEDICATED PRODUCT DETAIL PAGE (AYRI ÜRÜN DETAY SAYFASI) STİLLERİ
+   ========================================================================== */
+.pdp-section {
+  padding: 2.5rem 0 4rem;
+  background: var(--bg-page);
+}
+
+.pdp-grid {
+  display: grid;
+  grid-template-columns: 500px 1fr;
+  gap: 3rem;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 992px) {
+  .pdp-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+.pdp-gallery-box {
+  position: sticky;
+  top: 100px;
+}
+
+.pdp-main-image-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  position: relative;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdp-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.pdp-main-image:hover {
+  transform: scale(1.04);
+}
+
+.pdp-badge-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.pdp-info-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp-category-link {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.4rem;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.pdp-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 600px) {
+  .pdp-title {
+    font-size: 1.45rem;
+  }
+}
+
+.pdp-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.pdp-stars {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+.pdp-price-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.pdp-old-price {
+  font-size: 1.1rem;
+  text-decoration: line-through;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.pdp-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0.25rem 0;
+}
+
+.pdp-current-price {
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: var(--primary-deep);
+  letter-spacing: -0.5px;
+}
+
+.pdp-discount-tag {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+}
+
+.pdp-stock-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #15803d;
+  margin-top: 0.4rem;
+}
+
+.pdp-actions-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.pdp-qty-selector {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  overflow: hidden;
+  height: 48px;
+}
+
+.pdp-qty-btn {
+  width: 40px;
+  height: 100%;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.pdp-qty-btn:hover {
+  background: var(--bg-subtle);
+}
+
+.pdp-qty-input {
+  width: 45px;
+  height: 100%;
+  border: none;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  text-align: center;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--primary-deep);
+}
+
+.pdp-add-cart-btn {
+  flex: 2;
+  min-width: 180px;
+  height: 48px;
+  background: var(--primary-gradient);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+}
+
+.pdp-add-cart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.pdp-buy-now-btn {
+  flex: 1.5;
+  min-width: 140px;
+  height: 48px;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pdp-buy-now-btn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+.pdp-wishlist-btn {
+  width: 48px;
+  height: 48px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pdp-wishlist-btn:hover, .pdp-wishlist-btn.active {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.pdp-trust-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .pdp-trust-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pdp-trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.pdp-trust-item strong {
+  color: var(--primary-deep);
+  display: block;
+  font-size: 0.85rem;
+}
+
+/* Sekmeler (Tabs) */
+.pdp-tabs-container {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2.5rem;
+}
+
+.pdp-tabs-nav {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid var(--border-light);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.pdp-tab-btn {
+  padding: 0.75rem 1.25rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.pdp-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.pdp-tab-content {
+  display: none;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--text-main);
+}
+
+.pdp-tab-content.active {
+  display: block;
+  animation: fadeIn 0.25s ease;
+}
+
+.pdp-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.pdp-spec-table th, .pdp-spec-table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.pdp-spec-table th {
+  background: var(--bg-page);
+  width: 30%;
+  text-align: left;
+  color: var(--primary-deep);
+}
+
+
 

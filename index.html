@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Ana Stil Dosyası -->
-  <link rel="stylesheet" href="styles.css?v=3.0" />
+  <link rel="stylesheet" href="styles.css?v=3.1" />
 </head>
 <body>
 
@@ -342,6 +342,237 @@
             <div id="catProductsGrid" class="cat-products-grid"></div>
           </section>
 
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         AYRI ÜRÜN DETAY SAYFASI GÖRÜNÜMÜ (PRODUCT DETAIL PAGE VIEW)
+         ====================================================================== -->
+    <div id="productDetailPageView" class="page-view-section">
+      <div class="container pdp-section">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb-nav" style="margin-bottom: 1.5rem;">
+          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-link" id="pdpBreadcrumbCategory" onclick="navigateToCategory('kar-kureleri')">Kategori</span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current" id="pdpBreadcrumbTitle">Ürün Detayı</span>
+        </nav>
+
+        <!-- 2 Sütunlu Ürün Ana Alanı -->
+        <div class="pdp-grid">
+          
+          <!-- Sol Sütun: Galeri & Görsel -->
+          <div class="pdp-gallery-box">
+            <div class="pdp-main-image-wrap">
+              <span id="pdpBadgeTag" class="pdp-badge-tag">%25 İndirim</span>
+              <img id="pdpMainImg" class="pdp-main-image" src="/images/products/sokak_lambali_kar_kuresi.jpg" alt="Ürün Görseli" />
+            </div>
+            
+            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+              <div style="width: 70px; height: 70px; border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; cursor: pointer;">
+                <img id="pdpThumb1" src="/images/products/sokak_lambali_kar_kuresi.jpg" alt="Küçük Görsel" style="width: 100%; height: 100%; object-fit: cover;" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun: Bilgiler & Satın Alma -->
+          <div class="pdp-info-box">
+            <span id="pdpCategoryTag" class="pdp-category-link" onclick="navigateToCategory('kar-kureleri')">KAR KÜRELERİ</span>
+            <h1 id="pdpTitle" class="pdp-title">Sokak Lambalı Işıklı Kar Küresi</h1>
+            
+            <div class="pdp-meta-row">
+              <div class="pdp-stars">★★★★★</div>
+              <span id="pdpReviewsText" style="font-weight: 600; color: var(--text-muted);">(48 Değerlendirme)</span>
+              <span style="color: var(--border);">|</span>
+              <span id="pdpBarcodeText" style="color: var(--text-muted); font-size: 0.8rem;">Barkod: 869000100101</span>
+              <span style="color: var(--border);">|</span>
+              <span style="color: #16a34a; font-weight: 700;">✓ Orijinal Lisanslı Ürün</span>
+            </div>
+
+            <!-- Fiyat Kutusu -->
+            <div class="pdp-price-card">
+              <div id="pdpOldPrice" class="pdp-old-price">650,00 TL</div>
+              <div class="pdp-price-row">
+                <span id="pdpCurrentPrice" class="pdp-current-price">489,90 TL</span>
+                <span id="pdpDiscountBadge" class="pdp-discount-tag">%25 Kazanç</span>
+              </div>
+              <div class="pdp-stock-status">
+                <span>✓</span>
+                <span>Stokta Var - Saat 16:00 Öncesi Siparişlerde AYNI GÜN KARGODA</span>
+              </div>
+            </div>
+
+            <!-- Canlı Sosyal Kanıt & FOMO -->
+            <div class="quickview-social-proof" style="margin: 0 0 1.5rem 0;">
+              <div class="social-proof-line">
+                <span class="live-pulse-green"></span>
+                <span id="pdpLiveViewers">Bu hediyeyi şu an <strong>18 kişi</strong> inceliyor.</span>
+              </div>
+              <div class="social-proof-line">
+                <span>🔥</span>
+                <span id="pdpRecentOrders">Son 24 saatte <strong>8 adet</strong> sipariş verildi - Sınırlı Stok!</span>
+              </div>
+              <div class="social-proof-line">
+                <span>⚡</span>
+                <span>500 TL ve üzerine <strong>Ücretsiz Hızlı Kargo</strong></span>
+              </div>
+            </div>
+
+            <!-- Satın Alma Butonları & Adet -->
+            <div class="pdp-actions-row">
+              <div class="pdp-qty-selector">
+                <button type="button" class="pdp-qty-btn" onclick="changePdpQty(-1)">−</button>
+                <input id="pdpQtyInput" type="number" class="pdp-qty-input" value="1" min="1" max="99" readonly />
+                <button type="button" class="pdp-qty-btn" onclick="changePdpQty(1)">+</button>
+              </div>
+
+              <button id="pdpAddToCartBtn" type="button" class="pdp-add-cart-btn" onclick="handlePdpAddToCart()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                <span>Sepete Ekle</span>
+              </button>
+
+              <button id="pdpBuyNowBtn" type="button" class="pdp-buy-now-btn" onclick="handlePdpBuyNow()">
+                <span>⚡ Hemen Al</span>
+              </button>
+
+              <button id="pdpWishlistBtn" type="button" class="pdp-wishlist-btn" onclick="handlePdpWishlist()" title="Favorilere Ekle">
+                🤍
+              </button>
+            </div>
+
+            <!-- Güven & Kargo Rozetleri -->
+            <div class="pdp-trust-list">
+              <div class="pdp-trust-item">
+                <span style="font-size: 1.3rem;">🔒</span>
+                <div>
+                  <strong>PayTR 256-Bit SSL</strong>
+                  <span>3D Secure ile korumalı güvenli taksitli ödeme</span>
+                </div>
+              </div>
+              <div class="pdp-trust-item">
+                <span style="font-size: 1.3rem;">🎁</span>
+                <div>
+                  <strong>Özel Hediye Paketi</strong>
+                  <span>Saten kurdeleli koruyucu hediye kutusu & not kartı</span>
+                </div>
+              </div>
+              <div class="pdp-trust-item">
+                <span style="font-size: 1.3rem;">🚚</span>
+                <div>
+                  <strong>Aynı Gün Kargo</strong>
+                  <span>Yurtiçi Kargo güvencesiyle hızlı ve sigortalı teslimat</span>
+                </div>
+              </div>
+              <div class="pdp-trust-item">
+                <span style="font-size: 1.3rem;">🔄</span>
+                <div>
+                  <strong>14 Gün İade Garantisi</strong>
+                  <span>Koşulsuz iade ve anında değişim hakkı</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Ürün Detay Sekmeleri (Tablar) -->
+        <div class="pdp-tabs-container">
+          <div class="pdp-tabs-nav">
+            <button type="button" class="pdp-tab-btn active" id="tabBtnDesc" onclick="switchPdpTab('desc')">Ürün Açıklaması</button>
+            <button type="button" class="pdp-tab-btn" id="tabBtnSpecs" onclick="switchPdpTab('specs')">Özellikler & Boyut</button>
+            <button type="button" class="pdp-tab-btn" id="tabBtnShipping" onclick="switchPdpTab('shipping')">Teslimat & İade</button>
+            <button type="button" class="pdp-tab-btn" id="tabBtnReviews" onclick="switchPdpTab('reviews')">Müşteri Yorumları (<span id="pdpTabReviewCount">48</span>)</button>
+          </div>
+
+          <div id="pdpTabDesc" class="pdp-tab-content active">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-deep); margin-bottom: 0.75rem;">Özel Tasarım Hediyelik Koleksiyonu</h3>
+            <p id="pdpLongDescription" style="margin-bottom: 1rem;">
+              Sarmal Ticaret'in özenle seçilen hediyelik ürün koleksiyonuna ait bu özel tasarım, sevdiklerinize unutulmaz ve kalıcı bir mutluluk yaşatmak için tasarlandı. Yüksek kaliteli malzeme yapısı, dayanıklı koruyucu ambalajı ve büyüleyici detaylarıyla doğum günü, yıl dönümü, sevgililer günü veya özel tebrikler için mükemmel bir hediye seçeneğidir.
+            </p>
+            <div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+              <strong>💡 Hediye Paketi & Notu:</strong> Sepet adımında "Şık Hediye Paketi İstiyorum" seçeneğini işaretleyerek sevdiklerinize özel saten kurdeleli kutu ve kişisel tebrik kartı ekleyebilirsiniz.
+            </div>
+          </div>
+
+          <div id="pdpTabSpecs" class="pdp-tab-content">
+            <table class="pdp-spec-table">
+              <tbody>
+                <tr>
+                  <th>Kategori</th>
+                  <td id="pdpSpecCategory">Kar Küreleri</td>
+                </tr>
+                <tr>
+                  <th>Ürün Kodu / Barkod</th>
+                  <td id="pdpSpecBarcode">869000100101</td>
+                </tr>
+                <tr>
+                  <th>Malzeme Yapısı</th>
+                  <td>Kristal Cam, Sert Reçine Taban & Paslanmaz Metal Mekanizma</td>
+                </tr>
+                <tr>
+                  <th>Garanti Durumu</th>
+                  <td>2 Yıl Sarmal Ticaret Garantili</td>
+                </tr>
+                <tr>
+                  <th>Kullanım Alanı</th>
+                  <td>Masaüstü, Kitaplık, Başucu Gece Lambası & Dekoratif Obje</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="pdpTabShipping" class="pdp-tab-content">
+            <h4 style="font-weight: 800; color: var(--primary-deep); margin-bottom: 0.5rem;">Kargo ve Teslimat Süreci:</h4>
+            <p>Hafta içi saat 16:00'a kadar verilen tüm siparişler aynı gün <strong>Yurtiçi Kargo</strong>'ya teslim edilir. Kargonuz yola çıktığında SMS ve e-posta ile takip numaranız iletilir. 500 TL ve üzeri tüm siparişlerde kargo tamamen ücretsizdir.</p>
+            <h4 style="font-weight: 800; color: var(--primary-deep); margin: 1rem 0 0.5rem;">14 Gün Koşulsuz İade:</h4>
+            <p>Teslimat tarihinden itibaren 14 gün içerisinde herhangi bir gerekçe göstermeksizin Yurtiçi Kargo anlaşma kodumuz (540912) ile ücretsiz iade edebilirsiniz.</p>
+          </div>
+
+          <div id="pdpTabReviews" class="pdp-tab-content">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-page); padding: 1.25rem; border-radius: 8px;">
+              <div style="font-size: 2.5rem; font-weight: 900; color: var(--primary-deep);">4.9</div>
+              <div>
+                <div style="color: #f59e0b; font-size: 1.1rem;">★★★★★</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">%98 Müşteri Memnuniyeti</div>
+              </div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem;">
+                  <span>Selin Y.</span>
+                  <span style="color: #16a34a; font-size: 0.8rem;">✓ Onaylı Alıcı</span>
+                </div>
+                <div style="color: #f59e0b; font-size: 0.8rem; margin: 2px 0;">★★★★★</div>
+                <p style="font-size: 0.88rem; color: var(--text-main); margin-top: 4px;">Paketleme inanılmaz özenliydi, kırılmasın diye hava kabarcıklı naylona kat kat sarmışlar. Sevgilime hediye aldım bayıldı, ışıkları ve melodisi çok romantik.</p>
+              </div>
+
+              <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem;">
+                  <span>Burak T.</span>
+                  <span style="color: #16a34a; font-size: 0.8rem;">✓ Onaylı Alıcı</span>
+                </div>
+                <div style="color: #f59e0b; font-size: 0.8rem; margin: 2px 0;">★★★★★</div>
+                <p style="font-size: 0.88rem; color: var(--text-main); margin-top: 4px;">Ertesi gün elime ulaştı, çok hızlı kargo. Hediye notunu da çok şık yazmışlar, teşekkür ederim.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Benzer Ürünler / İlgili Koleksiyon -->
+        <div style="margin-top: 3rem;">
+          <div class="products-section-header" style="margin-bottom: 1.5rem;">
+            <div class="section-title-wrap">
+              <span class="section-title-icon">✨</span>
+              <h2 class="section-title">Bu Hediyeyi İnceleyenler Bunlara da Baktı</h2>
+            </div>
+          </div>
+          <div id="pdpRelatedProductsGrid" class="products-grid"></div>
         </div>
 
       </div>
@@ -1709,7 +1940,7 @@
   </div>
 
   <!-- Ana JavaScript Dosyası -->
-  <script type="module" src="/main.js?v=3.0"></script>
+  <script type="module" src="/main.js?v=3.1"></script>
 
 </body>
 </html>

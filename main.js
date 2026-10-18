@@ -967,7 +967,8 @@ const ALL_VIEWS = [
   "wishlistPageView",
   "authPageView",
   "profilePageView",
-  "trackingPageView"
+  "trackingPageView",
+  "productDetailPageView"
 ];
 
 function hideAllViews() {
@@ -1017,6 +1018,11 @@ function navigateToCategory(slug) {
   window.location.hash = "kategori=" + encodeURIComponent(slug);
 }
 
+function navigateToProduct(productId) {
+  closeAllModals();
+  window.location.hash = "urun=" + productId;
+}
+
 function navigateToPage(pageName) {
   if (pageName === "giris" || pageName === "kayit" || pageName === "hesabim") {
     try { sessionStorage.setItem("sarmal_explicit_auth", "true"); } catch (e) {}
@@ -1061,6 +1067,17 @@ function renderRoute() {
       currentCategorySlug = slug;
       showView("categoryView");
       renderCategoryPage(category);
+      updateMobileBottomNavUI("categories");
+      return;
+    }
+  }
+
+  if (rawHash.startsWith("urun=")) {
+    const prodId = parseInt(rawHash.split("=")[1], 10);
+    const product = PRODUCTS_DATA.find(p => p.id === prodId);
+    if (product) {
+      showView("productDetailPageView");
+      renderProductDetailPage(product);
       updateMobileBottomNavUI("categories");
       return;
     }
@@ -1191,7 +1208,7 @@ function renderCartPage() {
           '<img class="cart-page-img" src="' + escapeHTML(item.product.image) + '" alt="' + escapeHTML(item.product.name) + '" />' +
           '<div class="cart-page-prod-info">' +
             '<span class="cart-page-prod-brand">' + escapeHTML(item.product.brand) + '</span>' +
-            '<a href="javascript:void(0)" onclick="openQuickView(' + item.product.id + ')" class="cart-page-prod-title">' + escapeHTML(item.product.name) + '</a>' +
+            '<a href="javascript:void(0)" onclick="navigateToProduct(' + item.product.id + ')" class="cart-page-prod-title">' + escapeHTML(item.product.name) + '</a>' +
             '<span class="cart-mobile-unit-price">' + formatPrice(item.product.price) + ' / adet</span>' +
           '</div>' +
         '</div>' +
@@ -1565,13 +1582,13 @@ function createProductCardHTML(product) {
       '<button class="product-wishlist-btn ' + (isWishlisted ? 'active' : '') + '" onclick="toggleWishlist(' + product.id + ', event)" title="Favorilere Ekle">' +
         (isWishlisted ? '❤️' : '🤍') +
       '</button>' +
-      '<div class="product-img-wrap" onclick="openQuickView(' + product.id + ')">' +
+      '<div class="product-img-wrap" onclick="navigateToProduct(' + product.id + ')">' +
         '<img class="product-img" src="' + safeImg + '" alt="' + safeName + '" loading="lazy" onerror="this.src=\'https://via.placeholder.com/400?text=Sarmal+Ticaret\'" />' +
-        '<button class="quick-view-overlay-btn" type="button">Hızlı İncele</button>' +
+        '<button class="quick-view-overlay-btn" type="button" onclick="navigateToProduct(' + product.id + '); event.stopPropagation();">Ürünü İncele</button>' +
       '</div>' +
       '<div class="product-content">' +
         '<span class="product-brand">' + safeBrand + '</span>' +
-        '<h3 class="product-title" onclick="openQuickView(' + product.id + ')" title="' + safeName + '">' + safeName + '</h3>' +
+        '<h3 class="product-title" onclick="navigateToProduct(' + product.id + ')" title="' + safeName + '">' + safeName + '</h3>' +
         '<div class="product-rating">' +
           '<span>★★★★★</span>' +
           '<span class="rating-count">(' + product.reviews + ')</span>' +
@@ -2283,67 +2300,141 @@ function openPolicyModal(type) {
   document.body.style.overflow = "hidden";
 }
 
-// --- 16. HIZLI İNCELEME (QUICK VIEW) & TAKSİT TABLOSU ---
+// --- 16. AYRI ÜRÜN DETAY SAYFASI MOTORU (PDP) ---
+let currentPdpProduct = null;
+
 function openQuickView(productId) {
-  const product = PRODUCTS_DATA.find(p => p.id === productId);
-  const quickViewModal = document.getElementById("quickViewModal");
-  if (!product || !quickViewModal) return;
+  navigateToProduct(productId);
+}
 
-  const modalBody = document.getElementById("quickViewContent");
-  if (modalBody) {
-    modalBody.innerHTML = (
-      '<div class="quickview-grid">' +
-        '<div class="quickview-img-box">' +
-          '<img src="' + escapeHTML(product.image) + '" alt="' + escapeHTML(product.name) + '" />' +
-        '</div>' +
-        '<div class="quickview-details">' +
-          '<span style="color: var(--primary); font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">' + escapeHTML(product.category) + '</span>' +
-          '<h2 style="font-size: 1.35rem; margin: 0.5rem 0 1rem; color: var(--text-main); font-weight: 800;">' + escapeHTML(product.name) + '</h2>' +
-          '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">' +
-            '<span style="color: #fbbf24;">★★★★★</span>' +
-            '<span style="color: var(--text-muted); font-size: 0.85rem;">(' + product.reviews + ' Değerlendirme)</span>' +
-            '<span style="margin-left: auto; background: var(--primary-subtle); color: var(--primary-dark); font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Barkod: ' + escapeHTML(product.barcode) + '</span>' +
-          '</div>' +
-          '<div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem;">' +
-            '<div style="text-decoration: line-through; color: var(--text-light); font-size: 0.9rem;">' + formatPrice(product.oldPrice) + '</div>' +
-            '<div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-deep);">' + formatPrice(product.price) + '</div>' +
-            '<div style="font-size: 0.82rem; color: #16a34a; font-weight: 700; margin-top: 0.35rem;">✓ Stokta Var - Aynı Gün Hızlı Kargo</div>' +
-          '</div>' +
-          '<div class="quickview-social-proof">' +
-            '<div class="social-proof-line">' +
-              '<span class="live-pulse-green"></span>' +
-              '<span>Bu hediyeyi şu an <strong>' + (12 + (product.id % 9)) + ' kişi</strong> inceliyor.</span>' +
-            '</div>' +
-            '<div class="social-proof-line">' +
-              '<span>🔥</span>' +
-              '<span>Son 24 saatte <strong>' + (4 + (product.id % 6)) + ' kişi</strong> bu ürünü sipariş etti.</span>' +
-            '</div>' +
-            '<div class="social-proof-line">' +
-              '<span>⚡</span>' +
-              '<span>Bugün 16:00 öncesi siparişlerde <strong>Aynı Gün Ücretsiz Kargo!</strong></span>' +
-            '</div>' +
-          '</div>' +
-          '<div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">' +
-            '<button class="add-to-cart-btn" style="flex: 1;" onclick="addToCart(' + product.id + ', 1); closeAllModals();">' +
-              '🛒 Sepete Ekle' +
-            '</button>' +
-            '<button class="action-btn" style="border: 1px solid var(--border);" onclick="toggleWishlist(' + product.id + ');">' +
-              '❤️ Favori' +
-            '</button>' +
-          '</div>' +
-          '<div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted);">' +
-            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🚚</span> <strong>Aynı Gün Kargo:</strong> Saat 16:00 öncesi verilen siparişler aynı gün kargoda.</div>' +
-            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🔒</span> <strong>PayTR Güvencesi:</strong> 256-Bit SSL şifreleme ve 3D Secure ile korumalı güvenli ödeme.</div>' +
-            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">📦</span> <strong>Özel Hediye Paketi:</strong> Kırılmaya karşı özel darbe emici korumalı ambalaj.</div>' +
-            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🔄</span> <strong>14 Gün İade:</strong> Koşulsuz iade ve değişim garantisi.</div>' +
-          '</div>' +
-        '</div>' +
-      '</div>'
-    );
+function renderProductDetailPage(product) {
+  currentPdpProduct = product;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const bCat = document.getElementById("pdpBreadcrumbCategory");
+  const bTitle = document.getElementById("pdpBreadcrumbTitle");
+  const badgeTag = document.getElementById("pdpBadgeTag");
+  const mainImg = document.getElementById("pdpMainImg");
+  const thumb1 = document.getElementById("pdpThumb1");
+  const catTag = document.getElementById("pdpCategoryTag");
+  const title = document.getElementById("pdpTitle");
+  const reviewsText = document.getElementById("pdpReviewsText");
+  const barcodeText = document.getElementById("pdpBarcodeText");
+  const oldPrice = document.getElementById("pdpOldPrice");
+  const currentPrice = document.getElementById("pdpCurrentPrice");
+  const discountBadge = document.getElementById("pdpDiscountBadge");
+  const liveViewers = document.getElementById("pdpLiveViewers");
+  const recentOrders = document.getElementById("pdpRecentOrders");
+  const qtyInput = document.getElementById("pdpQtyInput");
+  const wishlistBtn = document.getElementById("pdpWishlistBtn");
+  const specCat = document.getElementById("pdpSpecCategory");
+  const specBarcode = document.getElementById("pdpSpecBarcode");
+  const tabReviewCount = document.getElementById("pdpTabReviewCount");
+
+  if (bCat) {
+    bCat.textContent = product.category;
+    bCat.onclick = () => navigateToCategory(product.categorySlug);
   }
+  if (bTitle) bTitle.textContent = product.name;
+  if (badgeTag) {
+    badgeTag.textContent = product.badge || "%25 İndirim";
+    badgeTag.style.display = product.badge ? "block" : "none";
+  }
+  if (mainImg) {
+    mainImg.src = product.image;
+    mainImg.alt = product.name;
+  }
+  if (thumb1) {
+    thumb1.src = product.image;
+    thumb1.alt = product.name;
+    thumb1.parentElement.onclick = () => {
+      if (mainImg) mainImg.src = product.image;
+    };
+  }
+  if (catTag) {
+    catTag.textContent = product.category;
+    catTag.onclick = () => navigateToCategory(product.categorySlug);
+  }
+  if (title) title.textContent = product.name;
+  if (reviewsText) reviewsText.textContent = "(" + product.reviews + " Değerlendirme)";
+  if (barcodeText) barcodeText.textContent = "Barkod: " + product.barcode;
+  if (oldPrice) oldPrice.textContent = formatPrice(product.oldPrice);
+  if (currentPrice) currentPrice.textContent = formatPrice(product.price);
+  if (discountBadge) {
+    const diff = product.oldPrice - product.price;
+    discountBadge.textContent = "%" + product.discountPercent + " İndirim (" + formatPrice(diff) + " Kazanç)";
+  }
+  if (liveViewers) {
+    liveViewers.innerHTML = 'Bu hediyeyi şu an <strong>' + (14 + (product.id % 9)) + ' kişi</strong> inceliyor.';
+  }
+  if (recentOrders) {
+    recentOrders.innerHTML = 'Son 24 saatte <strong>' + (5 + (product.id % 6)) + ' kişi</strong> bu ürünü sipariş etti - Sınırlı Stok!';
+  }
+  if (qtyInput) qtyInput.value = "1";
+  if (wishlistBtn) {
+    const isW = wishlist.includes(product.id);
+    wishlistBtn.innerHTML = isW ? "❤️" : "🤍";
+    wishlistBtn.classList.toggle("active", isW);
+  }
+  if (specCat) specCat.textContent = product.category;
+  if (specBarcode) specBarcode.textContent = product.barcode;
+  if (tabReviewCount) tabReviewCount.textContent = product.reviews;
 
-  quickViewModal.classList.add("active");
-  document.body.style.overflow = "hidden";
+  // İlgili Benzer Ürünler (Aynı kategoriden 4 ürün)
+  const relatedGrid = document.getElementById("pdpRelatedProductsGrid");
+  if (relatedGrid) {
+    const relatedList = PRODUCTS_DATA
+      .filter(p => p.categorySlug === product.categorySlug && p.id !== product.id)
+      .slice(0, 4);
+    relatedGrid.innerHTML = relatedList.map(createProductCardHTML).join("");
+  }
+}
+
+function changePdpQty(delta) {
+  const qtyInput = document.getElementById("pdpQtyInput");
+  if (!qtyInput) return;
+  let val = parseInt(qtyInput.value, 10) || 1;
+  val = Math.max(1, Math.min(99, val + delta));
+  qtyInput.value = val;
+}
+
+function handlePdpAddToCart() {
+  if (!currentPdpProduct) return;
+  const qtyInput = document.getElementById("pdpQtyInput");
+  const qty = parseInt(qtyInput ? qtyInput.value : 1, 10) || 1;
+  addToCart(currentPdpProduct.id, qty);
+}
+
+function handlePdpBuyNow() {
+  if (!currentPdpProduct) return;
+  const qtyInput = document.getElementById("pdpQtyInput");
+  const qty = parseInt(qtyInput ? qtyInput.value : 1, 10) || 1;
+  addToCart(currentPdpProduct.id, qty);
+  navigateToPage("sepet");
+  setTimeout(() => {
+    openCheckoutModal();
+  }, 150);
+}
+
+function handlePdpWishlist() {
+  if (!currentPdpProduct) return;
+  toggleWishlist(currentPdpProduct.id);
+  const wishlistBtn = document.getElementById("pdpWishlistBtn");
+  if (wishlistBtn) {
+    const isW = wishlist.includes(currentPdpProduct.id);
+    wishlistBtn.innerHTML = isW ? "❤️" : "🤍";
+    wishlistBtn.classList.toggle("active", isW);
+  }
+}
+
+function switchPdpTab(tabName) {
+  const tabs = ["desc", "specs", "shipping", "reviews"];
+  tabs.forEach(t => {
+    const btn = document.getElementById("tabBtn" + t.charAt(0).toUpperCase() + t.slice(1));
+    const content = document.getElementById("pdpTab" + t.charAt(0).toUpperCase() + t.slice(1));
+    if (btn) btn.classList.toggle("active", t === tabName);
+    if (content) content.classList.toggle("active", t === tabName);
+  });
 }
 
 // --- 17. CANLI ARAMA (AUTOCOMPLETE) ---
@@ -2386,7 +2477,7 @@ function setupLiveSearch() {
         '<span>Sarmal Ticaret</span>' +
       '</div>' +
       matched.map(p => (
-        '<div class="search-result-item" onclick="openQuickView(' + p.id + '); closeSearch();">' +
+        '<div class="search-result-item" onclick="navigateToProduct(' + p.id + '); closeSearch();">' +
           '<img class="search-result-img" src="' + escapeHTML(p.image) + '" alt="' + escapeHTML(p.name) + '" />' +
           '<div class="search-result-info">' +
             '<div class="search-result-category">' + escapeHTML(p.category) + '</div>' +
@@ -2607,6 +2698,13 @@ window.switchAuthTab = switchAuthTab;
 window.handleLoginSubmit = handleLoginSubmit;
 window.handleRegisterSubmit = handleRegisterSubmit;
 window.handleLogout = handleLogout;
+window.navigateToProduct = navigateToProduct;
+window.renderProductDetailPage = renderProductDetailPage;
+window.changePdpQty = changePdpQty;
+window.handlePdpAddToCart = handlePdpAddToCart;
+window.handlePdpBuyNow = handlePdpBuyNow;
+window.handlePdpWishlist = handlePdpWishlist;
+window.switchPdpTab = switchPdpTab;
 window.toggleGiftWrapping = toggleGiftWrapping;
 window.toggleGiftNote = toggleGiftNote;
 window.updateGiftNoteCount = updateGiftNoteCount;
