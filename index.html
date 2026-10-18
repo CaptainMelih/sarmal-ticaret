@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sarmal Ticaret | Güvenli Alışverişin Adresi - Yemek Kartları Geçerlidir</title>
-  <meta name="description" content="Sarmal Ticaret ile kar küreleri, batmayan gemiler, hediye setleri ve kişiye özel hediyelikler. Pluxee, Ticket, Multinet, SetCard ile güvenli ödeme imkanı!" />
+  <title>Sarmal Ticaret | Hediyelik Eşya & Özel Tasarım Ürünler - PayTR Güvenli Ödeme</title>
+  <meta name="description" content="Sarmal Ticaret ile büyüleyici kar küreleri, batmayan gemiler, çiçek setleri, gece lambaları ve kişiye özel hediyelikler. PayTR güvencesi ile 256-Bit SSL korumalı taksitli alışveriş!" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   
   <!-- Favicon -->
@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Ana Stil Dosyası -->
-  <link rel="stylesheet" href="styles.css?v=2.2" />
+  <link rel="stylesheet" href="styles.css?v=3.0" />
 </head>
 <body>
 
@@ -27,13 +27,13 @@
     <div class="container top-bar-inner">
       <div class="top-announcement">
         <span>🚚</span>
-        <span><strong>500 TL ve üzeri market alışverişlerinde</strong> <span class="highlight">ÜCRETSİZ KARGO</span> | 💳 <strong>Multinet Up</strong> Yemek Kartı ile Güvenli Market Alışverişi!</span>
+        <span><strong>500 TL ve üzeri siparişlerde</strong> <span class="highlight">ÜCRETSİZ KARGO</span> | 🔒 <strong>PayTR Altyapısı</strong> ile Güvenli Kredi Kartı & Taksit İmkanı!</span>
       </div>
       <div class="top-links">
         <a href="tel:08503085872" class="top-link-btn">
           <span>📞</span> 0850 308 58 72
         </a>
-        <button type="button" class="top-link-btn" onclick="navigateToCategory('market')">
+        <button type="button" class="top-link-btn" onclick="navigateToCategory('kar-kureleri')">
           <span>⚡</span> Günün Fırsatları
         </button>
         <button id="openTrackingTopBtn" type="button" class="top-link-btn" onclick="navigateToPage('siparis-takip')">
@@ -58,7 +58,7 @@
           <img src="sarmalticaretlogo.jpg" alt="Sarmal Ticaret Logo" class="brand-logo-img" />
           <div class="brand-text">
             <span class="brand-name">Sarmal Ticaret</span>
-            <span class="brand-slogan">Güvenli Alışveriş Reyonu</span>
+            <span class="brand-slogan">Özel Hediye & Tasarım Reyonu</span>
           </div>
         </a>
       </div>
@@ -68,22 +68,18 @@
         <form class="search-form" onsubmit="event.preventDefault();">
           <select id="searchCategorySelect" class="search-category-select" aria-label="Kategori Seç">
             <option value="all">Tüm Reyonlar</option>
-            <option value="market" selected>Market & Temel Gıda</option>
-            <!-- GEÇİCİ OLARAK GİZLENEN KATEGORİLER (MULTİNET ONAYI SONRASI AÇILACAK)
-            <option value="kar-kureleri">Kar Küreleri</option>
-            <option value="batmayan-gemi">Batmayan Gemi</option>
-            <option value="cicek-buket">Çiçek & Buket</option>
-            <option value="taki-mucevher">Takı & Kolye</option>
-            <option value="gece-lambalari">Gece Lambaları</option>
-            <option value="ozel-hediyelikler">Özel Hediyelikler</option>
-            <option value="yemek-kartlari">Yemek Kartları</option>
-            -->
+            <option value="kar-kureleri" selected>Kar Küreleri & Cam Küreler</option>
+            <option value="batmayan-gemi">Batmayan Gemi & Akvaryum</option>
+            <option value="cicek-buket">Çiçek & Buket Koleksiyonu</option>
+            <option value="taki-mucevher">Takı & Sürpriz İnci Kolye</option>
+            <option value="gece-lambalari">Gece Lambaları & Not Panosu</option>
+            <option value="ozel-hediyelikler">Özel Hediye & Müzik Kutuları</option>
           </select>
           <input
             id="searchInput"
             type="text"
             class="search-input"
-            placeholder="Aradığınız market ürününü yazın (örn: Karakovan Balı, Çilek Reçeli, Zeytinyağı...)"
+            placeholder="Aradığınız hediyelik ürünü yazın (örn: Sokak Lambalı Kar Küresi, Batmayan Gemi, İnci Kolye...)"
             autocomplete="off"
             maxlength="100"
           />
@@ -152,27 +148,6 @@
         </button>
 
         <div class="desktop-mega-dropdown">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item" style="color: var(--primary); font-weight: 700;">
-            <span><span class="mega-cat-icon">🛒</span> Market & Temel Gıda Reyonu</span>
-            <span>★</span>
-          </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
-            <span><span class="mega-cat-icon">🍯</span> Doğal Karakovan & Çiçek Balı</span>
-            <span>›</span>
-          </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
-            <span><span class="mega-cat-icon">🍓</span> Ev Yapımı Doğal Reçeller</span>
-            <span>›</span>
-          </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
-            <span><span class="mega-cat-icon">🫒</span> Taş Baskı Sızma Zeytinyağı</span>
-            <span>›</span>
-          </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="mega-cat-item">
-            <span><span class="mega-cat-icon">🧀</span> Şarküteri, Tereyağı & Peynir</span>
-            <span>›</span>
-          </a>
-          <!-- GEÇİCİ OLARAK GİZLENEN KATEGORİLER (MULTİNET ONAYI SONRASI AÇILACAK)
           <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')" class="mega-cat-item">
             <span><span class="mega-cat-icon">🔮</span> Kar Küreleri & 3D Cam Küreler</span>
             <span>›</span>
@@ -190,54 +165,23 @@
             <span>›</span>
           </a>
           <a href="javascript:void(0)" onclick="navigateToCategory('gece-lambalari')" class="mega-cat-item">
-            <span><span class="mega-cat-icon">💡</span> Dekoratif Gece Lambaları</span>
+            <span><span class="mega-cat-icon">💡</span> Dekoratif Gece Lambaları & Not Panosu</span>
             <span>›</span>
           </a>
           <a href="javascript:void(0)" onclick="navigateToCategory('ozel-hediyelikler')" class="mega-cat-item">
             <span><span class="mega-cat-icon">🎁</span> Özel Hediye & Müzik Kutuları</span>
             <span>›</span>
           </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('yemek-kartlari')" class="mega-cat-item" style="color: var(--primary); font-weight: 700;">
-            <span><span class="mega-cat-icon">💳</span> Yemek Kartı ile Ödeme Reyonu</span>
-            <span>★</span>
-          </a>
-          -->
         </div>
       </div>
 
       <!-- Yatay Kategori Linkleri -->
       <ul class="horizontal-nav-links">
         <li class="nav-link-item deal">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
+          <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')">
             <span>🔥</span> Günün Fırsatları
           </a>
         </li>
-        <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
-            <span>🛒</span> Market & Temel Gıda
-          </a>
-        </li>
-        <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
-            <span>🍯</span> Bal & Reçel
-          </a>
-        </li>
-        <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
-            <span>🫒</span> Zeytin & Zeytinyağı
-          </a>
-        </li>
-        <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
-            <span>🧀</span> Şarküteri & Kahvaltılık
-          </a>
-        </li>
-        <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('market')">
-            <span>💳</span> Multinet Up Geçerlidir
-          </a>
-        </li>
-        <!-- GEÇİCİ OLARAK GİZLENEN KATEGORİLER (MULTİNET ONAYI SONRASI AÇILACAK)
         <li class="nav-link-item">
           <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')">
             <span>🔮</span> Kar Küreleri
@@ -255,7 +199,7 @@
         </li>
         <li class="nav-link-item">
           <a href="javascript:void(0)" onclick="navigateToCategory('taki-mucevher')">
-            <span>💎</span> Takı & Aksesuar
+            <span>💎</span> Takı & Kolye
           </a>
         </li>
         <li class="nav-link-item">
@@ -264,15 +208,14 @@
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('yemek-kartlari')">
-            <span>💳</span> Yemek Kartları
+          <a href="javascript:void(0)" onclick="navigateToCategory('ozel-hediyelikler')">
+            <span>🎁</span> Özel Hediyeler
           </a>
         </li>
-        -->
       </ul>
 
       <!-- Sağ Kampanya Rozeti -->
-      <a href="javascript:void(0)" onclick="navigateToCategory('market')" class="nav-badge-link">
+      <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')" class="nav-badge-link">
         <span>⚡</span> %40'a Varan Net İndirimler
       </a>
 
@@ -295,7 +238,7 @@
         <span class="countdown-sep">:</span>
         <span id="timerSeconds" class="countdown-unit">00</span>
       </div>
-      <span style="font-size: 0.85rem; color: #c7d2fe;">💳 <strong>Multinet Up (MultiPay)</strong> ile güvenle anında ödeyin</span>
+      <span style="font-size: 0.85rem; color: #c7d2fe;">🔒 <strong>PayTR Altyapısı</strong> ile 256-Bit SSL Korumalı Güvenli Ödeme</span>
     </div>
   </section>
 
@@ -399,10 +342,10 @@
               <!-- Slide 1 -->
               <div class="slide-item" style="background-image: url('/images/slides/slide1.jpg');">
                 <div class="slide-content">
-                  <span class="slide-tag">💳 MULTİNET UP İLE MARKET ALIŞVERİŞİ</span>
-                  <h1 class="slide-title">Multinet Up Yemek Kartı ile Market Alışverişi Sarmal Ticaret'te!</h1>
-                  <p class="slide-desc">Multinet Up bakiyenizle doğal karakovan balı, ev yapımı reçeller, taş baskı zeytinyağı ve temel market ürünlerini güvenle satın alın.</p>
-                  <button type="button" class="slide-btn" onclick="navigateToCategory('market')">
+                  <span class="slide-tag">✨ ÖZEL HEDİYE KOLEKSİYONU</span>
+                  <h1 class="slide-title">Büyüleyici Kar Küreleri & 3D Cam Kürelerde %35 İndirim</h1>
+                  <p class="slide-desc">Nostaljik sokak lambalı kar küreleri, renk değiştiren samanyolu ve gezegen temalı 3D kristal cam küreler ile sevdiklerinize unutulmaz anlar yaşatın.</p>
+                  <button type="button" class="slide-btn" onclick="navigateToCategory('kar-kureleri')">
                     Hemen Alışverişe Başla
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
@@ -412,35 +355,23 @@
               <!-- Slide 2 -->
               <div class="slide-item" style="background-image: url('/images/slides/slide2.jpg');">
                 <div class="slide-content">
-                  <span class="slide-tag">🍯 DOĞAL KAHVALTILIK & ŞARKÜTERİ</span>
-                  <h2 class="slide-title">Doğal Karakovan Balı, Reçeller ve Sızma Zeytinyağında İndirim</h2>
-                  <p class="slide-desc">Katkısız yayla balı, ev yapımı çilek ve vişne reçelleri ile sofralarınıza doğallık ve lezzet katın.</p>
-                  <button type="button" class="slide-btn" onclick="navigateToCategory('market')">
+                  <span class="slide-tag">🚢 MASAÜSTÜ DEKORASYON</span>
+                  <h2 class="slide-title">Batmayan Gemi & Deniz Temalı Akvaryum Hediyeleri</h2>
+                  <p class="slide-desc">Masaüstü dekoratif batmayan gemi akvaryumları, sıvı kum saatleri ve deniz temalı stres giderici özel hediyeler.</p>
+                  <button type="button" class="slide-btn" onclick="navigateToCategory('batmayan-gemi')">
                     Fırsatları Keşfet
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
                 </div>
               </div>
-              <!-- GEÇİCİ OLARAK GİZLENEN SLIDE 2 (MULTİNET ONAYI SONRASI AÇILACAK)
-              <div class="slide-item" style="background-image: url('https://images.unsplash.com/photo-1512909006721-3d6018887383?w=1400&auto=format&fit=crop&q=80');">
-                <div class="slide-content">
-                  <span class="slide-tag">✨ ÖZEL HEDİYE KOLEKSİYONU</span>
-                  <h2 class="slide-title">Büyüleyici Kar Küreleri & Batmayan Gemilerde %35 İndirim</h2>
-                  <p class="slide-desc">Işıklı sokak lambalı kar küreleri ve masaüstü batmayan gemi akvaryumları ile sevdiklerinizi mutlu edin.</p>
-                  <button type="button" class="slide-btn" onclick="navigateToCategory('kar-kureleri')">
-                    Fırsatları Keşfet
-                  </button>
-                </div>
-              </div>
-              -->
 
               <!-- Slide 3 -->
               <div class="slide-item" style="background-image: url('/images/slides/slide3.jpg');">
                 <div class="slide-content">
                   <span class="slide-tag">🎟️ "SARMAL10" KUPON KODU</span>
                   <h2 class="slide-title">500 TL Üzerine Ücretsiz Kargo & Ekstra %10 İndirim</h2>
-                  <p class="slide-desc">Sepetinizde kupon kodu alanına SARMAL10 yazarak market siparişlerinizde anında ek indirim kazanın.</p>
-                  <button type="button" class="slide-btn" onclick="navigateToCategory('market')">
+                  <p class="slide-desc">Sepetinizde kupon kodu alanına SARMAL10 yazarak hediyelik siparişlerinizde PayTR güvencesiyle anında ek indirim kazanın.</p>
+                  <button type="button" class="slide-btn" onclick="navigateToCategory('ozel-hediyelikler')">
                     Sepeti Doldur
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
@@ -471,66 +402,35 @@
           </div>
 
           <div class="category-scroll-container">
-            <div class="category-circle-card" onclick="navigateToCategory('market')">
-              <div class="category-icon-box">🛒</div>
-              <span class="category-card-name">Tüm Market</span>
-            </div>
-
-            <div class="category-circle-card" onclick="navigateToCategory('market')">
-              <div class="category-icon-box">🍯</div>
-              <span class="category-card-name">Bal & Reçel</span>
-            </div>
-
-            <div class="category-circle-card" onclick="navigateToCategory('market')">
-              <div class="category-icon-box">🫒</div>
-              <span class="category-card-name">Zeytinyağı</span>
-            </div>
-
-            <div class="category-circle-card" onclick="navigateToCategory('market')">
-              <div class="category-icon-box">🧀</div>
-              <span class="category-card-name">Peynir & Tereyağı</span>
-            </div>
-
-            <div class="category-circle-card" onclick="navigateToCategory('market')">
-              <div class="category-icon-box">🫖</div>
-              <span class="category-card-name">Organik Çay</span>
-            </div>
-
-            <div class="category-circle-card" onclick="navigateToCategory('market')">
-              <div class="category-icon-box" style="background: #ede9fe; color: var(--primary);">💳</div>
-              <span class="category-card-name">Multinet Up</span>
-            </div>
-
-            <!-- GEÇİCİ OLARAK GİZLENEN REYON KARTLARI (MULTİNET ONAYI SONRASI AÇILACAK)
             <div class="category-circle-card" onclick="navigateToCategory('kar-kureleri')">
               <div class="category-icon-box">🔮</div>
               <span class="category-card-name">Kar Küreleri</span>
             </div>
+
             <div class="category-circle-card" onclick="navigateToCategory('batmayan-gemi')">
               <div class="category-icon-box">🚢</div>
               <span class="category-card-name">Batmayan Gemi</span>
             </div>
+
             <div class="category-circle-card" onclick="navigateToCategory('cicek-buket')">
               <div class="category-icon-box">💐</div>
               <span class="category-card-name">Çiçek & Buket</span>
             </div>
+
             <div class="category-circle-card" onclick="navigateToCategory('taki-mucevher')">
               <div class="category-icon-box">💎</div>
               <span class="category-card-name">Takı & Kolye</span>
             </div>
+
             <div class="category-circle-card" onclick="navigateToCategory('gece-lambalari')">
               <div class="category-icon-box">💡</div>
               <span class="category-card-name">Gece Lambaları</span>
             </div>
+
             <div class="category-circle-card" onclick="navigateToCategory('ozel-hediyelikler')">
               <div class="category-icon-box">🎁</div>
               <span class="category-card-name">Özel Hediyeler</span>
             </div>
-            <div class="category-circle-card" onclick="navigateToCategory('yemek-kartlari')">
-              <div class="category-icon-box" style="background: #ede9fe; color: var(--primary);">💳</div>
-              <span class="category-card-name">Yemek Kartları</span>
-            </div>
-            -->
           </div>
         </div>
       </section>
@@ -548,18 +448,18 @@
             </div>
 
             <div class="trust-item">
-              <div class="trust-icon-box">💳</div>
+              <div class="trust-icon-box">🔒</div>
               <div class="trust-info">
-                <h4>Yemek Kartları Geçerli</h4>
-                <p>Pluxee, Ticket, Multinet, SetCard</p>
+                <h4>PayTR Güvenli Ödeme</h4>
+                <p>256-Bit SSL & 3D Secure Koruması</p>
               </div>
             </div>
 
             <div class="trust-item">
-              <div class="trust-icon-box">🔒</div>
+              <div class="trust-icon-box">💳</div>
               <div class="trust-info">
-                <h4>256-Bit SSL Güvenliği</h4>
-                <p>Uçtan uca şifreli güvenli ödeme</p>
+                <h4>Taksit İmkanı</h4>
+                <p>Tüm Kredi Kartlarına Taksit Fırsatı</p>
               </div>
             </div>
 
@@ -596,33 +496,22 @@
         <div class="container">
           <div class="promo-banners-grid">
             <div class="promo-banner-card promo-banner-1">
-              <span class="promo-tag">SARMAL TİCARET & YEMEK KARTLARI</span>
-              <h3 class="promo-title">Yemek Kartı Bakiyenizle Alışveriş Keyfi</h3>
-              <p style="font-size: 0.95rem; opacity: 0.9;">Multinet Up yemek kartınızla taze ve doğal market ürünlerini hemen sipariş verin.</p>
-              <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('market')">
-                Kart Avantajlarını İncele →
+              <span class="promo-tag">BÜYÜLEYİCİ IŞIKLAR & NOSTALJİ</span>
+              <h3 class="promo-title">Nostaljik Sokak Lambalı Kar Küresi & Kristal Cam Küreler</h3>
+              <p style="font-size: 0.95rem; opacity: 0.9;">Renk değiştiren ışıklı, müzikli ve sim püskürtmeli dekoratif hediyelikler ile sevdiklerinize unutulmaz bir sürpriz yapın.</p>
+              <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('kar-kureleri')">
+                Ürünleri Hemen İncele →
               </button>
             </div>
 
-            <div class="promo-banner-card promo-banner-2" style="background: linear-gradient(135deg, #15803d, #14532d);">
-              <span class="promo-tag">DOĞAL & KATKISIZ LEZZETLER</span>
-              <h3 class="promo-title">Taş Baskı Naturel Sızma Zeytinyağı ve Gurme Reçeller</h3>
-              <p style="font-size: 0.95rem; opacity: 0.9;">Soğuk sıkım zeytinyağı ve katkısız geleneksel reçellerle sofralarınıza sağlık katın.</p>
-              <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('market')">
-                Market Ürünlerini İncele →
-              </button>
-            </div>
-
-            <!-- GEÇİCİ OLARAK GİZLENEN PROMOSYON AFİŞİ (MULTİNET ONAYI SONRASI AÇILACAK)
             <div class="promo-banner-card promo-banner-2">
               <span class="promo-tag">SÜRPRİZ HEDİYE SEÇENEKLERİ</span>
               <h3 class="promo-title">Gerçek İstiridye İçinden Çıkan Sürpriz İnci Kolye</h3>
-              <p style="font-size: 0.95rem; opacity: 0.9;">Özel hediye kutusunda, sevdiğinize unutamayacağı bir an yaşatın.</p>
+              <p style="font-size: 0.95rem; opacity: 0.9;">Özel hediye kutusunda, sevdiğinize kendi incisini çıkarma heyecanını ve zarafetini yaşatın.</p>
               <button type="button" class="promo-link" style="border: none; background: none; cursor: pointer;" onclick="navigateToCategory('taki-mucevher')">
-                Ürünü Hemen İncele →
+                Koleksiyonu Keşfet →
               </button>
             </div>
-            -->
           </div>
         </div>
       </section>
@@ -642,44 +531,54 @@
         </div>
       </section>
 
-      <!-- Öne Çıkan Markalar & Yemek Kartları Bandı -->
+      <!-- Öne Çıkan Markalar & PayTR Güvenli Ödeme Altyapısı -->
       <section id="brandsSection" class="brands-section">
         <div class="container">
           <div class="brands-container">
             <div style="text-align: center; margin-bottom: 1.5rem;">
-              <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-deep);">Öne Çıkan Markalar & Geçerli Yemek Kartları</h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Sarmal Ticaret'te tüm bu anlaşmalı sistemlerle güvenle ödeme yapabilirsiniz.</p>
+              <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-deep);">Güvenli Ödeme Altyapısı & Anlaşmalı Kartlar</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Sarmal Ticaret'te tüm alışverişleriniz PayTR 256-Bit SSL güvencesiyle korunur.</p>
             </div>
 
             <div class="brands-grid">
-              <div class="brand-badge-item" onclick="navigateToCategory('yemek-kartlari')">
-                <span class="brand-logo-text" style="color: var(--primary);">STAR CAST</span>
-                <span class="brand-badge-desc">Orijinal Koleksiyon</span>
+              <div class="brand-badge-item" onclick="openCheckoutModal()">
+                <span class="brand-logo-text" style="color: #15803d; font-weight: 900;">PayTR</span>
+                <span class="brand-badge-desc">256-Bit SSL 3D Secure</span>
               </div>
 
-              <div class="brand-badge-item" onclick="navigateToCategory('yemek-kartlari')">
-                <span class="brand-logo-text brand-pluxee" style="background: #002d18; color: #00eb5e; padding: 2px 8px; border-radius: 4px;">pluxee</span>
-                <span class="brand-badge-desc">Sodexo Geçerli</span>
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #008234;">bonus</span>
+                <span class="brand-badge-desc">Garanti BBVA</span>
               </div>
 
-              <div class="brand-badge-item" onclick="navigateToCategory('yemek-kartlari')">
-                <span class="brand-logo-text" style="color: #e60000;">Ticket</span>
-                <span class="brand-badge-desc">Edenred Kart</span>
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #582cd2;">world</span>
+                <span class="brand-badge-desc">Yapı Kredi</span>
               </div>
 
-              <div class="brand-badge-item" onclick="navigateToCategory('yemek-kartlari')">
-                <span class="brand-logo-text" style="color: #f58220;">multinet</span>
-                <span class="brand-badge-desc">Multinet Up</span>
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #d8232a;">maximum</span>
+                <span class="brand-badge-desc">İş Bankası</span>
               </div>
 
-              <div class="brand-badge-item" onclick="navigateToCategory('yemek-kartlari')">
-                <span class="brand-logo-text" style="color: #0072ce;">SETCARD</span>
-                <span class="brand-badge-desc">Setcard Kurumsal</span>
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #ea580c;">axess</span>
+                <span class="brand-badge-desc">Akbank</span>
               </div>
 
-              <div class="brand-badge-item" onclick="navigateToCategory('yemek-kartlari')">
-                <span class="brand-logo-text" style="color: #00a859;">METROPOL</span>
-                <span class="brand-badge-desc">MetropolCard</span>
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #0284c7;">paraf</span>
+                <span class="brand-badge-desc">Halkbank</span>
+              </div>
+
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #0d9488;">CardFinans</span>
+                <span class="brand-badge-desc">QNB</span>
+              </div>
+
+              <div class="brand-badge-item">
+                <span class="brand-logo-text" style="color: #1e3a8a;">TROY</span>
+                <span class="brand-badge-desc">Yerli Ödeme Sistemi</span>
               </div>
             </div>
           </div>
@@ -697,7 +596,7 @@
           <div class="reviews-grid">
             <div class="review-card">
               <div class="review-stars">★★★★★</div>
-              <p class="review-text">"Karakovan süzme çiçek balı gerçekten muazzam lezzetli ve katkısız. Multinet Up yemek kartımla kolayca sipariş verdim, 1 günde teslim edildi!"</p>
+              <p class="review-text">"Sokak lambalı kar küresi sipariş verdim. Paketleme mükemmeldi ve 1 gün sonra elime ulaştı. Kredi kartımla peşin fiyatına taksitle aldım, ışıkları harika!"</p>
               <div class="reviewer-meta">
                 <span class="reviewer-name">Ayşe K.</span>
                 <span class="reviewer-badge">✓ Onaylı Alıcı (İstanbul)</span>
@@ -706,7 +605,7 @@
 
             <div class="review-card">
               <div class="review-stars">★★★★★</div>
-              <p class="review-text">"Taş baskı soğuk sıkım zeytinyağı ve ev yapımı çilek reçeli aldık. Kahvaltılarda vazgeçilmezimiz oldu. Paketleme ve tazelik 10 numara."</p>
+              <p class="review-text">"Batmayan gemi masaüstünde gerçekten büyüleyici duruyor. Sıvı dengesi mükemmel, arkadaşlarım çok beğendi. Güvenilir ve hızlı satıcı."</p>
               <div class="reviewer-meta">
                 <span class="reviewer-name">Murat D.</span>
                 <span class="reviewer-badge">✓ Onaylı Alıcı (Ankara)</span>
@@ -715,41 +614,12 @@
 
             <div class="review-card">
               <div class="review-stars">★★★★★</div>
-              <p class="review-text">"Ezine peyniri ve yayla tereyağı çok taze ve özenli soğuk zincir ambalajında ulaştı. SARMAL10 kuponuyla ekstra indirim aldım, teşekkürler!"</p>
+              <p class="review-text">"İstiridye içinden çıkan inci kolye setini eşime yıldönümü hediyesi aldım. SARMAL10 kuponuyla ek indirim de uygulandı, eşim çok mutlu oldu."</p>
               <div class="reviewer-meta">
                 <span class="reviewer-name">Emre S.</span>
                 <span class="reviewer-badge">✓ Onaylı Alıcı (İzmir)</span>
               </div>
             </div>
-
-            <!-- GEÇİCİ OLARAK GİZLENEN ESKİ YORUMLAR (MULTİNET ONAYI SONRASI AÇILACAK)
-            <div class="review-card">
-              <div class="review-stars">★★★★★</div>
-              <p class="review-text">"Sokak lambalı kar küresi sipariş verdim. Paketleme mükemmeldi ve 1 gün sonra elime ulaştı. Pluxee yemek kartımla rahatça ödedim!"</p>
-              <div class="reviewer-meta">
-                <span class="reviewer-name">Ayşe K.</span>
-                <span class="reviewer-badge">✓ Onaylı Alıcı (İstanbul)</span>
-              </div>
-            </div>
-
-            <div class="review-card">
-              <div class="review-stars">★★★★★</div>
-              <p class="review-text">"Batmayan gemi masaüstünde gerçekten harika duruyor. Çocuklar ve ofis arkadaşları bayıldı. Teşekkürler Sarmal Ticaret."</p>
-              <div class="reviewer-meta">
-                <span class="reviewer-name">Murat D.</span>
-                <span class="reviewer-badge">✓ Onaylı Alıcı (Ankara)</span>
-              </div>
-            </div>
-
-            <div class="review-card">
-              <div class="review-stars">★★★★★</div>
-              <p class="review-text">"İstiridye içinden çıkan inci kolye setini eşime hediye aldım. SARMAL10 kuponuyla ek indirim de uygulandı. Çok memnun kaldık."</p>
-              <div class="reviewer-meta">
-                <span class="reviewer-name">Emre S.</span>
-                <span class="reviewer-badge">✓ Onaylı Alıcı (İzmir)</span>
-              </div>
-            </div>
-            -->
           </div>
         </div>
       </section>
@@ -759,7 +629,7 @@
         <div class="container newsletter-inner">
           <div class="newsletter-info">
             <h3>E-Bültene Abone Olun, İndirimleri Kaçırmayın!</h3>
-            <p>Yemek kartı kampanyaları ve haftalık özel fırsatlar anında e-postanıza gelsin.</p>
+            <p>Özel hediyelik koleksiyonları, indirim kuponları ve fırsatlar anında e-postanıza gelsin.</p>
           </div>
           <form id="newsletterForm" class="newsletter-form">
             <input
@@ -793,7 +663,7 @@
           <h1 id="cartPageCountTitle" class="page-main-title">
             <span>🛒</span> Alışveriş Sepetim
           </h1>
-          <p class="page-subtitle">Siparişinizi güvenle oluşturun veya yemek kartınızla anında ödeyin.</p>
+          <p class="page-subtitle">Siparişinizi PayTR altyapısıyla 256-Bit SSL güvencesinde kredi kartı veya havale ile anında tamamlayın.</p>
         </div>
 
         <!-- 500 TL Ücretsiz Kargo İlerleme Çubuğu -->
@@ -810,7 +680,7 @@
         <div id="cartPageEmptyState" class="page-empty-state" style="display: none;">
           <div class="page-empty-icon">🛒</div>
           <h3 class="page-empty-title">Sepetinizde Henüz Ürün Bulunmuyor</h3>
-          <p class="page-empty-desc">Doğal market ürünleri ve Multinet Up yemek kartı avantajlarını hemen keşfetmeye başlayın.</p>
+          <p class="page-empty-desc">Büyüleyici hediye koleksiyonumuzu ve fırsatları hemen keşfetmeye başlayın.</p>
           <button type="button" class="slide-btn" style="display: inline-flex; margin: 0 auto;" onclick="navigateToHome()">
             Alışverişe Başla
           </button>
@@ -849,7 +719,7 @@
                 id="cartPageCouponInput"
                 type="text"
                 class="coupon-input"
-                placeholder="Kupon (SARMAL10, YEMEK50)"
+                placeholder="Kupon (SARMAL10)"
                 maxlength="20"
               />
               <button type="submit" class="coupon-btn">Uygula</button>
@@ -880,10 +750,10 @@
               <span>→</span>
             </button>
 
-            <!-- Güvenlik & Yemek Kartı Rozeti -->
+            <!-- Güvenlik & PayTR Rozeti -->
             <div style="background: var(--primary-subtle); border: 1px solid var(--primary-border); border-radius: 8px; padding: 0.85rem; font-size: 0.8rem; line-height: 1.5; color: var(--primary-deep); text-align: center;">
-              🔒 <strong>256-Bit SSL Koruma</strong><br>
-              💳 <strong>Multinet Up</strong> Yemek Kartı ile Güvenli Ödeme
+              🔒 <strong>PayTR 256-Bit SSL Güvenliği</strong><br>
+              💳 <strong>Tüm Banka Kartlarına</strong> Peşin Fiyatına Taksit İmkanı
             </div>
           </div>
         </div>
@@ -953,7 +823,7 @@
               <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">👤</div>
                 <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-deep);">Sarmal Ticaret'e Giriş Yap</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Siparişlerinizi ve yemek kartı ödemelerinizi takip edin.</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Siparişlerinizi ve kargo durumunuzu kolayca takip edin.</p>
               </div>
 
               <form id="pageAuthLoginForm" style="display: flex; flex-direction: column; gap: 1.1rem;">
@@ -1005,7 +875,7 @@
               <div style="text-align: center; margin-bottom: 1.5rem;">
                 <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">✨</div>
                 <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-deep);">Yeni Hesap Oluştur</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Hızlıca üye olun, özel yemek kartı indirimlerinden faydalanın.</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Hızlıca üye olun, özel hediyelik fırsatlarından ve kuponlardan anında faydalanın.</p>
               </div>
 
               <form id="pageAuthRegisterForm" style="display: flex; flex-direction: column; gap: 1.1rem;">
@@ -1177,7 +1047,7 @@
         <!-- Sütun 1: Kurumsal Hakkımızda & İletişim -->
         <div class="footer-col footer-about">
           <h4>Sarmal Ticaret</h4>
-          <p>Sarmal Ticaret, yenilikçi hediye ürünleri, dekoratif konseptler ve yemek kartları ile online alışveriş kolaylığı sunan güvenilir e-ticaret platformudur.</p>
+          <p>Sarmal Ticaret, yenilikçi hediye ürünleri, dekoratif konseptler, kar küreleri, batmayan gemiler ve özel hediyelikler sunan güvenilir e-ticaret platformudur.</p>
           <div class="footer-contact-item">
             <span class="footer-contact-icon">📍</span>
             <span>İstanbul / Türkiye</span>
@@ -1196,22 +1066,13 @@
         <div class="footer-col">
           <h4>Reyonlar</h4>
           <ul class="footer-links">
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🛒 Market & Temel Gıda</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🍯 Doğal Bal & Reçeller</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🫒 Soğuk Sıkım Zeytinyağı</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">🧀 Kahvaltılık & Şarküteri</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('market')">💳 Multinet Up ile Ödeme</button></li>
-          </ul>
-          <!-- GEÇİCİ OLARAK GİZLENEN FOOTER REYONLARI (MULTİNET ONAYI SONRASI AÇILACAK)
-          <ul class="footer-links" style="display:none;">
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('kar-kureleri')">🔮 Kar Küreleri</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('kar-kureleri')">🔮 Kar Küreleri & Cam Küreler</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('batmayan-gemi')">🚢 Batmayan Gemi & Akvaryum</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('cicek-buket')">💐 Çiçek & Buketler</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('taki-mucevher')">💎 Sürpriz İnci Kolye</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('gece-lambalari')">💡 Dekoratif Lambalar</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('yemek-kartlari')">💳 Yemek Kartı Ürünleri</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('cicek-buket')">💐 Çiçek & Buket Koleksiyonu</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('taki-mucevher')">💎 Takı & Sürpriz İnci Kolye</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('gece-lambalari')">💡 Dekoratif Gece Lambaları</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('ozel-hediyelikler')">🎁 Özel Hediye Kutuları</button></li>
           </ul>
-          -->
         </div>
 
         <!-- Sütun 3: Müşteri Hizmetleri & Yasal Sözleşmeler -->
@@ -1229,29 +1090,32 @@
           </ul>
         </div>
 
-        <!-- Sütun 4: Yemek Kartı & Ödeme Bilgileri -->
+        <!-- Sütun 4: Güvenli Ödeme & PayTR Bilgileri -->
         <div class="footer-col">
-          <h4>Yemek Kartı & Ödeme</h4>
+          <h4>Güvenli Ödeme & Taksit</h4>
           <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1rem;">
-            Yemek kartlarında <strong>Multinet Up (MultiPay)</strong> entegrasyonu ile bakiyenizle sevdiklerinize hediyeler seçebilir, kredi kartı ve havale ile güvenle ödeyebilirsiniz.
+            Ödemeleriniz <strong>PayTR</strong> altyapısı üzerinden 256-Bit SSL şifreleme ve 3D Secure güvencesiyle korunur. Kredi kartınızla peşin fiyatına taksitli veya Havale/EFT ile güvenle ödeyebilirsiniz.
           </p>
           <div style="background: var(--bg-page); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">🔒 256-Bit SSL Sertifikalı</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Tüm ödemeleriniz 3D Secure ile korunur.</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #15803d;">🔒 PayTR 256-Bit SSL Sertifikalı</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Tüm işlemleriniz SMS onaylı 3D Secure ile korunur.</div>
           </div>
         </div>
       </div>
 
       <!-- Ödeme Rozetleri -->
       <div class="payment-badges-wrap">
-        <div class="payment-title">GEÇERLİ ÖDEME SİSTEMLERİ VE YEMEK KARTLARI</div>
+        <div class="payment-title">GEÇERLİ ÖDEME SİSTEMLERİ VE ANLAŞMALI KARTLAR</div>
         <div class="payment-badges-row">
-          <span class="payment-badge" style="background: #eff6ff; color: #f58220; border-color: #f58220; font-weight: 800; font-size: 0.95rem;">★ Multinet UP (MultiPay)</span>
+          <span class="payment-badge" style="background: #f0fdf4; color: #15803d; border-color: #86efac; font-weight: 800; font-size: 0.95rem;">★ PayTR 3D Secure</span>
+          <span class="payment-badge">Bonus</span>
+          <span class="payment-badge">World</span>
+          <span class="payment-badge">Maximum</span>
+          <span class="payment-badge">Axess</span>
           <span class="payment-badge">MasterCard</span>
           <span class="payment-badge">VISA</span>
           <span class="payment-badge">TROY</span>
           <span class="payment-badge">256-Bit SSL</span>
-          <span class="payment-badge">3D Secure</span>
         </div>
       </div>
 
@@ -1260,7 +1124,7 @@
           © 2026 <strong>Sarmal Ticaret</strong> - Tüm Hakları Saklıdır.
         </div>
         <div>
-          Güvenli Alışveriş & Yemek Kartı Platformu
+          Güvenli Alışveriş & PayTR Ödeme Platformu
         </div>
       </div>
 
@@ -1279,24 +1143,6 @@
     <div class="mobile-drawer-body">
       <div class="mobile-cat-group">
         <div class="mobile-cat-heading">Reyonlar</div>
-        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
-          <span>🛒 Market & Temel Gıda</span>
-          <span>›</span>
-        </button>
-        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
-          <span>🍯 Doğal Bal & Reçeller</span>
-          <span>›</span>
-        </button>
-        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
-          <span>🫒 Soğuk Sıkım Zeytinyağı</span>
-          <span>›</span>
-        </button>
-        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left; color: var(--primary); font-weight: 700;" onclick="toggleMobileMenu(false); navigateToCategory('market');">
-          <span>💳 Multinet Up ile Ödeme</span>
-          <span>★</span>
-        </button>
-
-        <!-- GEÇİCİ OLARAK GİZLENEN MOBİL REYONLAR (MULTİNET ONAYI SONRASI AÇILACAK)
         <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('kar-kureleri');">
           <span>🔮 Kar Küreleri & 3D Cam Küreler</span>
           <span>›</span>
@@ -1317,11 +1163,10 @@
           <span>💡 Dekoratif Gece Lambaları</span>
           <span>›</span>
         </button>
-        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left; color: var(--primary); font-weight: 700;" onclick="toggleMobileMenu(false); navigateToCategory('yemek-kartlari');">
-          <span>💳 Yemek Kartları İle Ödeme</span>
-          <span>★</span>
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToCategory('ozel-hediyelikler');">
+          <span>🎁 Özel Hediye Kutuları</span>
+          <span>›</span>
         </button>
-        -->
       </div>
 
       <div class="mobile-cat-group" style="margin-top: 1.5rem;">
@@ -1461,68 +1306,46 @@
           Ödeme Yöntemi Seçin
         </h3>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-          Yemek kartları veya kredi kartı ile 256-Bit SSL korumalı güvenli ödeme.
+          PayTR altyapısıyla 256-Bit SSL korumalı kredi kartı veya havale/nakit ile güvenli ödeme.
         </p>
 
         <!-- Ödeme Sekmeleri -->
         <div class="payment-tabs">
-          <button type="button" class="payment-tab-btn active" data-tab="mealcard" onclick="switchPaymentTab('mealcard')">
-            💳 Multinet Up Yemek Kartı
-          </button>
-          <button type="button" class="payment-tab-btn" data-tab="creditcard" onclick="switchPaymentTab('creditcard')">
-            💳 Kredi / Banka Kartı
+          <button type="button" class="payment-tab-btn active" data-tab="creditcard" onclick="switchPaymentTab('creditcard')">
+            💳 Kredi / Banka Kartı (PayTR 3D Secure)
           </button>
           <button type="button" class="payment-tab-btn" data-tab="havale" onclick="switchPaymentTab('havale')">
-            🏦 Havale / EFT
+            🏦 Havale / EFT & Kapıda Nakit
           </button>
+          <!-- Multinet yemek kartı pasife alındı (onay sonrası açılabilir)
+          <button type="button" class="payment-tab-btn" data-tab="mealcard" onclick="switchPaymentTab('mealcard')">
+            💳 Multinet Up Yemek Kartı
+          </button>
+          -->
         </div>
 
         <form id="checkoutStep2Form">
-          <!-- Tab 1: Multinet Up Yemek Kartı -->
-          <div id="payContentMealCard" class="payment-tab-content active" data-tab="mealcard">
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #1e40af; line-height: 1.5;">
-              💳 <strong>Multinet Up (MultiPay) ile Güvenli Ödeme:</strong><br>
-              Şu an yemek kartlarından yalnızca <strong>Multinet Up</strong> entegrasyonu aktiftir. 16 haneli Multinet kart numaranızı ve kart bilgilerinizi girerek bakiyenizle güvenle ödeyebilirsiniz.
+          <!-- Tab 1: Kredi / Banka Kartı (PayTR Altyapısı - 256-Bit SSL 3D Secure) -->
+          <div id="payContentCreditCard" class="payment-tab-content active" data-tab="creditcard">
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.9rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #166534; line-height: 1.5;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem;">
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                  <span style="font-size: 1.2rem;">🔒</span>
+                  <strong style="font-size: 0.95rem; color: #14532d;">PayTR 256-Bit SSL & 3D Secure Güvenli Ödeme</strong>
+                </div>
+                <span style="background: #15803d; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">PAYTR ONAYLI</span>
+              </div>
+              <div>Tüm kredi kartı işlemleriniz PayTR ödeme altyapısı üzerinden 256-Bit SSL şifreleme ve SMS onaylı 3D Secure ile gerçekleştirilmektedir. Kart bilgileriniz kesinlikle sunucularımızda saklanmaz.</div>
             </div>
+
             <div class="checkout-form-grid">
               <div class="checkout-form-group full">
-                <label class="checkout-label">Yemek Kartı Sağlayıcısı *</label>
-                <select id="mealCardTypeSelect" class="checkout-select">
-                  <option value="Multinet Up" selected>Multinet Up (MultiPay)</option>
-                </select>
-              </div>
-
-              <div class="checkout-form-group full">
-                <label class="checkout-label">16 Haneli Multinet Kart Numarası *</label>
-                <input id="multinetCardNumber" type="text" class="checkout-input" placeholder="4506 XXXX XXXX XXXX" maxlength="19" required />
-              </div>
-
-              <div class="checkout-form-group">
-                <label class="checkout-label">Son Kullanma (AA/YY) *</label>
-                <input id="multinetExpiry" type="text" class="checkout-input" placeholder="12/28" maxlength="5" required />
-              </div>
-
-              <div class="checkout-form-group">
-                <label class="checkout-label">CVV / Güvenlik Kodu *</label>
-                <input id="multinetCvv" type="password" class="checkout-input" placeholder="***" maxlength="3" required />
-              </div>
-            </div>
-          </div>
-
-          <!-- Tab 2: Kredi / Banka Kartı (256-Bit SSL 3D Secure) -->
-          <div id="payContentCreditCard" class="payment-tab-content" data-tab="creditcard">
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #334155; line-height: 1.5;">
-              🔒 <strong>256-Bit SSL ve 3D Secure Doğrulaması:</strong><br>
-              Kart bilgileriniz bankanıza şifreli iletilir. Ödeme banka tarafından onaylanmadan sipariş oluşturulmaz.
-            </div>
-            <div class="checkout-form-grid">
-              <div class="checkout-form-group full">
-                <label class="checkout-label">Kart Üzerindeki İsim *</label>
+                <label class="checkout-label">Kart Üzerindeki İsim ve Soyisim *</label>
                 <input id="ccHolderName" type="text" class="checkout-input" placeholder="Ad Soyad" maxlength="50" />
               </div>
 
               <div class="checkout-form-group full">
-                <label class="checkout-label">Kart Numarası (16 Haneli) *</label>
+                <label class="checkout-label">16 Haneli Kart Numarası *</label>
                 <input id="ccNumber" type="text" class="checkout-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" />
               </div>
 
@@ -1532,33 +1355,51 @@
               </div>
 
               <div class="checkout-form-group">
-                <label class="checkout-label">CVC / CVV *</label>
+                <label class="checkout-label">Güvenlik Kodu (CVC / CVV) *</label>
                 <input id="ccCvc" type="password" class="checkout-input" placeholder="***" maxlength="4" />
               </div>
+            </div>
 
-              <div class="checkout-form-group full">
-                <label class="checkout-label">Taksit Seçeneği</label>
-                <select id="creditCardInstallment" class="checkout-select">
-                  <option value="Tek Çekim">Tek Çekim (Peşin Fiyatına)</option>
-                  <option value="3 Taksit">3 Taksit</option>
-                  <option value="6 Taksit">6 Taksit (+%5)</option>
-                  <option value="9 Taksit">9 Taksit (+%9)</option>
-                </select>
+            <!-- PayTR Taksit Seçenekleri Tablosu & Seçici -->
+            <div style="margin-top: 1.25rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                <label class="checkout-label" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--primary-deep);">
+                  💳 PayTR Taksit Seçenekleri (Bonus, World, Axess, Maximum, Paraf, Troy)
+                </label>
+                <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700;">✓ Peşin Fiyatına Taksit İmkanı</span>
               </div>
+              <div id="paytrInstallmentContainer" class="installment-table-wrap" style="margin-top: 0; padding-top: 0; border-top: none;">
+                <!-- Dinamik olarak JS tarafından calculateCartTotals().grandTotal'e göre render edilir -->
+              </div>
+              <input type="hidden" id="creditCardInstallment" value="Tek Çekim" />
             </div>
           </div>
 
-          <!-- Tab 3: Havale / EFT -->
+          <!-- Tab 2: Havale / EFT & Kapıda Nakit -->
           <div id="payContentHavale" class="payment-tab-content" data-tab="havale">
-            <div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; border: 1px solid var(--border);">
-              <strong style="color: var(--primary-deep); display: block; margin-bottom: 0.4rem;">Garanti BBVA IBAN Bilgileri:</strong>
+            <div style="background: var(--bg-page); padding: 1.25rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; border: 1px solid var(--border);">
+              <strong style="color: var(--primary-deep); display: block; margin-bottom: 0.4rem; font-size: 0.95rem;">Garanti BBVA IBAN & Havale Bilgileri:</strong>
               <div>Hesap Sahibi: <strong>Sarmal Ticaret ve Hediye Hizmetleri</strong></div>
               <div>IBAN: <strong>TR45 0006 2000 1234 5678 9012 34</strong></div>
+              <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border);">
+                <strong style="color: var(--primary-deep);">Kapıda Nakit / Kredi Kartı Ödeme:</strong>
+                <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 2px;">Kargo görevlisine kapıda nakit veya tek çekim kredi kartı ile güvenle ödeyebilirsiniz.</div>
+              </div>
               <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">
-                * Havale/EFT açıklama kısmına Adınızı ve Sipariş Numaranızı yazmanız yeterlidir. Dekontunuz hızla onaylanır.
+                * Havale/EFT açıklama kısmına Adınızı ve Sipariş Numaranızı yazmanız yeterlidir. Dekontunuz onaylandıktan sonra kargonuz derhal hazırlanır.
               </p>
             </div>
           </div>
+
+          <!-- GEÇİCİ OLARAK PASİFE ALINAN MULTİNET YEMEK KARTI TABI (SİLİNMEYEN YEDEK)
+          <div id="payContentMealCard" class="payment-tab-content" data-tab="mealcard" style="display:none;">
+            <div class="checkout-form-grid">
+              <input id="multinetCardNumber" type="text" class="checkout-input" placeholder="4506 XXXX XXXX XXXX" />
+              <input id="multinetExpiry" type="text" class="checkout-input" placeholder="12/28" />
+              <input id="multinetCvv" type="password" class="checkout-input" placeholder="***" />
+            </div>
+          </div>
+          -->
 
           <!-- Sözleşme Onay Kutusu -->
           <div style="margin-top: 1.25rem;">
@@ -1673,7 +1514,7 @@
     </button>
 
     <a
-      href="https://wa.me/905378715517?text=Merhaba,%20Sarmal%20Ticaret'ten%20ürünler%20ve%20Multinet%20Up%20yemek%20kartı%20ödemeleri%20hakkında%20bilgi%20almak%20istiyorum."
+      href="https://wa.me/905378715517?text=Merhaba,%20Sarmal%20Ticaret'ten%20hediyelik%20ürünler,%20taksit%20seçenekleri%20ve%20siparişim%20hakkında%20bilgi%20almak%20istiyorum."
       target="_blank"
       rel="noopener noreferrer"
       class="whatsapp-float-btn"
@@ -1730,7 +1571,7 @@
   </nav>
 
   <!-- Ana JavaScript Dosyası -->
-  <script type="module" src="/main.js?v=2.2"></script>
+  <script type="module" src="/main.js?v=3.0"></script>
 
 </body>
 </html>

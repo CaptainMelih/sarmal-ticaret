@@ -5,173 +5,896 @@
 // --- 1. MAĞAZA VERİLERİ ---
 const CATEGORIES_DATA = [
   {
-    "slug": "market",
-    "name": "Market & Temel Gıda",
-    "shortName": "Market",
-    "icon": "🛒",
-    "description": "Doğal bal, ev yapımı reçeller, taş baskı zeytinyağı, kahvaltılık ve gurme market ürünleri. Multinet Up (MultiPay) yemek kartı ile güvenli alışveriş."
+    "slug": "kar-kureleri",
+    "name": "Kar Küreleri & 3D Cam Küreler",
+    "shortName": "Kar Küreleri",
+    "icon": "🔮",
+    "description": "Nostaljik sokak lambalı kar küreleri, renk değiştiren samanyolu ve gezegen temalı 3D kristal cam küreler."
+  },
+  {
+    "slug": "batmayan-gemi",
+    "name": "Batmayan Gemiler & Akvaryum",
+    "shortName": "Batmayan Gemi",
+    "icon": "🚢",
+    "description": "Masaüstü dekoratif batmayan gemi akvaryumları, sıvı kum saatleri ve deniz temalı stres giderici hediyeler."
+  },
+  {
+    "slug": "cicek-buket",
+    "name": "Çiçek & Buket Koleksiyonu",
+    "shortName": "Çiçek & Buket",
+    "icon": "💐",
+    "description": "Dekoratif yapı blok çiçek setleri, orkideler, mini Love Flowers buketleri ve peluş ayıcıklı güller."
+  },
+  {
+    "slug": "taki-mucevher",
+    "name": "Takı & Sürpriz İnci Kolye",
+    "shortName": "Takı & Kolye",
+    "icon": "💎",
+    "description": "Gerçek istiridye içinden çıkan sürpriz inci kolyeler ve özel gün takı hediye setleri."
+  },
+  {
+    "slug": "gece-lambalari",
+    "name": "Dekoratif Gece Lambaları & Not Panosu",
+    "shortName": "Gece Lambaları",
+    "icon": "💡",
+    "description": "El yapımı bulut gece lambaları, LED yazı tahtası not panoları ve dijital çizim tabletleri."
+  },
+  {
+    "slug": "ozel-hediyelikler",
+    "name": "Özel Hediye & Müzik Kutuları",
+    "shortName": "Özel Hediyeler",
+    "icon": "🎁",
+    "description": "Nostaljik atlı karınca müzik kutusu, metal kalp kutuda ayıcık ve güller ve sevgiliye özel setler."
   }
 ];
 const PRODUCTS_DATA = [
   {
     "id": 1,
-    "name": "Doğal Karakovan Süzme Çiçek Balı & Çam Balı Gurme Seti (2 x 850g)",
-    "brand": "Sarmal Gurme",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 980,
-    "oldPrice": 1250,
-    "discountPercent": 22,
-    "badge": "%22 İndirim",
-    "rating": "4.9",
-    "reviews": 42,
-    "image": "/images/products/karakovan_bali.jpg",
+    "name": "Sokak Lambalı Işıklı Kar Küresi – Nostaljik ve Büyüleyici Dekoratif Gece Lambası",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 499.9,
+    "oldPrice": 675,
+    "discountPercent": 26,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 14,
+    "image": "https://cdn.dsmcdn.com/ty1822/prod/QC_ENRICHMENT/20260207/01/798dd167-5361-3924-b38d-14b7bdc89c01/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100101"
+    "barcode": "450670580"
   },
   {
     "id": 2,
-    "name": "Ev Yapımı Doğal Çilek Reçeli 3'lü Gurme Set (3 x 450g)",
-    "brand": "Sarmal Gurme",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 549.9,
-    "oldPrice": 680,
-    "discountPercent": 19,
-    "badge": "Yeni",
+    "name": "Batmayan Gemi Şişe Dekoratif Akvaryum",
+    "brand": "STAR CAST",
+    "categorySlug": "batmayan-gemi",
+    "category": "Batmayan Gemiler & Akvaryum",
+    "price": 299.9,
+    "oldPrice": 410,
+    "discountPercent": 27,
+    "badge": "%27 İndirim",
     "rating": "4.8",
-    "reviews": 28,
-    "image": "/images/products/cilek_receli.jpg",
+    "reviews": 21,
+    "image": "https://cdn.dsmcdn.com/ty1821/prod/QC_PREP/20260207/00/99c72ad8-4957-380e-8677-b0d6f55c749e/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100102"
+    "barcode": "450670588"
   },
   {
     "id": 3,
-    "name": "Geleneksel Doğal Vişne Reçeli 3'lü Gurme Set (3 x 450g)",
-    "brand": "Sarmal Gurme",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 549.9,
-    "oldPrice": 680,
-    "discountPercent": 19,
-    "badge": "Fırsat",
+    "name": "Dekoratif Batmayan Gemi Şişe Akvaryum – Masaüstü Deniz Temalı Hediye",
+    "brand": "STAR CAST",
+    "categorySlug": "batmayan-gemi",
+    "category": "Batmayan Gemiler & Akvaryum",
+    "price": 299.9,
+    "oldPrice": 415,
+    "discountPercent": 28,
+    "badge": "%28 İndirim",
     "rating": "4.9",
-    "reviews": 35,
-    "image": "/images/products/visne_receli.jpg",
+    "reviews": 28,
+    "image": "https://cdn.dsmcdn.com/ty1814/prod/QC_ENRICHMENT/20260119/19/91a7736b-5ebb-35d1-bfe3-652abf3d971b/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100103"
+    "barcode": "450670579"
   },
   {
     "id": 4,
-    "name": "Taş Baskı Soğuk Sıkım Naturel Sızma Zeytinyağı Teneke (5 Litre)",
-    "brand": "Ege Bahçesi",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 1850,
-    "oldPrice": 2150,
-    "discountPercent": 14,
-    "badge": "Çok Satan",
-    "rating": "5.0",
-    "reviews": 64,
-    "image": "/images/products/zeytinyagi.jpg",
+    "name": "Dekoratif Batmayan Gemi Akvaryum Şişe – Kalemlikli Yeşil Sıvı Yıldızlı Masaüstü Deniz Temalı Hediye",
+    "brand": "STAR CAST",
+    "categorySlug": "batmayan-gemi",
+    "category": "Batmayan Gemiler & Akvaryum",
+    "price": 299.9,
+    "oldPrice": 420,
+    "discountPercent": 29,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 35,
+    "image": "https://cdn.dsmcdn.com/ty1814/prod/QC_ENRICHMENT/20260120/12/42e193f2-0438-320d-993d-8278982225be/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100104"
+    "barcode": "450670575"
   },
   {
     "id": 5,
-    "name": "Köy Tipi Doğal Yayla Tereyağı Blok Vakumlu (2 kg)",
-    "brand": "Trabzon Çiftliği",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 940,
-    "oldPrice": 1100,
-    "discountPercent": 15,
-    "badge": "Taze",
-    "rating": "4.9",
-    "reviews": 38,
-    "image": "/images/products/tereyagi.jpg",
+    "name": "İnci Kolye – Gerçek İstiridye İçinden Çıkan Sürpriz İnci Taşlı Kolye | Özel Gün Hediyesi",
+    "brand": "STAR CAST",
+    "categorySlug": "taki-mucevher",
+    "category": "Takı & Sürpriz İnci Kolye",
+    "price": 199.9,
+    "oldPrice": 290,
+    "discountPercent": 31,
+    "badge": "Fırsat",
+    "rating": "4.8",
+    "reviews": 42,
+    "image": "https://cdn.dsmcdn.com/ty1814/prod/QC_ENRICHMENT/20260118/15/5606e78b-91d7-342e-a709-c9fd8dae787a/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100105"
+    "barcode": "450670574"
   },
   {
     "id": 6,
-    "name": "Gemlik Doğal Yağlı Sele Siyah Zeytin Özel Teneke (3 kg)",
-    "brand": "Gemlik Yöresel",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 780,
-    "oldPrice": 920,
-    "discountPercent": 15,
-    "badge": "%15 İndirim",
-    "rating": "4.8",
-    "reviews": 51,
-    "image": "/images/products/zeytin.jpg",
+    "name": "Yıldız Çiçeği Dekoratif Yapı Blok Çiçek – Saksı Çiçek Hediye Seti",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 699.9,
+    "oldPrice": 970,
+    "discountPercent": 28,
+    "badge": "Yeni",
+    "rating": "4.9",
+    "reviews": 49,
+    "image": "https://cdn.dsmcdn.com/ty1814/prod/QC_PREP/20260118/14/657a76c6-1bd1-3820-8b5f-3601ed4f977e/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100106"
+    "barcode": "450670573"
   },
   {
     "id": 7,
-    "name": "Tam Yağlı Olgunlaştırılmış Eski Kaşar & Ezine Peyniri Seçki (2 kg)",
-    "brand": "Ezine Mandıra",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 820,
-    "oldPrice": 960,
-    "discountPercent": 15,
-    "badge": "Geleneksel",
-    "rating": "4.9",
-    "reviews": 47,
-    "image": "/images/products/peynir.jpg",
+    "name": "Örümcek Zambağı Dekoratif Yapı Blok Çiçek – Saksı Çiçek Hediye Seti",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 599.9,
+    "oldPrice": 840,
+    "discountPercent": 29,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 56,
+    "image": "https://cdn.dsmcdn.com/ty1813/prod/QC_PREP/20260118/14/d264612a-c4a5-32bf-8e19-45e235a4d386/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100107"
+    "barcode": "450670572"
   },
   {
     "id": 8,
-    "name": "Giresun Çifte Kavrulmuş Doğal Fındık Ezmesi (1 kg Cam Kavanoz)",
-    "brand": "Sarmal Gurme",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 560,
-    "oldPrice": 680,
-    "discountPercent": 18,
-    "badge": "Doğal",
-    "rating": "4.9",
-    "reviews": 33,
-    "image": "/images/products/findik_ezmesi.jpg",
+    "name": "Mor Orkide Dekoratif Yapı Blok Çiçek – Saksı Çiçek Hediye Seti",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 599.9,
+    "oldPrice": 845,
+    "discountPercent": 29,
+    "badge": "%29 İndirim",
+    "rating": "4.8",
+    "reviews": 63,
+    "image": "https://cdn.dsmcdn.com/ty1812/prod/QC_ENRICHMENT/20260118/14/e0b5807a-38a2-3922-b29a-fd8c01acc8e0/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100108"
+    "barcode": "450670570"
   },
   {
     "id": 9,
-    "name": "Geleneksel Doğal Köy Üzüm Pekmezi Cam Kavanoz 2'li Set (2 x 1 kg)",
-    "brand": "Antalya Yöresel",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 580,
-    "oldPrice": 690,
-    "discountPercent": 16,
-    "badge": "İkili Set",
-    "rating": "4.8",
-    "reviews": 29,
-    "image": "/images/products/uzum_pekmezi.jpg",
+    "name": "Beyaz Orkide Dekoratif Yapı Blok Çiçek – Saksı Çiçek Hediye Seti",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 599.9,
+    "oldPrice": 850,
+    "discountPercent": 29,
+    "badge": "Fırsat",
+    "rating": "4.9",
+    "reviews": 70,
+    "image": "https://cdn.dsmcdn.com/ty1812/prod/QC_PREP/20260117/23/21f3db01-32a5-3238-92dd-197f7ff89b97/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100109"
+    "barcode": "450670569"
   },
   {
     "id": 10,
-    "name": "Rize Organik İlk Hasat Mayıslık Siyah Çay (3 kg Avantaj Paketi)",
-    "brand": "Çaykara Çiftliği",
-    "categorySlug": "market",
-    "category": "Market & Temel Gıda",
-    "price": 690,
-    "oldPrice": 820,
-    "discountPercent": 16,
-    "badge": "Organik",
-    "rating": "5.0",
-    "reviews": 58,
-    "image": "/images/products/rize_cayi.jpg",
+    "name": "Love Flowers Mini Çiçek Buketi – Özel Gün Hediyesi - Beyaz Çiçek Buketi",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 149.9,
+    "oldPrice": 247,
+    "discountPercent": 39,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 77,
+    "image": "https://cdn.dsmcdn.com/ty1814/prod/QC_PREP/20260117/23/a7a00816-8657-3855-8ec0-3916053dbf46/1_org_zoom.jpg",
     "inStock": true,
-    "barcode": "869000100110"
+    "barcode": "450670568"
+  },
+  {
+    "id": 11,
+    "name": "Love Flowers Mini Çiçek Buketi – Özel Gün Hediyesi - Siyah Çiçek Buketi",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 149.9,
+    "oldPrice": 202,
+    "discountPercent": 26,
+    "badge": "Yeni",
+    "rating": "4.8",
+    "reviews": 84,
+    "image": "https://cdn.dsmcdn.com/ty1812/prod/QC_PREP/20260117/23/bba41897-6e44-3394-9743-9bc33cec5995/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670566"
+  },
+  {
+    "id": 12,
+    "name": "Love Flowers Mini Çiçek Buketi – Özel Gün Hediyesi - Pembe Çiçek Buketi",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 149.9,
+    "oldPrice": 207,
+    "discountPercent": 28,
+    "badge": "%28 İndirim",
+    "rating": "4.9",
+    "reviews": 91,
+    "image": "https://cdn.dsmcdn.com/ty1813/prod/QC_PREP/20260117/23/2c580f7f-4a0c-3234-b4dc-6e0b87f6af4d/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670567"
+  },
+  {
+    "id": 13,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Love Gül Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 415,
+    "discountPercent": 28,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 98,
+    "image": "https://cdn.dsmcdn.com/ty1806/prod/QC_PREP/20260102/16/2fb09ce2-e7d0-324d-9091-a07efdaf72b4/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670563"
+  },
+  {
+    "id": 14,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Şemsiyeli Çocuk Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 420,
+    "discountPercent": 29,
+    "badge": "%29 İndirim",
+    "rating": "4.8",
+    "reviews": 20,
+    "image": "https://cdn.dsmcdn.com/ty1809/prod/QC_ENRICHMENT/20260110/19/94cc25dc-bdaa-32bf-b58f-57be0cf3503d/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670562"
+  },
+  {
+    "id": 15,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Şemsiyeli Adam Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 425,
+    "discountPercent": 29,
+    "badge": "%29 İndirim",
+    "rating": "4.9",
+    "reviews": 27,
+    "image": "https://cdn.dsmcdn.com/ty1806/prod/QC_PREP/20260102/16/51b232fe-9013-31b3-8f79-fc6033454d49/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670561"
+  },
+  {
+    "id": 16,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Hogwarts Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 430,
+    "discountPercent": 30,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 34,
+    "image": "https://cdn.dsmcdn.com/ty1809/prod/QC_ENRICHMENT/20260110/19/f9c9e720-d31e-30e4-be88-cdd3405d5b7c/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670560"
+  },
+  {
+    "id": 17,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Karahindiba Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 435,
+    "discountPercent": 31,
+    "badge": "Fırsat",
+    "rating": "4.8",
+    "reviews": 41,
+    "image": "https://cdn.dsmcdn.com/ty1809/prod/QC_ENRICHMENT/20260110/19/1f6a9fb6-e348-3c2e-85ac-551994c7f216/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670564"
+  },
+  {
+    "id": 18,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Dünya Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 440,
+    "discountPercent": 32,
+    "badge": "%32 İndirim",
+    "rating": "4.9",
+    "reviews": 48,
+    "image": "https://cdn.dsmcdn.com/ty1810/prod/QC_ENRICHMENT/20260110/19/12102ddd-f21b-3194-8c72-cde59b37debd/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670559"
+  },
+  {
+    "id": 19,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Astronot Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 445,
+    "discountPercent": 33,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 55,
+    "image": "https://cdn.dsmcdn.com/ty1808/prod/QC_ENRICHMENT/20260102/22/f05ec402-8d6c-395f-8932-749f84e32aed/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670558"
+  },
+  {
+    "id": 20,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Unicorn Polly Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 450,
+    "discountPercent": 33,
+    "badge": "%33 İndirim",
+    "rating": "4.8",
+    "reviews": 62,
+    "image": "https://cdn.dsmcdn.com/ty1808/prod/QC_PREP/20260102/16/192c3b16-6edc-3f70-bf28-00f86f659628/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670555"
+  },
+  {
+    "id": 21,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Hogwarts Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 405,
+    "discountPercent": 26,
+    "badge": "Yeni",
+    "rating": "4.9",
+    "reviews": 69,
+    "image": "https://cdn.dsmcdn.com/ty1806/prod/QC_PREP/20260102/16/a5e9d54b-16b7-34a4-be65-a5021832dc23/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670546"
+  },
+  {
+    "id": 22,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Geyik Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 410,
+    "discountPercent": 27,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 76,
+    "image": "https://cdn.dsmcdn.com/ty1807/prod/QC_PREP/20260102/16/7d230cdd-3827-33a0-98ab-c3b9abca46cf/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670553"
+  },
+  {
+    "id": 23,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Bulut Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 415,
+    "discountPercent": 28,
+    "badge": "%28 İndirim",
+    "rating": "4.8",
+    "reviews": 83,
+    "image": "https://cdn.dsmcdn.com/ty1808/prod/QC_PREP/20260102/16/642f3b09-054c-3b0e-9ca2-ae31f52f00c9/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670550"
+  },
+  {
+    "id": 24,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Love Gül Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 420,
+    "discountPercent": 29,
+    "badge": "%29 İndirim",
+    "rating": "4.9",
+    "reviews": 90,
+    "image": "https://cdn.dsmcdn.com/ty1808/prod/QC_PREP/20260102/16/bb361c1b-60e6-36a6-9af0-244fa9b7aed5/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670545"
+  },
+  {
+    "id": 25,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Dünya Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 425,
+    "discountPercent": 29,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 97,
+    "image": "https://cdn.dsmcdn.com/ty1807/prod/QC_PREP/20260102/16/d7be9f53-719b-38f5-a2d6-d5c2821a69bd/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670554"
+  },
+  {
+    "id": 26,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Karahindiba Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 430,
+    "discountPercent": 30,
+    "badge": "Yeni",
+    "rating": "4.8",
+    "reviews": 19,
+    "image": "https://cdn.dsmcdn.com/ty1807/prod/QC_PREP/20260102/16/70c1c50e-1068-3e2c-a94f-acfc8eb4b88d/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670556"
+  },
+  {
+    "id": 27,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Samanyolu Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 435,
+    "discountPercent": 31,
+    "badge": "%31 İndirim",
+    "rating": "4.9",
+    "reviews": 26,
+    "image": "https://cdn.dsmcdn.com/ty1806/prod/QC_PREP/20260102/16/46139f60-c2d9-340b-9fdc-b0d9aa567048/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670549"
+  },
+  {
+    "id": 28,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Dünya Figürlü Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 440,
+    "discountPercent": 32,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 33,
+    "image": "https://cdn.dsmcdn.com/ty1806/prod/QC_PREP/20260102/16/ad718126-f982-35bb-bed2-a8a1a291ba3a/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670551"
+  },
+  {
+    "id": 29,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Şemsiyeli Gül Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 445,
+    "discountPercent": 33,
+    "badge": "Fırsat",
+    "rating": "4.8",
+    "reviews": 40,
+    "image": "https://cdn.dsmcdn.com/ty1807/prod/QC_PREP/20260102/16/3625f711-d226-3960-9a9d-f63e341e31dd/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670548"
+  },
+  {
+    "id": 30,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Şemsiyeli Adam Küre",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 450,
+    "discountPercent": 33,
+    "badge": "%33 İndirim",
+    "rating": "4.9",
+    "reviews": 47,
+    "image": "https://cdn.dsmcdn.com/ty1807/prod/QC_PREP/20260102/16/aad1a5f4-23f3-385c-8cb7-567ed06985d1/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670557"
+  },
+  {
+    "id": 31,
+    "name": "3D Işıklı Cam Küre – LED Gece Lambası - Astronot",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 405,
+    "discountPercent": 26,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 54,
+    "image": "https://cdn.dsmcdn.com/ty1806/prod/QC_PREP/20260102/16/f9137cef-bfe7-3031-a936-96d3d7c6fbf5/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670552"
+  },
+  {
+    "id": 32,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Harry Poter Figürlü",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 410,
+    "discountPercent": 27,
+    "badge": "%27 İndirim",
+    "rating": "4.8",
+    "reviews": 61,
+    "image": "https://cdn.dsmcdn.com/ty1805/prod/QC_PREP/20251227/00/6898d3e1-7ce1-3c77-abb1-4a140a771c96/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670539"
+  },
+  {
+    "id": 33,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Unicorn Figürlü",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 415,
+    "discountPercent": 28,
+    "badge": "Fırsat",
+    "rating": "4.9",
+    "reviews": 68,
+    "image": "https://cdn.dsmcdn.com/ty1804/prod/QC_PREP/20251227/00/b31e50d8-3548-3baf-bf7e-8f52ebb52754/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670544"
+  },
+  {
+    "id": 34,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Bulut Figürlü",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 420,
+    "discountPercent": 29,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 75,
+    "image": "https://cdn.dsmcdn.com/ty1804/prod/QC_PREP/20251227/00/43a77c82-861b-36e8-bc22-44945f73638f/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670543"
+  },
+  {
+    "id": 35,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Geyik Figürlü",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 425,
+    "discountPercent": 29,
+    "badge": "%29 İndirim",
+    "rating": "4.8",
+    "reviews": 82,
+    "image": "https://cdn.dsmcdn.com/ty1804/prod/QC_PREP/20251227/00/f2312ee9-1a92-3955-b038-20b1bd7f66f1/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670542"
+  },
+  {
+    "id": 36,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Dünya Figürlü",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 430,
+    "discountPercent": 30,
+    "badge": "Yeni",
+    "rating": "4.9",
+    "reviews": 89,
+    "image": "https://cdn.dsmcdn.com/ty1804/prod/QC_PREP/20251227/00/439c2ba8-2923-3a81-8e6a-df87276ba0f3/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670540"
+  },
+  {
+    "id": 37,
+    "name": "3D Işıklı Cam Küre – Renk Değiştiren LED Gece Lambası - Samanyolu Figürlü",
+    "brand": "STAR CAST",
+    "categorySlug": "kar-kureleri",
+    "category": "Kar Küreleri & 3D Cam Küreler",
+    "price": 299.9,
+    "oldPrice": 435,
+    "discountPercent": 31,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 96,
+    "image": "https://cdn.dsmcdn.com/ty1805/prod/QC_PREP/20251227/00/ca4e7da9-1008-3c17-be07-4996286805c0/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670541"
+  },
+  {
+    "id": 38,
+    "name": "Romantik Gül Buketi – Sevgililer Günü, Anneler Günü İçin İdeal",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 129.99,
+    "oldPrice": 210,
+    "discountPercent": 38,
+    "badge": "%38 İndirim",
+    "rating": "4.8",
+    "reviews": 18,
+    "image": "https://cdn.dsmcdn.com/ty1805/prod/QC_PREP/20251226/17/6f9be172-781a-3ee4-97c7-126f552dbe2f/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670535"
+  },
+  {
+    "id": 39,
+    "name": "Yapay Ayı Gül Buketi – Sevgililer Günü Özel Tasarım | Dekoratif Çiçek & Hediye",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 129.99,
+    "oldPrice": 215,
+    "discountPercent": 40,
+    "badge": "%40 İndirim",
+    "rating": "4.9",
+    "reviews": 25,
+    "image": "https://cdn.dsmcdn.com/ty1804/prod/QC_PREP/20251226/17/ce00e7ae-e6ba-36ae-8e0b-41a7bc1422ce/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670534"
+  },
+  {
+    "id": 40,
+    "name": "İstridye İçinde İnci Kolye - Sürpriz İnci Kolye Set",
+    "brand": "Store",
+    "categorySlug": "taki-mucevher",
+    "category": "Takı & Sürpriz İnci Kolye",
+    "price": 299,
+    "oldPrice": 449,
+    "discountPercent": 33,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 32,
+    "image": "https://cdn.dsmcdn.com/ty1814/prod/QC_ENRICHMENT/20260118/14/c0256451-186a-32ab-bcec-710e22522b0b/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424052"
+  },
+  {
+    "id": 41,
+    "name": "El Yapımı Büyük Boy Bulut Gece Lambası",
+    "brand": "STAR CAST",
+    "categorySlug": "gece-lambalari",
+    "category": "Dekoratif Gece Lambaları & Not Panosu",
+    "price": 799.9,
+    "oldPrice": 1080,
+    "discountPercent": 26,
+    "badge": "Yeni",
+    "rating": "4.8",
+    "reviews": 39,
+    "image": "https://cdn.dsmcdn.com/ty1822/prod/QC_ENRICHMENT/20260207/14/912a9395-3d4b-338c-8771-d6d1003321e5/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670516"
+  },
+  {
+    "id": 42,
+    "name": "Romantik Metal Kalp Kutu – Ayıcık ve Güllerle Dolu Sevgiliye Hediye Seti | Özel Gün Hediyesi",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 299.9,
+    "oldPrice": 410,
+    "discountPercent": 27,
+    "badge": "%27 İndirim",
+    "rating": "4.9",
+    "reviews": 46,
+    "image": "https://cdn.dsmcdn.com/ty1783/prod/QC_PREP/20251030/23/1dfb1d73-933e-3a7e-a128-8f80cb739fc8/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670515"
+  },
+  {
+    "id": 43,
+    "name": "El Yapımı Sonsuz Gül Bulutu Gece Lambası - Masaüstü Dekoru Demonte",
+    "brand": "STAR CAST",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 599.99,
+    "oldPrice": 820,
+    "discountPercent": 27,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 53,
+    "image": "https://cdn.dsmcdn.com/ty1769/prod/QC_PREP/20251009/13/f46e45ba-a4d4-3a4f-904f-9e1a6775e8fc/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670513"
+  },
+  {
+    "id": 44,
+    "name": "Led Yazı Tahtası Gece Lambası - Not Panosu",
+    "brand": "STAR CAST",
+    "categorySlug": "gece-lambalari",
+    "category": "Dekoratif Gece Lambaları & Not Panosu",
+    "price": 299.9,
+    "oldPrice": 420,
+    "discountPercent": 29,
+    "badge": "%29 İndirim",
+    "rating": "4.8",
+    "reviews": 60,
+    "image": "https://cdn.dsmcdn.com/ty1769/prod/QC_PREP/20251009/12/017073c1-ad11-3efd-8734-1a64322eb928/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670512"
+  },
+  {
+    "id": 45,
+    "name": "Nostaljik Atlı Karınca Müzik Kutusu",
+    "brand": "STAR CAST",
+    "categorySlug": "ozel-hediyelikler",
+    "category": "Özel Hediye & Müzik Kutuları",
+    "price": 299.9,
+    "oldPrice": 425,
+    "discountPercent": 29,
+    "badge": "Fırsat",
+    "rating": "4.9",
+    "reviews": 67,
+    "image": "https://cdn.dsmcdn.com/ty1766/prod/QC_PREP/20250928/01/cff8795e-e841-384b-94f0-104cefbcfaef/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670506"
+  },
+  {
+    "id": 46,
+    "name": "Elmas Tasarımlı Sıvı Kum Saati – Masaüstü Dekor & Stres Giderici",
+    "brand": "STAR CAST",
+    "categorySlug": "batmayan-gemi",
+    "category": "Batmayan Gemiler & Akvaryum",
+    "price": 299.9,
+    "oldPrice": 430,
+    "discountPercent": 30,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 74,
+    "image": "https://cdn.dsmcdn.com/ty1765/prod/QC_PREP/20250928/00/884e6435-b13d-35ec-85c3-2fd5d209681a/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670505"
+  },
+  {
+    "id": 47,
+    "name": "Renkli Sulu Kum Saati - Stres Giderici Masaüstü Dekor ve Hediyelik",
+    "brand": "STAR CAST",
+    "categorySlug": "batmayan-gemi",
+    "category": "Batmayan Gemiler & Akvaryum",
+    "price": 199.9,
+    "oldPrice": 300,
+    "discountPercent": 33,
+    "badge": "%33 İndirim",
+    "rating": "4.8",
+    "reviews": 81,
+    "image": "https://cdn.dsmcdn.com/ty1765/prod/QC_PREP/20250927/22/cd9f85c8-465d-3de0-acb9-438473c1e078/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "450670503"
+  },
+  {
+    "id": 48,
+    "name": "Romantik Yapay Gül Buketi ve Peluş Ayı - Pembe",
+    "brand": "Store",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 129.9,
+    "oldPrice": 210,
+    "discountPercent": 38,
+    "badge": "%38 İndirim",
+    "rating": "4.9",
+    "reviews": 88,
+    "image": "https://cdn.dsmcdn.com/ty1669/prod/QC/20250426/12/fba38fff-71e5-34ea-9f94-03fbe69abb4c/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424161"
+  },
+  {
+    "id": 49,
+    "name": "Romantik Yapay Gül Buketi ve Peluş Ayı - Kırmızı",
+    "brand": "Store",
+    "categorySlug": "cicek-buket",
+    "category": "Çiçek & Buket Koleksiyonu",
+    "price": 129.9,
+    "oldPrice": 215,
+    "discountPercent": 40,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 95,
+    "image": "https://cdn.dsmcdn.com/ty1666/prod/QC/20250423/15/60e20008-ff62-3515-803a-64c22c7cd4f8/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424157"
+  },
+  {
+    "id": 50,
+    "name": "Led Çizim Tableti Gece Lambası - Beyaz",
+    "brand": "Store",
+    "categorySlug": "gece-lambalari",
+    "category": "Dekoratif Gece Lambaları & Not Panosu",
+    "price": 299.9,
+    "oldPrice": 450,
+    "discountPercent": 33,
+    "badge": "%33 İndirim",
+    "rating": "4.8",
+    "reviews": 17,
+    "image": "https://cdn.dsmcdn.com/ty1663/prod/QC/20250417/02/4c6a8b5b-4139-3dce-8f58-b7c610e83291/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424156"
+  },
+  {
+    "id": 51,
+    "name": "Led Çizim Tableti Gece Lambası - Beyaz",
+    "brand": "Store",
+    "categorySlug": "gece-lambalari",
+    "category": "Dekoratif Gece Lambaları & Not Panosu",
+    "price": 299.9,
+    "oldPrice": 405,
+    "discountPercent": 26,
+    "badge": "Yeni",
+    "rating": "4.9",
+    "reviews": 24,
+    "image": "https://cdn.dsmcdn.com/ty1651/prod/QC/20250317/01/ed683b76-b345-3d0f-884f-4174f500f91d/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424129"
+  },
+  {
+    "id": 52,
+    "name": "El Yapımı Büyük Boy Bulut Gece Lambası Lale Desenli",
+    "brand": "Store",
+    "categorySlug": "gece-lambalari",
+    "category": "Dekoratif Gece Lambaları & Not Panosu",
+    "price": 639.99,
+    "oldPrice": 869,
+    "discountPercent": 26,
+    "badge": "İndirim",
+    "rating": "4.7",
+    "reviews": 31,
+    "image": "https://cdn.dsmcdn.com/ty1823/prod/QC_ENRICHMENT/20260207/15/e2ce0565-4cc5-3cf6-9243-834c3241c598/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424098"
+  },
+  {
+    "id": 53,
+    "name": "Led Çizim Tableti Gece Lambası Not Panosu",
+    "brand": "Onigonline",
+    "categorySlug": "gece-lambalari",
+    "category": "Dekoratif Gece Lambaları & Not Panosu",
+    "price": 299.9,
+    "oldPrice": 415,
+    "discountPercent": 28,
+    "badge": "Fırsat",
+    "rating": "4.8",
+    "reviews": 38,
+    "image": "https://cdn.dsmcdn.com/ty1623/prod/QC/20250117/00/bf9da4e7-9310-3ab2-85d0-b4eb28e6c6ff/1_org_zoom.jpg",
+    "inStock": true,
+    "barcode": "30122424061"
   }
 ];
 
@@ -869,10 +1592,10 @@ function renderProductGrids() {
   const curatedGrid = document.getElementById("curatedProductsGrid");
   if (!dealsGrid || !curatedGrid) return;
 
-  const dealsList = PRODUCTS_DATA.slice(0, 6);
+  const dealsList = PRODUCTS_DATA.slice(0, 10);
   dealsGrid.innerHTML = dealsList.map(createProductCardHTML).join("");
 
-  const curatedList = PRODUCTS_DATA;
+  const curatedList = PRODUCTS_DATA.slice(10, 34);
   curatedGrid.innerHTML = curatedList.map(createProductCardHTML).join("");
 }
 
@@ -1084,6 +1807,90 @@ function setCheckoutStep(step) {
   const { grandTotal } = calculateCartTotals();
   const summaryTotalEl = document.getElementById("checkoutSummaryTotal");
   if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(grandTotal);
+
+  if (step === 2) {
+    renderCheckoutInstallments();
+  }
+}
+
+// --- PAYTR DİNAMİK TAKSİT TABLOSU VE SEÇİCİSİ (ÖDEME ADIMINDA GÖSTERİLİR) ---
+function renderCheckoutInstallments() {
+  const container = document.getElementById("paytrInstallmentContainer");
+  if (!container) return;
+
+  const { grandTotal } = calculateCartTotals();
+  const t2 = (grandTotal / 2);
+  const t3 = (grandTotal / 3);
+  const t6 = ((grandTotal * 1.045) / 6);
+  const t9 = ((grandTotal * 1.085) / 9);
+  const t12 = ((grandTotal * 1.125) / 12);
+
+  const options = [
+    { id: "opt_single", label: "Tek Çekim", monthly: grandTotal, total: grandTotal, note: "Peşin Fiyatına", count: 1 },
+    { id: "opt_2", label: "2 Taksit", monthly: t2, total: grandTotal, note: "Peşin Fiyatına", count: 2 },
+    { id: "opt_3", label: "3 Taksit", monthly: t3, total: grandTotal, note: "Peşin Fiyatına", count: 3 },
+    { id: "opt_6", label: "6 Taksit", monthly: t6, total: grandTotal * 1.045, note: "+%4.5 Vade Farkı", count: 6 },
+    { id: "opt_9", label: "9 Taksit", monthly: t9, total: grandTotal * 1.085, note: "+%8.5 Vade Farkı", count: 9 },
+    { id: "opt_12", label: "12 Taksit", monthly: t12, total: grandTotal * 1.125, note: "+%12.5 Vade Farkı", count: 12 }
+  ];
+
+  const currentVal = document.getElementById("creditCardInstallment")?.value || "Tek Çekim";
+
+  let html = 
+    '<div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 0.5rem;">' +
+      '<div style="padding: 0.6rem 0.85rem; background: #f1f5f9; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">' +
+        '<span>🔒 PayTR Altyapısı ile Taksit Tablosu</span>' +
+        '<span style="color: var(--text-muted); font-size: 0.72rem;">Bonus, World, Axess, Maximum, Paraf, Troy</span>' +
+      '</div>' +
+      '<table class="installment-table" style="margin-top: 0; border: none; width: 100%;">' +
+        '<thead>' +
+          '<tr>' +
+            '<th style="width: 40px; text-align: center;">Seç</th>' +
+            '<th>Taksit</th>' +
+            '<th style="text-align: right;">Aylık Tutar</th>' +
+            '<th style="text-align: right;">Toplam Tutar</th>' +
+          '</tr>' +
+        '</thead>' +
+        '<tbody>';
+
+  options.forEach((opt, idx) => {
+    const isChecked = currentVal === opt.label || (idx === 0 && currentVal === "Tek Çekim");
+    html += 
+      '<tr style="cursor: pointer;' + (isChecked ? ' background: #eff6ff;' : '') + '" onclick="selectPaytrInstallment(\'' + opt.label + '\')">' +
+        '<td style="text-align: center;">' +
+          '<input type="radio" name="paytr_installment_radio" value="' + opt.label + '" ' + (isChecked ? 'checked' : '') + ' onchange="selectPaytrInstallment(\'' + opt.label + '\')" />' +
+        '</td>' +
+        '<td>' +
+          '<strong>' + opt.label + '</strong> ' +
+          '<span style="font-size: 0.72rem; color: ' + (opt.note.includes("Peşin") ? '#16a34a' : 'var(--text-muted)') + '; font-weight: 600; margin-left: 4px;">(' + opt.note + ')</span>' +
+        '</td>' +
+        '<td style="text-align: right; font-weight: 700; color: var(--primary);">' + formatPrice(opt.monthly) + '</td>' +
+        '<td style="text-align: right; font-weight: 800; color: var(--primary-deep);">' + formatPrice(opt.total) + '</td>' +
+      '</tr>';
+  });
+
+  html += 
+        '</tbody>' +
+      '</table>' +
+    '</div>';
+
+  container.innerHTML = html;
+}
+
+function selectPaytrInstallment(val) {
+  const hiddenInput = document.getElementById("creditCardInstallment");
+  if (hiddenInput) hiddenInput.value = val;
+  const radios = document.querySelectorAll("input[name='paytr_installment_radio']");
+  radios.forEach(r => {
+    const row = r.closest("tr");
+    if (r.value === val) {
+      r.checked = true;
+      if (row) row.style.background = "#eff6ff";
+    } else {
+      r.checked = false;
+      if (row) row.style.background = "";
+    }
+  });
 }
 
 function handleStep1Submit(e) {
@@ -1154,11 +1961,11 @@ function handleFinalOrderSubmit(e) {
     return;
   }
 
-  const activeTab = document.querySelector(".payment-tab-btn.active")?.getAttribute("data-tab") || "mealcard";
-  let paymentMethodName = "Multinet Up Yemek Kartı";
+  const activeTab = document.querySelector(".payment-tab-btn.active")?.getAttribute("data-tab") || "creditcard";
+  let paymentMethodName = "PayTR ile Kredi Kartı";
   let orderStatus = "Hazırlanıyor";
 
-  // --- KREDİ KARTI KONTROLLERİ ---
+  // --- KREDİ KARTI KONTROLLERİ (PayTR Altyapısı - 3D Secure) ---
   if (activeTab === "creditcard") {
     const holder = document.getElementById("ccHolderName")?.value.trim() || "";
     const number = document.getElementById("ccNumber")?.value.trim() || "";
@@ -1190,9 +1997,14 @@ function handleFinalOrderSubmit(e) {
     }
 
     const installment = document.getElementById("creditCardInstallment")?.value || "Tek Çekim";
-    paymentMethodName = "Kredi Kartı (" + installment + ") - 3D Secure Onaylı";
+    paymentMethodName = "PayTR Kredi Kartı (" + installment + ") - 3D Secure Onaylı";
 
-  // --- MULTİNET YEMEK KARTI KONTROLLERİ ---
+  // --- HAVALE / EFT / NAKİT ---
+  } else if (activeTab === "havale") {
+    paymentMethodName = "Havale / EFT & Kapıda Nakit (Garanti BBVA)";
+    orderStatus = "Ödeme Bekleniyor (Havale Bildirimi)";
+
+  // --- MULTİNET YEMEK KARTI KONTROLLERİ (Pasif Yedek) ---
   } else if (activeTab === "mealcard") {
     const cardNum = (document.getElementById("multinetCardNumber")?.value || "").replace(/[^0-9]/g, "");
     const expiry = document.getElementById("multinetExpiry")?.value.trim() || "";
@@ -1217,11 +2029,6 @@ function handleFinalOrderSubmit(e) {
     }
 
     paymentMethodName = "Multinet Up Yemek Kartı (MultiPay Onaylı)";
-
-  // --- HAVALE / EFT ---
-  } else if (activeTab === "havale") {
-    paymentMethodName = "Havale / EFT (Garanti BBVA)";
-    orderStatus = "Ödeme Bekleniyor (Havale Bildirimi)";
   }
 
   // Ödeme Onaylama & İşlem Simülasyonu (Fail-Safe)
@@ -1331,11 +2138,6 @@ function openQuickView(productId) {
 
   const modalBody = document.getElementById("quickViewContent");
   if (modalBody) {
-    const price = product.price;
-    const t3 = (price / 3).toFixed(2);
-    const t6 = (price * 1.05 / 6).toFixed(2);
-    const t9 = (price * 1.09 / 9).toFixed(2);
-
     modalBody.innerHTML = (
       '<div class="quickview-grid">' +
         '<div class="quickview-img-box">' +
@@ -1352,7 +2154,7 @@ function openQuickView(productId) {
           '<div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem;">' +
             '<div style="text-decoration: line-through; color: var(--text-light); font-size: 0.9rem;">' + formatPrice(product.oldPrice) + '</div>' +
             '<div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-deep);">' + formatPrice(product.price) + '</div>' +
-            '<div style="font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-top: 0.25rem;">💳 Multinet Up Yemek Kartı ile Ödenebilir</div>' +
+            '<div style="font-size: 0.82rem; color: #16a34a; font-weight: 700; margin-top: 0.35rem;">✓ Stokta Var - Aynı Gün Hızlı Kargo</div>' +
           '</div>' +
           '<div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">' +
             '<button class="add-to-cart-btn" style="flex: 1;" onclick="addToCart(' + product.id + ', 1); closeAllModals();">' +
@@ -1362,17 +2164,11 @@ function openQuickView(productId) {
               '❤️ Favori' +
             '</button>' +
           '</div>' +
-          '<div class="installment-table-wrap">' +
-            '<strong style="font-size: 0.88rem; color: var(--primary-deep);">Taksit Seçenekleri (Bonus, World, Axess, Maximum)</strong>' +
-            '<table class="installment-table">' +
-              '<thead><tr><th>Taksit</th><th>Aylık Tutar</th><th>Toplam Tutar</th></tr></thead>' +
-              '<tbody>' +
-                '<tr><td>Tek Çekim</td><td>' + formatPrice(price) + '</td><td>' + formatPrice(price) + '</td></tr>' +
-                '<tr><td>3 Taksit</td><td>' + formatPrice(t3) + '</td><td>' + formatPrice(price) + '</td></tr>' +
-                '<tr><td>6 Taksit</td><td>' + formatPrice(t6) + '</td><td>' + formatPrice(price * 1.05) + '</td></tr>' +
-                '<tr><td>9 Taksit</td><td>' + formatPrice(t9) + '</td><td>' + formatPrice(price * 1.09) + '</td></tr>' +
-              '</tbody>' +
-            '</table>' +
+          '<div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted);">' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🚚</span> <strong>Aynı Gün Kargo:</strong> Saat 16:00 öncesi verilen siparişler aynı gün kargoda.</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🔒</span> <strong>PayTR Güvencesi:</strong> 256-Bit SSL şifreleme ve 3D Secure ile korumalı güvenli ödeme.</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">📦</span> <strong>Özel Hediye Paketi:</strong> Kırılmaya karşı özel darbe emici korumalı ambalaj.</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🔄</span> <strong>14 Gün İade:</strong> Koşulsuz iade ve değişim garantisi.</div>' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -1606,6 +2402,8 @@ window.toggleWishlist = toggleWishlist;
 window.openCheckoutModal = openCheckoutModal;
 window.setCheckoutStep = setCheckoutStep;
 window.switchPaymentTab = switchPaymentTab;
+window.renderCheckoutInstallments = renderCheckoutInstallments;
+window.selectPaytrInstallment = selectPaytrInstallment;
 window.openPolicyModal = openPolicyModal;
 window.openQuickView = openQuickView;
 window.closeAllModals = closeAllModals;

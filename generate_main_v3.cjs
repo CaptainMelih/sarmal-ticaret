@@ -1,13 +1,11 @@
 const fs = require('fs');
 
 // ==========================================================================
-// GEÇİCİ OLARAK GİZLENEN ESKİ ÜRÜN VE KATEGORİ TANIMLARI
-// MULTİNET ONAYI ALINDIKTAN SONRA TEKRAR AKTİF EDİLECEKTİR. KODLARI SİLMEYİN!
+// AKTİF HEDİYELİK & DEKORATİF ÜRÜN VE KATEGORİ TANIMLARI (53 ADET ÜRÜN)
 // ==========================================================================
-/*
 const rawData = JSON.parse(fs.readFileSync('sevgiliye_ozel_full.json', 'utf8'));
 
-const ORIGINAL_CATEGORIES_DEF = [
+const CATEGORIES_DEF = [
   {
     slug: 'kar-kureleri',
     name: 'Kar Küreleri & 3D Cam Küreler',
@@ -49,17 +47,10 @@ const ORIGINAL_CATEGORIES_DEF = [
     shortName: 'Özel Hediyeler',
     icon: '🎁',
     description: 'Nostaljik atlı karınca müzik kutusu, metal kalp kutuda ayıcık ve güller ve sevgiliye özel setler.'
-  },
-  {
-    slug: 'yemek-kartlari',
-    name: 'Multinet Up ile Alışveriş Reyonu',
-    shortName: 'Multinet',
-    icon: '💳',
-    description: 'Multinet Up yemek kartı bakiyenizle güvenle sipariş verebileceğiniz hediye ve dekoratif ürünler.'
   }
 ];
 
-const originalProducts = rawData.map((p, idx) => {
+const products = rawData.map((p, idx) => {
   const name = (p["Ürün Adı"] || "").trim();
   let slug = "ozel-hediyelikler";
   let catName = "Özel Hediye & Müzik Kutuları";
@@ -106,12 +97,12 @@ const originalProducts = rawData.map((p, idx) => {
     barcode: p["Barkod"] || ("45067" + (1000 + idx))
   };
 });
-*/
 
 // ==========================================================================
-// AKTİF REYON: MULTİNET ONAYI İÇİN GEÇİCİ OLARAK SADECE MARKET
+// GEÇİCİ OLARAK PASİFE ALINAN GURME MARKET VE MULTİNET ÜRÜNLERİ (SİLİNMEYEN YEDEK)
 // ==========================================================================
-const CATEGORIES_DEF = [
+/*
+const marketCategoriesDef = [
   {
     slug: 'market',
     name: 'Market & Temel Gıda',
@@ -121,10 +112,7 @@ const CATEGORIES_DEF = [
   }
 ];
 
-// ==========================================================================
-// AKTİF 10 ADET GURME MARKET & GIDA ÜRÜNÜ (MULTİNET ONAY SÜRECİ İÇİN)
-// ==========================================================================
-const products = [
+const marketProducts = [
   {
     id: 1,
     name: "Doğal Karakovan Süzme Çiçek Balı & Çam Balı Gurme Seti (2 x 850g)",
@@ -286,6 +274,7 @@ const products = [
     barcode: "869000100110"
   }
 ];
+*/
 
 const jsContent = `/**
  * SARMAL TİCARET - ÇOK SAYFALI (SEPET, FAVORİLER, GİRİŞ, KAYIT, KATEGORİ) E-TİCARET MOTORU
@@ -989,10 +978,10 @@ function renderProductGrids() {
   const curatedGrid = document.getElementById("curatedProductsGrid");
   if (!dealsGrid || !curatedGrid) return;
 
-  const dealsList = PRODUCTS_DATA.slice(0, 6);
+  const dealsList = PRODUCTS_DATA.slice(0, 10);
   dealsGrid.innerHTML = dealsList.map(createProductCardHTML).join("");
 
-  const curatedList = PRODUCTS_DATA;
+  const curatedList = PRODUCTS_DATA.slice(10, 34);
   curatedGrid.innerHTML = curatedList.map(createProductCardHTML).join("");
 }
 
@@ -1204,6 +1193,90 @@ function setCheckoutStep(step) {
   const { grandTotal } = calculateCartTotals();
   const summaryTotalEl = document.getElementById("checkoutSummaryTotal");
   if (summaryTotalEl) summaryTotalEl.textContent = formatPrice(grandTotal);
+
+  if (step === 2) {
+    renderCheckoutInstallments();
+  }
+}
+
+// --- PAYTR DİNAMİK TAKSİT TABLOSU VE SEÇİCİSİ (ÖDEME ADIMINDA GÖSTERİLİR) ---
+function renderCheckoutInstallments() {
+  const container = document.getElementById("paytrInstallmentContainer");
+  if (!container) return;
+
+  const { grandTotal } = calculateCartTotals();
+  const t2 = (grandTotal / 2);
+  const t3 = (grandTotal / 3);
+  const t6 = ((grandTotal * 1.045) / 6);
+  const t9 = ((grandTotal * 1.085) / 9);
+  const t12 = ((grandTotal * 1.125) / 12);
+
+  const options = [
+    { id: "opt_single", label: "Tek Çekim", monthly: grandTotal, total: grandTotal, note: "Peşin Fiyatına", count: 1 },
+    { id: "opt_2", label: "2 Taksit", monthly: t2, total: grandTotal, note: "Peşin Fiyatına", count: 2 },
+    { id: "opt_3", label: "3 Taksit", monthly: t3, total: grandTotal, note: "Peşin Fiyatına", count: 3 },
+    { id: "opt_6", label: "6 Taksit", monthly: t6, total: grandTotal * 1.045, note: "+%4.5 Vade Farkı", count: 6 },
+    { id: "opt_9", label: "9 Taksit", monthly: t9, total: grandTotal * 1.085, note: "+%8.5 Vade Farkı", count: 9 },
+    { id: "opt_12", label: "12 Taksit", monthly: t12, total: grandTotal * 1.125, note: "+%12.5 Vade Farkı", count: 12 }
+  ];
+
+  const currentVal = document.getElementById("creditCardInstallment")?.value || "Tek Çekim";
+
+  let html = 
+    '<div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 0.5rem;">' +
+      '<div style="padding: 0.6rem 0.85rem; background: #f1f5f9; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; color: var(--primary-deep);">' +
+        '<span>🔒 PayTR Altyapısı ile Taksit Tablosu</span>' +
+        '<span style="color: var(--text-muted); font-size: 0.72rem;">Bonus, World, Axess, Maximum, Paraf, Troy</span>' +
+      '</div>' +
+      '<table class="installment-table" style="margin-top: 0; border: none; width: 100%;">' +
+        '<thead>' +
+          '<tr>' +
+            '<th style="width: 40px; text-align: center;">Seç</th>' +
+            '<th>Taksit</th>' +
+            '<th style="text-align: right;">Aylık Tutar</th>' +
+            '<th style="text-align: right;">Toplam Tutar</th>' +
+          '</tr>' +
+        '</thead>' +
+        '<tbody>';
+
+  options.forEach((opt, idx) => {
+    const isChecked = currentVal === opt.label || (idx === 0 && currentVal === "Tek Çekim");
+    html += 
+      '<tr style="cursor: pointer;' + (isChecked ? ' background: #eff6ff;' : '') + '" onclick="selectPaytrInstallment(\\'' + opt.label + '\\')">' +
+        '<td style="text-align: center;">' +
+          '<input type="radio" name="paytr_installment_radio" value="' + opt.label + '" ' + (isChecked ? 'checked' : '') + ' onchange="selectPaytrInstallment(\\'' + opt.label + '\\')" />' +
+        '</td>' +
+        '<td>' +
+          '<strong>' + opt.label + '</strong> ' +
+          '<span style="font-size: 0.72rem; color: ' + (opt.note.includes("Peşin") ? '#16a34a' : 'var(--text-muted)') + '; font-weight: 600; margin-left: 4px;">(' + opt.note + ')</span>' +
+        '</td>' +
+        '<td style="text-align: right; font-weight: 700; color: var(--primary);">' + formatPrice(opt.monthly) + '</td>' +
+        '<td style="text-align: right; font-weight: 800; color: var(--primary-deep);">' + formatPrice(opt.total) + '</td>' +
+      '</tr>';
+  });
+
+  html += 
+        '</tbody>' +
+      '</table>' +
+    '</div>';
+
+  container.innerHTML = html;
+}
+
+function selectPaytrInstallment(val) {
+  const hiddenInput = document.getElementById("creditCardInstallment");
+  if (hiddenInput) hiddenInput.value = val;
+  const radios = document.querySelectorAll("input[name='paytr_installment_radio']");
+  radios.forEach(r => {
+    const row = r.closest("tr");
+    if (r.value === val) {
+      r.checked = true;
+      if (row) row.style.background = "#eff6ff";
+    } else {
+      r.checked = false;
+      if (row) row.style.background = "";
+    }
+  });
 }
 
 function handleStep1Submit(e) {
@@ -1274,11 +1347,11 @@ function handleFinalOrderSubmit(e) {
     return;
   }
 
-  const activeTab = document.querySelector(".payment-tab-btn.active")?.getAttribute("data-tab") || "mealcard";
-  let paymentMethodName = "Multinet Up Yemek Kartı";
+  const activeTab = document.querySelector(".payment-tab-btn.active")?.getAttribute("data-tab") || "creditcard";
+  let paymentMethodName = "PayTR ile Kredi Kartı";
   let orderStatus = "Hazırlanıyor";
 
-  // --- KREDİ KARTI KONTROLLERİ ---
+  // --- KREDİ KARTI KONTROLLERİ (PayTR Altyapısı - 3D Secure) ---
   if (activeTab === "creditcard") {
     const holder = document.getElementById("ccHolderName")?.value.trim() || "";
     const number = document.getElementById("ccNumber")?.value.trim() || "";
@@ -1310,9 +1383,14 @@ function handleFinalOrderSubmit(e) {
     }
 
     const installment = document.getElementById("creditCardInstallment")?.value || "Tek Çekim";
-    paymentMethodName = "Kredi Kartı (" + installment + ") - 3D Secure Onaylı";
+    paymentMethodName = "PayTR Kredi Kartı (" + installment + ") - 3D Secure Onaylı";
 
-  // --- MULTİNET YEMEK KARTI KONTROLLERİ ---
+  // --- HAVALE / EFT / NAKİT ---
+  } else if (activeTab === "havale") {
+    paymentMethodName = "Havale / EFT & Kapıda Nakit (Garanti BBVA)";
+    orderStatus = "Ödeme Bekleniyor (Havale Bildirimi)";
+
+  // --- MULTİNET YEMEK KARTI KONTROLLERİ (Pasif Yedek) ---
   } else if (activeTab === "mealcard") {
     const cardNum = (document.getElementById("multinetCardNumber")?.value || "").replace(/[^0-9]/g, "");
     const expiry = document.getElementById("multinetExpiry")?.value.trim() || "";
@@ -1337,11 +1415,6 @@ function handleFinalOrderSubmit(e) {
     }
 
     paymentMethodName = "Multinet Up Yemek Kartı (MultiPay Onaylı)";
-
-  // --- HAVALE / EFT ---
-  } else if (activeTab === "havale") {
-    paymentMethodName = "Havale / EFT (Garanti BBVA)";
-    orderStatus = "Ödeme Bekleniyor (Havale Bildirimi)";
   }
 
   // Ödeme Onaylama & İşlem Simülasyonu (Fail-Safe)
@@ -1451,11 +1524,6 @@ function openQuickView(productId) {
 
   const modalBody = document.getElementById("quickViewContent");
   if (modalBody) {
-    const price = product.price;
-    const t3 = (price / 3).toFixed(2);
-    const t6 = (price * 1.05 / 6).toFixed(2);
-    const t9 = (price * 1.09 / 9).toFixed(2);
-
     modalBody.innerHTML = (
       '<div class="quickview-grid">' +
         '<div class="quickview-img-box">' +
@@ -1472,7 +1540,7 @@ function openQuickView(productId) {
           '<div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem;">' +
             '<div style="text-decoration: line-through; color: var(--text-light); font-size: 0.9rem;">' + formatPrice(product.oldPrice) + '</div>' +
             '<div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-deep);">' + formatPrice(product.price) + '</div>' +
-            '<div style="font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-top: 0.25rem;">💳 Multinet Up Yemek Kartı ile Ödenebilir</div>' +
+            '<div style="font-size: 0.82rem; color: #16a34a; font-weight: 700; margin-top: 0.35rem;">✓ Stokta Var - Aynı Gün Hızlı Kargo</div>' +
           '</div>' +
           '<div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">' +
             '<button class="add-to-cart-btn" style="flex: 1;" onclick="addToCart(' + product.id + ', 1); closeAllModals();">' +
@@ -1482,17 +1550,11 @@ function openQuickView(productId) {
               '❤️ Favori' +
             '</button>' +
           '</div>' +
-          '<div class="installment-table-wrap">' +
-            '<strong style="font-size: 0.88rem; color: var(--primary-deep);">Taksit Seçenekleri (Bonus, World, Axess, Maximum)</strong>' +
-            '<table class="installment-table">' +
-              '<thead><tr><th>Taksit</th><th>Aylık Tutar</th><th>Toplam Tutar</th></tr></thead>' +
-              '<tbody>' +
-                '<tr><td>Tek Çekim</td><td>' + formatPrice(price) + '</td><td>' + formatPrice(price) + '</td></tr>' +
-                '<tr><td>3 Taksit</td><td>' + formatPrice(t3) + '</td><td>' + formatPrice(price) + '</td></tr>' +
-                '<tr><td>6 Taksit</td><td>' + formatPrice(t6) + '</td><td>' + formatPrice(price * 1.05) + '</td></tr>' +
-                '<tr><td>9 Taksit</td><td>' + formatPrice(t9) + '</td><td>' + formatPrice(price * 1.09) + '</td></tr>' +
-              '</tbody>' +
-            '</table>' +
+          '<div style="margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 1rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted);">' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🚚</span> <strong>Aynı Gün Kargo:</strong> Saat 16:00 öncesi verilen siparişler aynı gün kargoda.</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🔒</span> <strong>PayTR Güvencesi:</strong> 256-Bit SSL şifreleme ve 3D Secure ile korumalı güvenli ödeme.</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">📦</span> <strong>Özel Hediye Paketi:</strong> Kırılmaya karşı özel darbe emici korumalı ambalaj.</div>' +
+            '<div style="display: flex; align-items: center; gap: 0.5rem;"><span style="color: var(--primary); font-weight: 700;">🔄</span> <strong>14 Gün İade:</strong> Koşulsuz iade ve değişim garantisi.</div>' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -1726,6 +1788,8 @@ window.toggleWishlist = toggleWishlist;
 window.openCheckoutModal = openCheckoutModal;
 window.setCheckoutStep = setCheckoutStep;
 window.switchPaymentTab = switchPaymentTab;
+window.renderCheckoutInstallments = renderCheckoutInstallments;
+window.selectPaytrInstallment = selectPaytrInstallment;
 window.openPolicyModal = openPolicyModal;
 window.openQuickView = openQuickView;
 window.closeAllModals = closeAllModals;
