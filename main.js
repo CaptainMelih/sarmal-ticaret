@@ -2254,45 +2254,95 @@ function openPolicyModal(type) {
   if (!modal || !titleEl || !bodyEl) return;
 
   if (type === "returns") {
-    titleEl.textContent = "İade ve Değişim Politikası";
+    titleEl.textContent = "İade ve Değişim Şartları";
     bodyEl.innerHTML = (
-      '<h4>1. Cayma Hakkı ve İade Süresi</h4>' +
-      '<p>6502 sayılı Tüketicinin Korunması Hakkında Kanun uyarınca, alıcı ürünü teslim aldığı tarihten itibaren <strong>14 (on dört) gün</strong> içerisinde gerekçe göstermeksizin iade edebilir.</p>' +
-      '<h4>2. İade Koşulları</h4>' +
+      '<h4>1. Cayma Hakkı ve Yasal İade Süresi</h4>' +
+      '<p>6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri uyarınca, Alıcı (Müşteri) satın aldığı ürünü teslim aldığı tarihten itibaren <strong>14 (on dört) gün</strong> içerisinde herhangi bir gerekçe göstermeksizin ve cezai şart ödemeksizin cayma hakkını kullanarak iade edebilir.</p>' +
+      '<h4>2. İade ve Değişim Koşulları</h4>' +
       '<ul>' +
-        '<li>İade edilecek ürünlerin orijinal ambalajında, koruyucu kutusunda ve faturasıyla eksiksiz gönderilmesi gerekmektedir.</li>' +
-        '<li>Cam küreler ve elektronik lambalar hasarsız olmalıdır.</li>' +
+        '<li>İade veya değişim yapılacak ürünün faturası, orijinal koruyucu ambalajı, kutusu ve tüm aksesuarlarıyla birlikte eksiksiz ve hasarsız olarak gönderilmesi gerekmektedir.</li>' +
+        '<li>Hediyelik kar küreleri, batmayan gemiler ve dekoratif lambalar gibi hassas ürünlerin kargoda kırılmaması için teslim alındığı şekilde koruyucu patpat / strafor ambalajına sarılarak paketlenmesi rica olunur.</li>' +
+        '<li>Kullanılmış, tahrip edilmiş, orijinal kutusu kaybolmuş veya zarar görmüş ürünlerin iadesi kabul edilmemektedir.</li>' +
       '</ul>' +
-      '<h4>3. Ücretsiz İade Anlaşması</h4>' +
-      '<p>İadelerinizi Yurtiçi Kargo anlaşma kodumuz olan <strong>540912</strong> ile Sarmal Ticaret adına ücretsiz gönderebilirsiniz.</p>'
+      '<h4>3. Anlaşmalı Kargo ile Ücretsiz İade Gönderimi</h4>' +
+      '<p>Cayma hakkı kapsamında yapacağınız tüm iadeleri, resmi kargo partnerimiz <strong>Yurtiçi Kargo</strong> şubelerine giderek anlaşma numaramız olan <strong>540912</strong> kodunu belirterek <strong>Sarmal Ticaret</strong> adına <strong>tamamen ücretsiz (karşı ödemeli)</strong> olarak teslim edebilirsiniz.</p>' +
+      '<h4>4. Ücret İadesi ve Geri Ödeme Süreci</h4>' +
+      '<p>İade ettiğiniz ürün depomuza ulaşıp teknik kontrolü tamamlandıktan sonra aynı gün iade onayı verilir. Ürün bedeli:</p>' +
+      '<ul>' +
+        '<li><strong>Kredi Kartı ile Yapılan Ödemelerde:</strong> PayTR altyapısı üzerinden anında bankanıza aktarılır ve bankanızın işlem süreçlerine bağlı olarak 1-3 iş günü (taksitli işlemlerde bankanızın taksit prosedürüne göre) kartınıza yansır.</li>' +
+        '<li><strong>Havale / EFT ile Yapılan Ödemelerde:</strong> İade onayından sonra 24 saat içerisinde bildireceğiniz IBAN hesabınıza kesintisiz olarak aktarılır.</li>' +
+      '</ul>' +
+      '<h4>5. Hasarlı / Kırık Teslimat Durumu</h4>' +
+      '<p>Siparişinizi teslim alırken kargo paketinde ezilme, yırtılma veya kırık şüphesi varsa lütfen kargo görevlisine <em>"Hasar Tespit Tutanağı"</em> tutturunuz. Tutanağı WhatsApp hattımıza (0537 871 55 17) iletmeniz durumunda derhal yeni ürün gönderimi sağlanır.</p>'
     );
   } else if (type === "distance-contract") {
-    titleEl.textContent = "Mesafeli Satış Sözleşmesi (ETBİS Uyumlu)";
+    titleEl.textContent = "Mesafeli Satış Sözleşmesi";
     bodyEl.innerHTML = (
       '<h4>MADDE 1 – TARAFLAR</h4>' +
-      '<p><strong>SATICI BİLGİLERİ (ETBİS Kayıtlı):</strong><br>' +
-      '<strong>Ticari Ünvan:</strong> Sarmal Ticaret ve Hediyelik Eşya San. Tic. Ltd. Şti.<br>' +
-      '<strong>Vergi Dairesi & No:</strong> Kadıköy V.D. - 7460982315<br>' +
-      '<strong>MERSİS Numarası:</strong> 0746098231500001<br>' +
-      '<strong>Ticaret Sicil No:</strong> 492015-5<br>' +
-      '<strong>Adres:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3 Kadıköy / İstanbul<br>' +
-      '<strong>Telefon:</strong> 0850 308 58 72 | <strong>WhatsApp:</strong> 0537 871 55 17<br>' +
-      '<strong>KEP Adresi:</strong> sarmalticaret@hs01.kep.tr | <strong>E-Posta:</strong> destek@sarmalticaret.com</p>' +
-      '<p><strong>ALICI (MÜŞTERİ):</strong> Sipariş formunda belirtilen alıcı bilgileri.</p>' +
-      '<h4>MADDE 2 – SÖZLEŞMENİN KONUSU</h4>' +
-      '<p>ALICI’nın www.sarmalticaret.com üzerinden sipariş ettiği hediyelik ürünlerin satışı, teslimi ve PayTR 256-Bit SSL güvencesiyle tahsilatı ile ilgili yasal hak ve yükümlülükler.</p>'
+      '<p><strong>SATICI BİLGİLERİ:</strong><br>' +
+      '<strong>Ünvan:</strong> Sarmal Ticaret ve Hediyelik Eşya Hizmetleri<br>' +
+      '<strong>Adres:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3, Kadıköy / İstanbul<br>' +
+      '<strong>Müşteri Hizmetleri:</strong> 0850 308 58 72<br>' +
+      '<strong>WhatsApp Sipariş & Destek:</strong> 0537 871 55 17<br>' +
+      '<strong>E-Posta:</strong> destek@sarmalticaret.com<br>' +
+      '<strong>Web Sitesi:</strong> www.sarmalticaret.com</p>' +
+      '<p><strong>ALICI (TÜKETİCİ) BİLGİLERİ:</strong><br>' +
+      'Sipariş formunda adı, soyadı, teslimat adresi, telefon numarası ve e-posta adresi belirtilen gerçek kişi (Tüketici).</p>' +
+      '<h4>MADDE 2 – SÖZLEŞMENİN KONUSU VE KAPSAMI</h4>' +
+      '<p>İşbu sözleşmenin konusu, ALICI tarafından SATICI firmaya ait www.sarmalticaret.com web sitesi üzerinden elektronik ortamda siparişi verilen hediyelik eşya, dekoratif ürün ve aksesuarların satışı, teslimi ve bedelinin tahsili ile ilgili olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların karşılıklı hak ve yükümlülüklerinin belirlenmesidir.</p>' +
+      '<h4>MADDE 3 – SÖZLEŞME KONUSU ÜRÜN, FİYAT VE ÖDEME</h4>' +
+      '<p>Sipariş edilen ürünlerin cinsi, miktarı, modeli, vergiler dahil satış bedeli ve kargo ücreti sipariş özeti ekranında ve ALICI tarafına iletilen sipariş onay belgesinde belirtildiği gibidir. Ödemeler, PayTR 256-Bit SSL korumalı altyapı ile kredi kartı (peşin veya taksitli) veya Havale/EFT / Kapıda Nakit yöntemiyle gerçekleştirilir.</p>' +
+      '<h4>MADDE 4 – TESLİMAT VE KARGO ŞARTLARI</h4>' +
+      '<p>Sipariş konusu ürün, yasal 30 günlük süreyi aşmamak koşulu ile her bir ürün için ALICI yerleşim yerinin uzaklığına bağlı olarak taahhüt edilen süre içinde (saat 16:00 öncesi aynı gün, en geç 2-3 iş günü içerisinde) Yurtiçi Kargo güvencesiyle ALICI tarafının belirttiği teslimat adresine teslim edilir. 500 TL ve üzeri tüm alışverişlerde kargo ücreti SATICI tarafından karşılanır.</p>' +
+      '<h4>MADDE 5 – CAYMA HAKKI</h4>' +
+      '<p>ALICI, sözleşme konusu ürünün kendisine veya gösterdiği adresteki kişi/kuruluşa tesliminden itibaren <strong>14 (on dört) gün</strong> içinde hiçbir gerekçe göstermeksizin ve cezai şart ödemeksizin sözleşmeden cayma hakkına sahiptir. Cayma hakkının kullanılması için bu süre içinde SATICI firmaya WhatsApp veya e-posta ile bildirimde bulunulması ve ürünün Yurtiçi Kargo anlaşma kodumuzla (540912) ücretsiz gönderilmesi yeterlidir.</p>' +
+      '<h4>MADDE 6 – UYUŞMAZLIKLARIN ÇÖZÜMÜ</h4>' +
+      '<p>İşbu sözleşmeden doğabilecek uyuşmazlıklarda, Ticaret Bakanlığınca her yıl belirlenen parasal sınırlar dahilinde ALICI yerleşim yerindeki İl veya İlçe Tüketici Hakem Heyetleri ile Tüketici Mahkemeleri yetkilidir.</p>' +
+      '<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">* ALICI, sipariş adımlarını tamamlayıp ödemeyi gerçekleştirdiğinde işbu sözleşmenin tüm maddelerini eksiksiz okuduğunu, anladığını ve kabul ettiğini elektronik ortamda teyit etmiş sayılır.</p>'
     );
   } else if (type === "privacy") {
-    titleEl.textContent = "Gizlilik ve PayTR Güvenlik Politikası";
+    titleEl.textContent = "Gizlilik ve Güvenlik Politikası";
     bodyEl.innerHTML = (
-      '<h4>1. Güvenli Alışveriş ve 256-Bit SSL</h4>' +
-      '<p>Sitemizdeki tüm işlemler <strong>256-Bit SSL</strong> şifreleme ve <strong>PayTR Lisanslı Ödeme Sistemi</strong> ile korunmaktadır. Kredi kartı bilgileriniz doğrudan PCI-DSS Level 1 sertifikalı PayTR sunucularında işlenir, mağaza veritabanımızda asla saklanmaz.</p>'
+      '<h4>1. Gizlilik Taahhüdümüz ve Veri Güvenliği</h4>' +
+      '<p>Sarmal Ticaret olarak müşterilerimizin kişisel verilerinin gizliliğine ve güvenliğine en üst seviyede önem veriyoruz. www.sarmalticaret.com üzerinden paylaştığınız tüm bilgiler gizli tutulmakta olup, yasal yükümlülükler ve kargo teslimat süreci haricinde üçüncü şahıslarla asla paylaşılmaz, satılmaz veya ticari amaçla devredilmez.</p>' +
+      '<h4>2. PayTR Ödeme Altyapısı ve 256-Bit SSL Koruması</h4>' +
+      '<p>Sitemizde kredi kartı ile gerçekleştirilen tüm ödemeler Türkiye Cumhuriyet Merkez Bankası (TCMB) lisanslı ve PCI-DSS Seviye 1 güvenlik sertifikasına sahip <strong>PayTR Ödeme ve Elektronik Para Kuruluşu A.Ş.</strong> altyapısı üzerinden gerçekleştirilmektedir.</p>' +
+      '<ul>' +
+        '<li>Sitemizde gerçekleştirdiğiniz tüm işlemler <strong>256-Bit SSL (Secure Sockets Layer)</strong> şifreleme protokolü ile korunur.</li>' +
+        '<li>Kredi kartı numaranız, son kullanma tarihiniz ve CVV güvenlik kodunuz dahil hiçbir hassas kart verisi <strong>Sarmal Ticaret sunucularında tutulmaz, kaydedilmez ve görüntülenemez</strong>.</li>' +
+        '<li>Ödeme esnasında bilgiler doğrudan bankanızın güvenli 3D Secure ekranına iletilir ve telefonunuza gelen tek kullanımlık SMS onay kodu ile işlem tamamlanır.</li>' +
+      '</ul>' +
+      '<h4>3. Çerez (Cookie) Kullanımı</h4>' +
+      '<p>Sitemizde, alışveriş sepetinizi hatırlamak, kullanıcı oturumunuzu sürdürmek, sayfalar arası geçişleri hızlandırmak ve kullanıcı deneyiminizi iyileştirmek amacıyla zorunlu ve işlevsel çerezler kullanılmaktadır. Tarayıcı ayarlarınızdan çerez tercihlerinizi dilediğiniz zaman değiştirebilirsiniz.</p>' +
+      '<h4>4. İletişim İzinleri</h4>' +
+      '<p>E-bülten veya kampanya bildirimlerine onay veren müşterilerimize özel indirim ve fırsat duyuruları gönderilmektedir. Müşterilerimiz diledikleri zaman bu bildirim listesinden ücretsiz olarak çıkma hakkına sahiptir.</p>'
     );
   } else if (type === "kvkk") {
     titleEl.textContent = "KVKK Aydınlatma Metni";
     bodyEl.innerHTML = (
-      '<h4>Kişisel Verilerin Korunması Kanunu (KVKK)</h4>' +
-      '<p>6698 sayılı kanun kapsamında veri sorumlusu: <strong>Sarmal Ticaret ve Hediyelik Eşya San. Tic. Ltd. Şti.</strong> Ad, telefon, adres ve e-posta verileriniz yalnızca sipariş hazırlığı, faturalandırma ve kargo teslimatı için işlenir.</p>'
+      '<h4>1. Veri Sorumlusunun Kimliği</h4>' +
+      '<p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla <strong>Sarmal Ticaret</strong> tarafından işlenmektedir.</p>' +
+      '<p><strong>İletişim:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3, Kadıköy / İstanbul | <strong>E-Posta:</strong> destek@sarmalticaret.com | <strong>Tel:</strong> 0850 308 58 72</p>' +
+      '<h4>2. İşlenen Kişisel Verileriniz ve Toplanma Yöntemi</h4>' +
+      '<p>Web sitemiz üzerinden sipariş oluştururken, üye olurken veya bültene kaydolurken tarafınızca sağlanan:</p>' +
+      '<ul>' +
+        '<li><strong>Kimlik Bilgileri:</strong> Ad, soyad.</li>' +
+        '<li><strong>İletişim Bilgileri:</strong> Teslimat adresi, fatura adresi, cep telefonu numarası, e-posta adresi.</li>' +
+        '<li><strong>Müşteri İşlem Bilgileri:</strong> Sipariş geçmişi, sepet bilgileri, hediye kartı notları ve talep/şikayet kayıtları.</li>' +
+      '</ul>' +
+      '<p>Bu veriler, web sitemiz üzerindeki formlar aracılığıyla tamamen dijital ortamda otomatik yöntemlerle toplanmaktadır.</p>' +
+      '<h4>3. Kişisel Verilerin İşlenme Amaçları</h4>' +
+      '<p>Kişisel verileriniz, KVKK Kanununun 5. maddesinde belirtilen sözleşmenin kurulması ve ifası ile hukuki yükümlülükler kapsamında;</p>' +
+      '<ul>' +
+        '<li>Siparişlerinizin hazırlanması, kargolanması ve adresinize güvenle teslim edilmesi,</li>' +
+        '<li>Muhasebe kayıtlarının yasal sürelere uygun tutulması,</li>' +
+        '<li>Sipariş durumu ve kargo takip bilgilendirmelerinin iletilmesi,</li>' +
+        '<li>Satış sonrası müşteri destek, iade ve garanti süreçlerinin yürütülmesi amaçlarıyla işlenir.</li>' +
+      '</ul>' +
+      '<h4>4. Kişisel Verilerin Aktarılması</h4>' +
+      '<p>Kişisel verileriniz yalnızca siparişinizin teslimatı amacıyla yetkili kargo şirketine (Yurtiçi Kargo), ödemelerin tahsili amacıyla lisanslı ödeme kuruluşuna (PayTR) ve yasal zorunluluk halinde kanunen yetkili kamu kurumlarına aktarılmaktadır. Hiçbir üçüncü tarafa pazarlama veya reklam amacıyla devredilmez.</p>' +
+      '<h4>5. KVKK Kapsamındaki Haklarınız</h4>' +
+      '<p>Veri sahibi olarak; verilerinizin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, amacına uygun kullanılıp kullanılmadığını öğrenme, eksik/yanlış verilerin düzeltilmesini isteme ve silinmesini talep etme haklarına sahipsiniz. Taleplerinizi <strong>destek@sarmalticaret.com</strong> adresine iletebilirsiniz.</p>'
     );
   }
 
