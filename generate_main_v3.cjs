@@ -1667,8 +1667,8 @@ function openPolicyModal(type) {
       '<h4>MADDE 1 – TARAFLAR</h4>' +
       '<p><strong>SATICI BİLGİLERİ:</strong><br>' +
       '<strong>Ünvan:</strong> Sarmal Ticaret ve Hediyelik Eşya Hizmetleri<br>' +
-      '<strong>Adres:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3, Kadıköy / İstanbul<br>' +
-      '<strong>Müşteri Hizmetleri:</strong> 0850 308 58 72<br>' +
+      '<strong>Adres:</strong> İstanbul / Türkiye<br>' +
+      '<strong>Tel / Müşteri Hizmetleri:</strong> 0537 871 55 17<br>' +
       '<strong>WhatsApp Sipariş & Destek:</strong> 0537 871 55 17<br>' +
       '<strong>E-Posta:</strong> destek@sarmalticaret.com<br>' +
       '<strong>Web Sitesi:</strong> www.sarmalticaret.com</p>' +
@@ -1708,7 +1708,7 @@ function openPolicyModal(type) {
     bodyEl.innerHTML = (
       '<h4>1. Veri Sorumlusunun Kimliği</h4>' +
       '<p>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) uyarınca, kişisel verileriniz veri sorumlusu sıfatıyla <strong>Sarmal Ticaret</strong> tarafından işlenmektedir.</p>' +
-      '<p><strong>İletişim:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3, Kadıköy / İstanbul | <strong>E-Posta:</strong> destek@sarmalticaret.com | <strong>Tel:</strong> 0850 308 58 72</p>' +
+      '<p><strong>İletişim:</strong> İstanbul / Türkiye | <strong>E-Posta:</strong> destek@sarmalticaret.com | <strong>Tel:</strong> 0537 871 55 17</p>' +
       '<h4>2. İşlenen Kişisel Verileriniz ve Toplanma Yöntemi</h4>' +
       '<p>Web sitemiz üzerinden sipariş oluştururken, üye olurken veya bültene kaydolurken tarafınızca sağlanan:</p>' +
       '<ul>' +
