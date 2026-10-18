@@ -1,4 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import * as fb from './firebase';
+
+export { fb };
 
 // 🔑 Supabase Project Credentials
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ynfecvczapkbiwdekptd.supabase.co';
@@ -34,6 +37,7 @@ export function isAdminUser(email) {
 
 // Kayıt ol
 export async function signUp(email, password, userData = {}) {
+    if (fb.isFirebaseConfigured) return fb.signUp(email, password, userData);
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -63,6 +67,7 @@ export async function signUp(email, password, userData = {}) {
 
 // Giriş yap
 export async function signIn(email, password) {
+    if (fb.isFirebaseConfigured) return fb.signIn(email, password);
     const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -74,12 +79,14 @@ export async function signIn(email, password) {
 
 // Çıkış yap
 export async function signOut() {
+    if (fb.isFirebaseConfigured) return fb.signOut();
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
 }
 
 // Şifre sıfırlama e-postası gönder
 export async function resetPassword(email) {
+    if (fb.isFirebaseConfigured) return fb.resetPassword(email);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/reset-password` : undefined,
     });
@@ -88,6 +95,7 @@ export async function resetPassword(email) {
 
 // Mevcut oturumu al
 export async function getSession() {
+    if (fb.isFirebaseConfigured) return fb.getSession();
     const { data, error } = await supabase.auth.getSession();
     if (error) throw error;
     return data.session;
@@ -95,6 +103,7 @@ export async function getSession() {
 
 // Auth durumu değişikliğini dinle
 export function onAuthStateChange(callback) {
+    if (fb.isFirebaseConfigured) return fb.onAuthStateChange(callback);
     return supabase.auth.onAuthStateChange(callback);
 }
 
@@ -104,6 +113,7 @@ export function onAuthStateChange(callback) {
 
 // Kullanıcı profilini getir
 export async function getUserProfile(userId) {
+    if (fb.isFirebaseConfigured) return fb.getProfile(userId);
     const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -136,6 +146,7 @@ export async function checkEmailExists(email) {
 export const getProfile = getUserProfile;
 
 export async function updateProfile(userId, updates) {
+    if (fb.isFirebaseConfigured) return fb.updateProfile(userId, updates);
     const { data, error } = await supabase
         .from('profiles')
         .upsert({ id: userId, ...updates, updated_at: new Date().toISOString() });
@@ -145,6 +156,7 @@ export async function updateProfile(userId, updates) {
 }
 
 export async function getProfileCount() {
+    if (fb.isFirebaseConfigured) return fb.getProfileCount();
     const { count, error } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true });
@@ -154,6 +166,7 @@ export async function getProfileCount() {
 }
 
 export async function getAllProfiles() {
+    if (fb.isFirebaseConfigured) return fb.getAllProfiles();
     const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -208,6 +221,7 @@ export function getCachedReviews() {
 }
 
 export async function getProducts() {
+    if (fb.isFirebaseConfigured) return fb.getProducts();
     try {
         const { data, error } = await supabase
             .from('products')
@@ -233,6 +247,7 @@ export async function getProducts() {
 
 export async function getProductById(id) {
     if (!id) return null;
+    if (fb.isFirebaseConfigured) return fb.getProductById(id);
     try {
         const targetIdStr = String(id);
         const { data, error } = await supabase
@@ -262,6 +277,7 @@ export async function getProductById(id) {
 }
 
 export async function getAllProductsAdmin() {
+    if (fb.isFirebaseConfigured) return fb.getAllProductsAdmin();
     try {
         const { data, error } = await supabase
             .from('products')
@@ -290,6 +306,7 @@ function sanitizeProductPayload(payload) {
 }
 
 export async function addProduct(product) {
+    if (fb.isFirebaseConfigured) return fb.addProduct(product);
     const cleanPayload = sanitizeProductPayload(product);
     if (!cleanPayload.id) {
         cleanPayload.id = Date.now();
@@ -406,6 +423,7 @@ export async function deleteProduct(productId) {
 // ==========================================
 
 export async function getOrders(userId) {
+    if (fb.isFirebaseConfigured) return fb.getOrders(userId);
     const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -423,6 +441,7 @@ export async function getOrders(userId) {
 }
 
 export async function getAllOrders() {
+    if (fb.isFirebaseConfigured) return fb.getAllOrders();
     try {
         const { data: orders, error } = await supabase
             .from('orders')
@@ -482,6 +501,7 @@ export async function getAllUsersAdmin() {
 }
 
 export async function createOrder(orderData) {
+    if (fb.isFirebaseConfigured) return fb.createOrder(orderData);
     const giftInfo = orderData.giftNote ? ` [Hediye Notu: ${orderData.giftNote}]` : '';
     const fullNote = `${orderData.note || ''}${giftInfo}`.trim();
     const orderId = Date.now();
@@ -547,6 +567,7 @@ export async function createOrder(orderData) {
 }
 
 export async function createGuestOrder(orderData, guestAddress) {
+    if (fb.isFirebaseConfigured) return fb.createGuestOrder(orderData, guestAddress);
     let addressId = null;
     try {
         if (guestAddress) {
@@ -619,6 +640,7 @@ export async function updateOrderStatus(orderId, status, additionalChanges = {})
 // ==========================================
 
 export async function getAddresses(userId) {
+    if (fb.isFirebaseConfigured) return fb.getAddresses(userId);
     const { data, error } = await supabase
         .from('addresses')
         .select('*')
@@ -630,6 +652,7 @@ export async function getAddresses(userId) {
 }
 
 export async function addAddress(userId, address) {
+    if (fb.isFirebaseConfigured) return fb.addAddress(userId, address);
     const { data, error } = await supabase
         .from('addresses')
         .insert([{ user_id: userId, ...address }])
@@ -640,6 +663,7 @@ export async function addAddress(userId, address) {
 }
 
 export async function deleteAddress(addressId) {
+    if (fb.isFirebaseConfigured) return fb.deleteAddress(addressId);
     const { error } = await supabase
         .from('addresses')
         .delete()
@@ -685,6 +709,7 @@ export async function removeFavorite(userId, productId) {
 // ==========================================
 
 export async function getProductReviews(productId) {
+    if (fb.isFirebaseConfigured) return fb.getProductReviews(productId);
     const { data, error } = await supabase
         .from('reviews')
         .select(`
@@ -699,6 +724,7 @@ export async function getProductReviews(productId) {
 }
 
 export async function addReview(review) {
+    if (fb.isFirebaseConfigured) return fb.addReview(review);
     const payload = {
         product_id: review.product_id,
         user_id: review.user_id || null,
@@ -749,6 +775,7 @@ export async function getProductAverageRating(productId) {
 }
 
 export async function getAllReviews() {
+    if (fb.isFirebaseConfigured) return fb.getAllReviews();
     try {
         const { data, error } = await supabase
             .from('reviews')
@@ -805,6 +832,7 @@ export async function deleteReview(reviewId) {
 // ==========================================
 
 export async function getCoupon(code) {
+    if (fb.isFirebaseConfigured) return fb.getCoupon(code);
     const { data, error } = await supabase
         .from('coupons')
         .select('*')
@@ -831,6 +859,7 @@ export async function getCoupon(code) {
 export const getCouponByCode = getCoupon;
 
 export async function getCoupons() {
+    if (fb.isFirebaseConfigured) return fb.getCoupons();
     try {
         const { data, error } = await supabase
             .from('coupons')
