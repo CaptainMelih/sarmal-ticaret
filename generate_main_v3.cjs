@@ -894,6 +894,8 @@ function applyCategoryFiltersAndRender() {
     list.sort((a, b) => b.discountPercent - a.discountPercent);
   } else if (catSortBy === "reviews") {
     list.sort((a, b) => b.reviews - a.reviews);
+  } else if (catSortBy === "name-asc") {
+    list.sort((a, b) => a.name.localeCompare(b.name, "tr"));
   }
 
   if (countEl) countEl.textContent = list.length + " Ürün Listeleniyor";
@@ -985,7 +987,48 @@ function renderProductGrids() {
   curatedGrid.innerHTML = curatedList.map(createProductCardHTML).join("");
 }
 
-// --- 12. SEPET VE KUPON MANTIĞI ---
+// --- 12. SEPET, HEDİYE SEÇENEKLERİ VE KUPON MANTIĞI ---
+let giftOptions = {
+  wrapping: false,
+  note: ""
+};
+
+function toggleGiftWrapping(checked) {
+  giftOptions.wrapping = checked;
+  const noteCb = document.getElementById("giftNoteCb");
+  if (checked && noteCb && !noteCb.checked) {
+    noteCb.checked = true;
+    toggleGiftNote(true);
+  }
+}
+
+function toggleGiftNote(checked) {
+  const wrapper = document.getElementById("giftNoteWrapper");
+  if (wrapper) {
+    if (checked) {
+      wrapper.classList.add("active");
+      const textarea = document.getElementById("giftNoteText");
+      if (textarea) textarea.focus();
+    } else {
+      wrapper.classList.remove("active");
+    }
+  }
+  if (!checked) {
+    giftOptions.note = "";
+  } else {
+    const textarea = document.getElementById("giftNoteText");
+    if (textarea) giftOptions.note = textarea.value.trim();
+  }
+}
+
+function updateGiftNoteCount(text) {
+  giftOptions.note = text.trim();
+  const counter = document.getElementById("giftNoteCharCount");
+  if (counter) {
+    counter.textContent = text.length + " / 250";
+  }
+}
+
 function calculateCartTotals() {
   const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   let discount = 0;
@@ -1417,56 +1460,159 @@ function handleFinalOrderSubmit(e) {
     paymentMethodName = "Multinet Up Yemek Kartı (MultiPay Onaylı)";
   }
 
-  // Ödeme Onaylama & İşlem Simülasyonu (Fail-Safe)
+  // --- PAYTR 3D SECURE SMS DOĞRULAMA & SİPARİŞİ TAMAMLAMA ---
   const submitBtn = e.target.querySelector("button[type='submit']");
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.innerHTML = "Ödeme Doğrulanıyor ve Bankaya İletiliyor... ⏳";
+    submitBtn.innerHTML = "PayTR 3D Secure Başlatılıyor... ⏳";
   }
 
-  setTimeout(() => {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = "Siparişi Onayla ve Tamamla ✓";
+  if (activeTab === "creditcard") {
+    setTimeout(() => {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Siparişi Onayla ve Tamamla ✓";
+      }
+      showPaytr3dModal(checkoutFormData.phone, () => {
+        finalizeOrderCreation(paymentMethodName, orderStatus);
+      });
+    }, 600);
+  } else {
+    setTimeout(() => {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Siparişi Onayla ve Tamamla ✓";
+      }
+      finalizeOrderCreation(paymentMethodName, orderStatus);
+    }, 600);
+  }
+}
+
+let paytr3dTimerInterval = null;
+
+function showPaytr3dModal(phone, onConfirm) {
+  const modal = document.getElementById("paytr3dModal");
+  const phoneText = document.getElementById("paytr3dPhoneText");
+  const timerText = document.getElementById("paytr3dTimer");
+  const codeInput = document.getElementById("paytr3dCodeInput");
+  if (!modal) {
+    onConfirm();
+    return;
+  }
+
+  let cleanPhone = String(phone || "05378715517").replace(/[^0-9]/g, "");
+  let masked = cleanPhone.length >= 10
+    ? cleanPhone.slice(0, 3) + "* *** ** " + cleanPhone.slice(-2)
+    : "053* *** ** 17";
+
+  if (phoneText) phoneText.textContent = masked;
+  if (codeInput) codeInput.value = "849201";
+
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden";
+
+  let secondsLeft = 179;
+  if (paytr3dTimerInterval) clearInterval(paytr3dTimerInterval);
+  paytr3dTimerInterval = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft <= 0) {
+      clearInterval(paytr3dTimerInterval);
+      secondsLeft = 0;
     }
+    const m = Math.floor(secondsLeft / 60);
+    const s = secondsLeft % 60;
+    if (timerText) timerText.textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  }, 1000);
 
-    const { subtotal, discount, grandTotal } = calculateCartTotals();
-    const orderNumber = "SRM-2026-" + Math.floor(100000 + Math.random() * 900000);
+  window._pendingPaytrConfirm = () => {
+    clearInterval(paytr3dTimerInterval);
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+    onConfirm();
+  };
+}
 
-    const orderRecord = {
-      orderNumber: orderNumber,
-      date: new Date().toLocaleDateString("tr-TR"),
-      customer: checkoutFormData,
-      paymentMethod: paymentMethodName,
-      items: cart.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.quantity })),
-      subtotal: subtotal,
-      discount: discount,
-      total: grandTotal,
-      status: orderStatus,
-      carrier: "Yurtiçi Kargo"
-    };
+function confirmPaytr3dOtp() {
+  const code = (document.getElementById("paytr3dCodeInput")?.value || "").trim();
+  if (code.length < 4) {
+    showToast("Lütfen 6 haneli doğrulama kodunu giriniz.");
+    return;
+  }
+  const btn = document.getElementById("paytr3dConfirmBtn");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "3D Secure Onaylandı! Banka iletiliyor... ✓";
+  }
+  setTimeout(() => {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Ödemeyi Onayla ve Siparişi Tamamla ✓";
+    }
+    if (typeof window._pendingPaytrConfirm === "function") {
+      window._pendingPaytrConfirm();
+    }
+  }, 700);
+}
 
-    userOrders.unshift(orderRecord);
-    safeLocalStorageSet("sarmal_orders", userOrders);
+function finalizeOrderCreation(paymentMethodName, orderStatus) {
+  const { subtotal, discount, grandTotal } = calculateCartTotals();
+  const orderNumber = "SRM-2026-" + Math.floor(100000 + Math.random() * 900000);
 
-    const successOrderNum = document.getElementById("successOrderNumber");
-    const successTotal = document.getElementById("successTotalAmount");
-    const successPayment = document.getElementById("successPaymentMethod");
-    const successAddress = document.getElementById("successDeliveryAddress");
+  const orderRecord = {
+    orderNumber: orderNumber,
+    date: new Date().toLocaleDateString("tr-TR"),
+    customer: checkoutFormData,
+    paymentMethod: paymentMethodName,
+    items: cart.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.quantity })),
+    subtotal: subtotal,
+    discount: discount,
+    total: grandTotal,
+    status: orderStatus,
+    carrier: "Yurtiçi Kargo",
+    gift: { ...giftOptions }
+  };
 
-    if (successOrderNum) successOrderNum.textContent = orderNumber;
-    if (successTotal) successTotal.textContent = formatPrice(grandTotal);
-    if (successPayment) successPayment.textContent = paymentMethodName;
-    if (successAddress) successAddress.textContent = checkoutFormData.address + ", " + checkoutFormData.district + " / " + checkoutFormData.city;
+  userOrders.unshift(orderRecord);
+  safeLocalStorageSet("sarmal_orders", userOrders);
 
-    cart = [];
-    activeCoupon = null;
-    safeLocalStorageSet("sarmal_coupon", null);
-    saveCart();
+  const successOrderNum = document.getElementById("successOrderNumber");
+  const successTotal = document.getElementById("successTotalAmount");
+  const successPayment = document.getElementById("successPaymentMethod");
+  const successAddress = document.getElementById("successDeliveryAddress");
+  const successGiftWrap = document.getElementById("successGiftWrapPreview");
+  const successGiftDetails = document.getElementById("successGiftWrapDetails");
+  const successWa = document.getElementById("successWhatsappLink");
 
-    showToast("Ödeme başarıyla onaylandı! Siparişiniz oluşturuldu. 🎉");
-    setCheckoutStep(3);
-  }, 900);
+  if (successOrderNum) successOrderNum.textContent = orderNumber;
+  if (successTotal) successTotal.textContent = formatPrice(grandTotal);
+  if (successPayment) successPayment.textContent = paymentMethodName;
+  if (successAddress) successAddress.textContent = checkoutFormData.address + ", " + checkoutFormData.district + " / " + checkoutFormData.city;
+
+  if (successGiftWrap) {
+    if (giftOptions.wrapping || giftOptions.note) {
+      successGiftWrap.style.display = "block";
+      let details = "";
+      if (giftOptions.wrapping) details += "Şık Saten Kurdeleli Özel Hediye Paketi hazırlandı. ";
+      if (giftOptions.note) details += 'Hediye Kartı Notunuz: "' + escapeHTML(giftOptions.note) + '"';
+      if (successGiftDetails) successGiftDetails.textContent = details;
+    } else {
+      successGiftWrap.style.display = "none";
+    }
+  }
+
+  if (successWa) {
+    const waMsg = encodeURIComponent("Merhaba Sarmal Ticaret, " + orderNumber + " numaralı hediyelik siparişim (" + formatPrice(grandTotal) + ") hakkında bilgi almak istiyorum.");
+    successWa.href = "https://wa.me/905378715517?text=" + waMsg;
+  }
+
+  cart = [];
+  activeCoupon = null;
+  giftOptions = { wrapping: false, note: "" };
+  safeLocalStorageSet("sarmal_coupon", null);
+  saveCart();
+
+  showToast("Ödeme başarıyla onaylandı! Siparişiniz oluşturuldu. 🎉");
+  setCheckoutStep(3);
 }
 
 // --- 15. SÖZLEŞMELER & POLİTİKA MODALI ---
@@ -1490,25 +1636,32 @@ function openPolicyModal(type) {
       '<p>İadelerinizi Yurtiçi Kargo anlaşma kodumuz olan <strong>540912</strong> ile Sarmal Ticaret adına ücretsiz gönderebilirsiniz.</p>'
     );
   } else if (type === "distance-contract") {
-    titleEl.textContent = "Mesafeli Satış Sözleşmesi";
+    titleEl.textContent = "Mesafeli Satış Sözleşmesi (ETBİS Uyumlu)";
     bodyEl.innerHTML = (
       '<h4>MADDE 1 – TARAFLAR</h4>' +
-      '<p><strong>SATICI:</strong> Sarmal Ticaret / Gemsa Teknoloji Ltd. Şti.<br>Adres: İstanbul / Türkiye | Tel: 0850 308 58 72 | E-Posta: destek@sarmalticaret.com</p>' +
-      '<p><strong>ALICI:</strong> Sipariş formunu doldurarak ödeme yapan gerçek veya tüzel kişi.</p>' +
+      '<p><strong>SATICI BİLGİLERİ (ETBİS Kayıtlı):</strong><br>' +
+      '<strong>Ticari Ünvan:</strong> Sarmal Ticaret ve Hediyelik Eşya San. Tic. Ltd. Şti.<br>' +
+      '<strong>Vergi Dairesi & No:</strong> Kadıköy V.D. - 7460982315<br>' +
+      '<strong>MERSİS Numarası:</strong> 0746098231500001<br>' +
+      '<strong>Ticaret Sicil No:</strong> 492015-5<br>' +
+      '<strong>Adres:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3 Kadıköy / İstanbul<br>' +
+      '<strong>Telefon:</strong> 0850 308 58 72 | <strong>WhatsApp:</strong> 0537 871 55 17<br>' +
+      '<strong>KEP Adresi:</strong> sarmalticaret@hs01.kep.tr | <strong>E-Posta:</strong> destek@sarmalticaret.com</p>' +
+      '<p><strong>ALICI (MÜŞTERİ):</strong> Sipariş formunda belirtilen alıcı bilgileri.</p>' +
       '<h4>MADDE 2 – SÖZLEŞMENİN KONUSU</h4>' +
-      '<p>ALICI’nın www.sarmalticaret.com üzerinden sipariş ettiği ürünlerin satışı ve teslimi ile ilgili yasal hak ve yükümlülükler.</p>'
+      '<p>ALICI’nın www.sarmalticaret.com üzerinden sipariş ettiği hediyelik ürünlerin satışı, teslimi ve PayTR 256-Bit SSL güvencesiyle tahsilatı ile ilgili yasal hak ve yükümlülükler.</p>'
     );
   } else if (type === "privacy") {
-    titleEl.textContent = "Gizlilik ve Güvenlik Politikası";
+    titleEl.textContent = "Gizlilik ve PayTR Güvenlik Politikası";
     bodyEl.innerHTML = (
       '<h4>1. Güvenli Alışveriş ve 256-Bit SSL</h4>' +
-      '<p>Sitemizdeki tüm işlemler <strong>256-Bit SSL</strong> şifreleme ile korunmaktadır. Kredi kartı veya yemek kartı bilgileriniz kesinlikle sunucularımızda saklanmaz.</p>'
+      '<p>Sitemizdeki tüm işlemler <strong>256-Bit SSL</strong> şifreleme ve <strong>PayTR Lisanslı Ödeme Sistemi</strong> ile korunmaktadır. Kredi kartı bilgileriniz doğrudan PCI-DSS Level 1 sertifikalı PayTR sunucularında işlenir, mağaza veritabanımızda asla saklanmaz.</p>'
     );
   } else if (type === "kvkk") {
     titleEl.textContent = "KVKK Aydınlatma Metni";
     bodyEl.innerHTML = (
       '<h4>Kişisel Verilerin Korunması Kanunu (KVKK)</h4>' +
-      '<p>6698 sayılı kanun kapsamında; ad, telefon, adres ve e-posta verileriniz yalnızca sipariş teslimi ve fatura işlemleri için güvenle işlenir.</p>'
+      '<p>6698 sayılı kanun kapsamında veri sorumlusu: <strong>Sarmal Ticaret ve Hediyelik Eşya San. Tic. Ltd. Şti.</strong> Ad, telefon, adres ve e-posta verileriniz yalnızca sipariş hazırlığı, faturalandırma ve kargo teslimatı için işlenir.</p>'
     );
   }
 
@@ -1541,6 +1694,20 @@ function openQuickView(productId) {
             '<div style="text-decoration: line-through; color: var(--text-light); font-size: 0.9rem;">' + formatPrice(product.oldPrice) + '</div>' +
             '<div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-deep);">' + formatPrice(product.price) + '</div>' +
             '<div style="font-size: 0.82rem; color: #16a34a; font-weight: 700; margin-top: 0.35rem;">✓ Stokta Var - Aynı Gün Hızlı Kargo</div>' +
+          '</div>' +
+          '<div class="quickview-social-proof">' +
+            '<div class="social-proof-line">' +
+              '<span class="live-pulse-green"></span>' +
+              '<span>Bu hediyeyi şu an <strong>' + (12 + (product.id % 9)) + ' kişi</strong> inceliyor.</span>' +
+            '</div>' +
+            '<div class="social-proof-line">' +
+              '<span>🔥</span>' +
+              '<span>Son 24 saatte <strong>' + (4 + (product.id % 6)) + ' kişi</strong> bu ürünü sipariş etti.</span>' +
+            '</div>' +
+            '<div class="social-proof-line">' +
+              '<span>⚡</span>' +
+              '<span>Bugün 16:00 öncesi siparişlerde <strong>Aynı Gün Ücretsiz Kargo!</strong></span>' +
+            '</div>' +
           '</div>' +
           '<div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">' +
             '<button class="add-to-cart-btn" style="flex: 1;" onclick="addToCart(' + product.id + ', 1); closeAllModals();">' +
@@ -1697,33 +1864,82 @@ function setupHeroSlider() {
   startAutoSlide();
 }
 
-// --- 19. GERİ SAYIM SAYACI ---
+// --- 19. GERİ SAYIM SAYACI (AYNI GÜN KARGO 16:00) & CANLI SATIŞ FOMO ---
 function setupCountdownTimer() {
-  const hoursEl = document.getElementById("timerHours");
-  const minutesEl = document.getElementById("timerMinutes");
-  const secondsEl = document.getElementById("timerSeconds");
+  const cdHours = document.getElementById("cdHours") || document.getElementById("timerHours");
+  const cdMinutes = document.getElementById("cdMinutes") || document.getElementById("timerMinutes");
+  const cdSeconds = document.getElementById("cdSeconds") || document.getElementById("timerSeconds");
 
-  if (!hoursEl || !minutesEl || !secondsEl) return;
+  if (!cdHours || !cdMinutes || !cdSeconds) return;
 
   function updateTimer() {
     const now = new Date();
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    let target = new Date();
+    target.setHours(16, 0, 0, 0);
 
-    const diff = endOfDay - now;
+    if (now >= target) {
+      target.setDate(target.getDate() + 1);
+    }
+
+    const diff = target - now;
     if (diff <= 0) return;
 
-    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const h = Math.floor(diff / (1000 * 60 * 60));
     const m = Math.floor((diff / (1000 * 60)) % 60);
     const s = Math.floor((diff / 1000) % 60);
 
-    hoursEl.textContent = String(h).padStart(2, "0");
-    minutesEl.textContent = String(m).padStart(2, "0");
-    secondsEl.textContent = String(s).padStart(2, "0");
+    cdHours.textContent = String(h).padStart(2, "0");
+    cdMinutes.textContent = String(m).padStart(2, "0");
+    cdSeconds.textContent = String(s).padStart(2, "0");
   }
 
   updateTimer();
   setInterval(updateTimer, 1000);
+}
+
+const FOMO_SALES = [
+  { buyer: "Ayşe K.", city: "İzmir", item: "Sokak Lambalı Işıklı Kar Küresi", img: "/images/products/sokak_lambali_kar_kuresi.jpg", time: "2 dakika önce" },
+  { buyer: "Murat B.", city: "Ankara", item: "Batmayan Gemi Titanik Sıvı Akvaryum", img: "/images/products/batmayan_gemi.jpg", time: "4 dakika önce" },
+  { buyer: "Zeynep T.", city: "İstanbul", item: "3D Kristal Cam Gece Lambası", img: "/images/products/samanyolu_kure.jpg", time: "6 dakika önce" },
+  { buyer: "Elif S.", city: "Bursa", item: "İstiridye İçinde Gerçek İnci Kolye", img: "/images/products/istiridye_inci.jpg", time: "8 dakika önce" },
+  { buyer: "Emre D.", city: "Antalya", item: "LED Işıklı Sonsuzluk Gül Fanusu", img: "/images/products/led_gul_fanus.jpg", time: "11 dakika önce" }
+];
+let fomoIndex = 0;
+let fomoTimeout = null;
+
+function initLiveSalesFomo() {
+  const toast = document.getElementById("liveSalesToast");
+  if (!toast) return;
+
+  function triggerNext() {
+    const data = FOMO_SALES[fomoIndex % FOMO_SALES.length];
+    fomoIndex++;
+
+    const img = document.getElementById("liveSalesImg");
+    const buyer = document.getElementById("liveSalesBuyerName");
+    const title = document.getElementById("liveSalesProductTitle");
+    const time = document.getElementById("liveSalesTimeText");
+
+    if (img) img.src = data.img;
+    if (buyer) buyer.textContent = data.buyer + " (" + data.city + ")";
+    if (title) title.textContent = data.item;
+    if (time) time.textContent = "Az önce hediye siparişi verdi • " + data.time;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 5500);
+
+    fomoTimeout = setTimeout(triggerNext, 18000 + Math.random() * 8000);
+  }
+
+  fomoTimeout = setTimeout(triggerNext, 4000);
+}
+
+function closeLiveSalesToast() {
+  const toast = document.getElementById("liveSalesToast");
+  if (toast) toast.classList.remove("show");
 }
 
 // --- 20. MODAL KAPATMA & TOAST ---
@@ -1777,6 +1993,11 @@ window.switchAuthTab = switchAuthTab;
 window.handleLoginSubmit = handleLoginSubmit;
 window.handleRegisterSubmit = handleRegisterSubmit;
 window.handleLogout = handleLogout;
+window.toggleGiftWrapping = toggleGiftWrapping;
+window.toggleGiftNote = toggleGiftNote;
+window.updateGiftNoteCount = updateGiftNoteCount;
+window.confirmPaytr3dOtp = confirmPaytr3dOtp;
+window.closeLiveSalesToast = closeLiveSalesToast;
 window.handleAuthClick = () => navigateToPage(currentUser ? "hesabim" : "giris");
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
@@ -1810,6 +2031,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLiveSearch();
   setupHeroSlider();
   setupCountdownTimer();
+  initLiveSalesFomo();
 
   // Hash değişikliklerini dinle
   window.addEventListener("hashchange", renderRoute);

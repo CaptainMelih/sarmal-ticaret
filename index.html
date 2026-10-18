@@ -43,6 +43,22 @@
     </div>
   </header>
 
+  <!-- Canlı Geri Sayım & Aciliyet Bandı (FOMO Countdown) -->
+  <aside class="same-day-countdown-bar" id="sameDayCountdownBar">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <span class="countdown-pulse-dot"></span>
+      <span>⚡ <strong>AYNI GÜN ÜCRETSİZ KARGO:</strong> Saat 16:00'a kadar verilen siparişler bugün kargoda!</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 0.4rem;">
+      <span style="font-size: 0.78rem; opacity: 0.9;">Kalan Süre:</span>
+      <div class="countdown-timer-digits" id="countdownTimerDigits">
+        <span class="countdown-digit-box" id="cdHours">00</span> sa
+        <span class="countdown-digit-box" id="cdMinutes">00</span> dk
+        <span class="countdown-digit-box" id="cdSeconds">00</span> sn
+      </div>
+    </div>
+  </aside>
+
   <!-- ======================================================================
        2. ANA HEADER (MAIN HEADER) - 3 SÜTUN GRID
        ====================================================================== -->
@@ -289,9 +305,9 @@
               <button id="catApplyPriceBtn" type="button" class="sidebar-apply-btn">Fiyat Filtrele</button>
               
               <div class="sidebar-filter-chips">
-                <button type="button" class="filter-chip-btn" data-min="500" data-max="700">500 - 700 TL</button>
-                <button type="button" class="filter-chip-btn" data-min="700" data-max="1000">700 - 1000 TL</button>
-                <button type="button" class="filter-chip-btn" data-min="1000" data-max="">1000 TL ve Üzeri</button>
+                <button type="button" class="filter-chip-btn" data-min="500" data-max="1000">500 - 1000 TL</button>
+                <button type="button" class="filter-chip-btn" data-min="1000" data-max="1500">1000 - 1500 TL</button>
+                <button type="button" class="filter-chip-btn" data-min="1500" data-max="">1500 TL ve Üzeri</button>
               </div>
             </div>
 
@@ -319,6 +335,7 @@
                 <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
                 <option value="discount">En Çok İndirim Alanlar</option>
                 <option value="reviews">En Çok Değerlendirilenler</option>
+                <option value="name-asc">İsim: A'dan Z'ye</option>
               </select>
             </div>
 
@@ -482,7 +499,7 @@
               <span class="section-title-icon">🔥</span>
               <h2 class="section-title">Günün Fırsat Ürünleri</h2>
             </div>
-            <button type="button" class="nav-badge-link" onclick="navigateToCategory('market')">
+            <button type="button" class="nav-badge-link" onclick="navigateToCategory('kar-kureleri')">
               Tüm Fırsatları Gör →
             </button>
           </div>
@@ -712,6 +729,38 @@
           <!-- Sağ: Sipariş Özeti & Kupon & Tamamla -->
           <div class="cart-summary-box">
             <h3 class="cart-summary-title">Sipariş Özeti</h3>
+            
+            <!-- Hediye Paketi & Özel Hediye Notu Seçenekleri -->
+            <div class="gift-options-box">
+              <div class="gift-options-header">
+                <span>🎁</span>
+                <span>Bu Sipariş Bir Hediye mi?</span>
+                <span class="gift-badge-free">ÜCRETSİZ</span>
+              </div>
+              <div class="gift-options-checkbox-group">
+                <label class="gift-checkbox-label">
+                  <input type="checkbox" id="giftWrappingCb" onchange="toggleGiftWrapping(this.checked)" />
+                  <span>Şık Saten Kurdeleli Hediye Paketi İstiyorum</span>
+                </label>
+                <label class="gift-checkbox-label">
+                  <input type="checkbox" id="giftNoteCb" onchange="toggleGiftNote(this.checked)" />
+                  <span>Özel Hediye Kartı ve Mesaj Notu Ekle</span>
+                </label>
+              </div>
+              <div class="gift-note-wrapper" id="giftNoteWrapper">
+                <textarea
+                  id="giftNoteText"
+                  class="gift-note-textarea"
+                  placeholder="Sevdiklerinize iletmek istediğiniz özel mesajı buraya yazın... (Örn: Nice mutlu senelere birtanem ❤️)"
+                  maxlength="250"
+                  oninput="updateGiftNoteCount(this.value)"
+                ></textarea>
+                <div class="gift-note-meta">
+                  <span>✉️ Kart faturadan ayrı özel zarfta iletilir.</span>
+                  <span id="giftNoteCharCount">0 / 250</span>
+                </div>
+              </div>
+            </div>
             
             <!-- Kupon Girişi -->
             <form id="cartPageCouponForm" class="coupon-form">
@@ -1119,6 +1168,27 @@
         </div>
       </div>
 
+      <!-- ETBİS ve Yasal Şirket Bilgi Künyesi -->
+      <div class="etbis-legal-box">
+        <div class="etbis-qr-badge" title="T.C. Ticaret Bakanlığı ETBİS Kayıtlı Doğrulanmış İşletme">
+          <div class="etbis-qr-icon">📱</div>
+          <span>ETBİS</span>
+          <span style="font-size: 0.6rem; color: #16a34a; font-weight: 800;">DOĞRULANDI</span>
+        </div>
+        <div class="etbis-company-table">
+          <div><strong>Ticari Ünvan:</strong> Sarmal Ticaret ve Hediyelik Eşya San. Tic. Ltd. Şti.</div>
+          <div><strong>Vergi Dairesi & No:</strong> Kadıköy Vergi Dairesi - 7460982315 | <strong>MERSİS No:</strong> 0746098231500001</div>
+          <div><strong>Merkez Adres:</strong> Osmanağa Mah. Söğütlüçeşme Cad. No: 42/3, 34714 Kadıköy / İstanbul</div>
+          <div><strong>Resmi KEP Adresi:</strong> sarmalticaret@hs01.kep.tr | <strong>E-Posta:</strong> destek@sarmalticaret.com</div>
+          <div class="etbis-badges-row">
+            <span class="etbis-tag">✓ Ticaret Bakanlığı ETBİS Kayıtlı</span>
+            <span class="etbis-tag">✓ PayTR Lisanslı Ödeme Sistemi</span>
+            <span class="etbis-tag">✓ 256-Bit SSL Şifreli Güvenlik</span>
+            <span class="etbis-tag">✓ 6502 Sayılı Tüketici Kanununa Tam Uyumlu</span>
+          </div>
+        </div>
+      </div>
+
       <div class="footer-bottom">
         <div>
           © 2026 <strong>Sarmal Ticaret</strong> - Tüm Hakları Saklıdır.
@@ -1327,52 +1397,69 @@
         <form id="checkoutStep2Form">
           <!-- Tab 1: Kredi / Banka Kartı (PayTR Altyapısı - 256-Bit SSL 3D Secure) -->
           <div id="payContentCreditCard" class="payment-tab-content active" data-tab="creditcard">
-            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.9rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #166534; line-height: 1.5;">
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem;">
-                <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="font-size: 1.2rem;">🔒</span>
-                  <strong style="font-size: 0.95rem; color: #14532d;">PayTR 256-Bit SSL & 3D Secure Güvenli Ödeme</strong>
+            
+            <div class="paytr-secure-iframe-box">
+              <div class="paytr-iframe-header">
+                <div class="paytr-iframe-brand">
+                  <span style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.5px; color: #ffffff;">Pay<span style="color: #22c55e;">TR</span></span>
+                  <span style="font-size: 0.75rem; opacity: 0.85; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 0.5rem;">Güvenli Ödeme Ekranı (iFrame Altyapısı)</span>
                 </div>
-                <span style="background: #15803d; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px;">PAYTR ONAYLI</span>
+                <div class="paytr-lock-badge">
+                  <span>🔒</span>
+                  <span>256-Bit SSL & 3D Secure</span>
+                </div>
               </div>
-              <div>Tüm kredi kartı işlemleriniz PayTR ödeme altyapısı üzerinden 256-Bit SSL şifreleme ve SMS onaylı 3D Secure ile gerçekleştirilmektedir. Kart bilgileriniz kesinlikle sunucularımızda saklanmaz.</div>
+
+              <div class="paytr-iframe-content">
+                <div class="paytr-security-banner">
+                  <span style="font-size: 1.3rem;">🛡️</span>
+                  <div>
+                    <strong>PCI-DSS Seviye 1 Güvenlik Koruması:</strong>
+                    Kart bilgileriniz doğrudan PayTR güvenli şifreli sunucuları üzerinden işlenir, mağaza sunucularında asla saklanmaz.
+                  </div>
+                </div>
+
+                <div id="paytrIframeContainer" style="width: 100%;">
+                  <div class="checkout-form-grid">
+                    <div class="checkout-form-group full">
+                      <label class="checkout-label">Kart Üzerindeki İsim ve Soyisim *</label>
+                      <input id="ccHolderName" type="text" class="checkout-input" placeholder="Ad Soyad" maxlength="50" autocomplete="cc-name" />
+                    </div>
+
+                    <div class="checkout-form-group full">
+                      <label class="checkout-label">16 Haneli Kart Numarası *</label>
+                      <input id="ccNumber" type="text" class="checkout-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" autocomplete="cc-number" />
+                    </div>
+
+                    <div class="checkout-form-group">
+                      <label class="checkout-label">Son Kullanma (AA/YY) *</label>
+                      <input id="ccExpiry" type="text" class="checkout-input" placeholder="AA/YY" maxlength="5" autocomplete="cc-exp" />
+                    </div>
+
+                    <div class="checkout-form-group">
+                      <label class="checkout-label">Güvenlik Kodu (CVC / CVV) *</label>
+                      <input id="ccCvc" type="password" class="checkout-input" placeholder="***" maxlength="4" autocomplete="cc-csc" />
+                    </div>
+                  </div>
+
+                  <!-- PayTR Taksit Seçenekleri Tablosu & Seçici -->
+                  <div style="margin-top: 1.25rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                      <label class="checkout-label" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--primary-deep);">
+                        💳 PayTR Taksit Seçenekleri (Bonus, World, Axess, Maximum, Paraf, Troy)
+                      </label>
+                      <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700;">✓ Peşin Fiyatına Taksit İmkanı</span>
+                    </div>
+                    <div id="paytrInstallmentContainer" class="installment-table-wrap" style="margin-top: 0; padding-top: 0; border-top: none;">
+                      <!-- Dinamik olarak JS tarafından calculateCartTotals().grandTotal'e göre render edilir -->
+                    </div>
+                    <input type="hidden" id="creditCardInstallment" value="Tek Çekim" />
+                  </div>
+                </div>
+
+              </div>
             </div>
 
-            <div class="checkout-form-grid">
-              <div class="checkout-form-group full">
-                <label class="checkout-label">Kart Üzerindeki İsim ve Soyisim *</label>
-                <input id="ccHolderName" type="text" class="checkout-input" placeholder="Ad Soyad" maxlength="50" />
-              </div>
-
-              <div class="checkout-form-group full">
-                <label class="checkout-label">16 Haneli Kart Numarası *</label>
-                <input id="ccNumber" type="text" class="checkout-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" />
-              </div>
-
-              <div class="checkout-form-group">
-                <label class="checkout-label">Son Kullanma (AA/YY) *</label>
-                <input id="ccExpiry" type="text" class="checkout-input" placeholder="05/27" maxlength="5" />
-              </div>
-
-              <div class="checkout-form-group">
-                <label class="checkout-label">Güvenlik Kodu (CVC / CVV) *</label>
-                <input id="ccCvc" type="password" class="checkout-input" placeholder="***" maxlength="4" />
-              </div>
-            </div>
-
-            <!-- PayTR Taksit Seçenekleri Tablosu & Seçici -->
-            <div style="margin-top: 1.25rem;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
-                <label class="checkout-label" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--primary-deep);">
-                  💳 PayTR Taksit Seçenekleri (Bonus, World, Axess, Maximum, Paraf, Troy)
-                </label>
-                <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700;">✓ Peşin Fiyatına Taksit İmkanı</span>
-              </div>
-              <div id="paytrInstallmentContainer" class="installment-table-wrap" style="margin-top: 0; padding-top: 0; border-top: none;">
-                <!-- Dinamik olarak JS tarafından calculateCartTotals().grandTotal'e göre render edilir -->
-              </div>
-              <input type="hidden" id="creditCardInstallment" value="Tek Çekim" />
-            </div>
           </div>
 
           <!-- Tab 2: Havale / EFT & Kapıda Nakit -->
@@ -1441,9 +1528,19 @@
             <div>Toplam Tutar: <strong id="successTotalAmount" style="color: var(--primary); font-size: 1.1rem;">-</strong></div>
             <div>Teslimat Adresi: <strong id="successDeliveryAddress">-</strong></div>
             <div>Tahmini Teslimat: <strong style="color: var(--success);">2 İş Günü İçerisinde Kargoda (Yurtiçi Kargo)</strong></div>
+            
+            <div id="successGiftWrapPreview" style="display: none; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px dashed #f59e0b; border-radius: 8px; padding: 0.9rem 1.15rem; margin-top: 0.75rem; text-align: left;">
+              <div style="font-weight: 800; color: #92400e; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span>🎁</span> Özel Hediye Hazırlığı:
+              </div>
+              <div id="successGiftWrapDetails" style="font-size: 0.82rem; color: #78350f; margin-top: 0.25rem; font-style: italic;"></div>
+            </div>
           </div>
 
           <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a id="successWhatsappLink" href="https://wa.me/905378715517" target="_blank" class="action-btn" style="background: #25d366; color: #ffffff; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.85rem 1.25rem;">
+              <span>💬</span> WhatsApp ile Siparişi Teyit Et
+            </a>
             <button type="button" class="checkout-btn" style="max-width: 220px;" onclick="closeAllModals(); openOrderTrackingModal();">
               📦 Siparişi Takip Et
             </button>
@@ -1569,6 +1666,47 @@
       <span id="bottomNavAuthLabel" class="bottom-nav-label">Giriş Yap</span>
     </button>
   </nav>
+
+  <!-- Canlı Satış Toast Pop-up Bildirimi (FOMO) -->
+  <div id="liveSalesToast" class="live-sales-toast" aria-live="polite">
+    <img id="liveSalesImg" class="live-sales-img" src="/images/products/sokak_lambali_kar_kuresi.jpg" alt="Ürün" />
+    <div class="live-sales-body">
+      <div class="live-sales-buyer">
+        <span class="live-pulse-green"></span>
+        <span id="liveSalesBuyerName">Ayşe K. (İzmir)</span>
+      </div>
+      <div class="live-sales-product" id="liveSalesProductTitle">Sokak Lambalı Işıklı Kar Küresi</div>
+      <div class="live-sales-time" id="liveSalesTimeText">Az önce hediye siparişi verdi • 3 dk önce</div>
+    </div>
+    <button type="button" class="live-sales-close" onclick="closeLiveSalesToast()" aria-label="Kapat">×</button>
+  </div>
+
+  <!-- PayTR 3D Secure SMS Doğrulama Simülasyon Modalı -->
+  <div id="paytr3dModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-box" style="max-width: 440px; padding: 1.5rem; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <div style="font-weight: 900; font-size: 1.1rem; color: var(--primary-deep);">Pay<span style="color: #22c55e;">TR</span> 3D Secure</div>
+        <span style="font-size: 0.8rem; background: #f0fdf4; color: #166534; font-weight: 700; padding: 2px 8px; border-radius: 4px;">SMS ONAYI</span>
+      </div>
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📱</div>
+      <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--primary-deep); margin-bottom: 0.5rem;">Doğrulama Kodu Gönderildi</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Lütfen <strong id="paytr3dPhoneText">053* *** ** 17</strong> numaralı telefonunuza iletilen 6 haneli 3D Secure SMS onay şifresini giriniz.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <input id="paytr3dCodeInput" type="text" maxlength="6" value="849201" style="width: 180px; text-align: center; letter-spacing: 6px; font-size: 1.3rem; font-weight: 800; padding: 0.5rem; border: 2px solid var(--primary); border-radius: 8px; color: var(--primary-deep);" />
+      </div>
+      <div style="font-size: 0.8rem; color: #ef4444; font-weight: 600; margin-bottom: 1.25rem;">
+        Kalan Süre: <span id="paytr3dTimer">02:59</span>
+      </div>
+      <button id="paytr3dConfirmBtn" type="button" class="checkout-btn" onclick="confirmPaytr3dOtp()" style="width: 100%;">
+        Ödemeyi Onayla ve Siparişi Tamamla ✓
+      </button>
+      <div style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted);">
+        🔒 256-Bit SSL ile doğrudan banka provizyon sistemine iletilmektedir.
+      </div>
+    </div>
+  </div>
 
   <!-- Ana JavaScript Dosyası -->
   <script type="module" src="/main.js?v=3.0"></script>

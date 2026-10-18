@@ -3582,3 +3582,387 @@ img {
   border: 1.5px solid #ffffff;
 }
 
+/* ==========================================================================
+   YENİ ÖZELLİKLER: HEDİYE NOTU, FOMO / ACİLİYET, ETBİS & PAYTR İFRAME TASARIMI
+   ========================================================================== */
+
+/* 1. HEDİYE PAKETİ VE ÖZEL HEDİYE NOTU */
+.gift-options-box {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1.5px dashed #f59e0b;
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  margin: 1.25rem 0;
+  position: relative;
+}
+
+.gift-options-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 800;
+  color: #92400e;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+}
+
+.gift-options-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.gift-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #78350f;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gift-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #d97706;
+  cursor: pointer;
+}
+
+.gift-note-wrapper {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(217, 119, 6, 0.3);
+  display: none;
+}
+
+.gift-note-wrapper.active {
+  display: block;
+  animation: fadeIn 0.25s ease;
+}
+
+.gift-note-textarea {
+  width: 100%;
+  min-height: 85px;
+  padding: 0.75rem;
+  border: 1px solid #d97706;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.88rem;
+  background: #ffffff;
+  color: #1e1b4b;
+  resize: vertical;
+}
+
+.gift-note-textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25);
+}
+
+.gift-note-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: #b45309;
+}
+
+.gift-badge-free {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+/* 2. CANLI ACİLİYET / AYNI GÜN KARGO GERİ SAYIM SAYACI */
+.same-day-countdown-bar {
+  background: linear-gradient(90deg, #1e1b4b 0%, #4338ca 100%);
+  color: #ffffff;
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.countdown-pulse-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.countdown-timer-digits {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.countdown-digit-box {
+  background: #ffffff;
+  color: #1e1b4b;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* 3. CANLI SOSYAL KANIT VE ZİYARETÇİ SAYACI (HIZLI BAKIŞ & DETAY) */
+.quickview-social-proof {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+}
+
+.social-proof-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #166534;
+  font-weight: 600;
+}
+
+.social-proof-line strong {
+  color: #14532d;
+  font-weight: 800;
+}
+
+.live-pulse-green {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulseDotGreen 1.5s infinite;
+}
+
+@keyframes pulseDotGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+/* 4. CANLI SATIŞ TOAST BİLDİRİMİ (FOMO POP-UP) */
+.live-sales-toast {
+  position: fixed;
+  bottom: 85px;
+  left: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 340px;
+  z-index: 9999;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.live-sales-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.live-sales-img {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.live-sales-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.live-sales-buyer {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.live-sales-product {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 1px 0;
+}
+
+.live-sales-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.live-sales-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* 5. RESMİ PAYTR İFRAME VE GÜVENLİ ÖDEME KONTEYNERİ */
+.paytr-secure-iframe-box {
+  background: #ffffff;
+  border: 1.5px solid #e0e7ff;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.06);
+}
+
+.paytr-iframe-header {
+  background: linear-gradient(90deg, #1e1b4b 0%, #312e81 100%);
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.paytr-iframe-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.paytr-lock-badge {
+  background: #15803d;
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paytr-iframe-content {
+  padding: 1.25rem;
+  background: #f8fafc;
+}
+
+.paytr-security-banner {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  color: #14532d;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* 6. ETBİS VE YASAL ŞİRKET BİLGİ KÜNYESİ */
+.etbis-legal-box {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .etbis-legal-box {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+.etbis-qr-badge {
+  width: 90px;
+  height: 90px;
+  border: 2px solid #1e1b4b;
+  border-radius: 8px;
+  padding: 4px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  box-shadow: var(--shadow-sm);
+  margin: 0 auto;
+}
+
+.etbis-qr-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.etbis-company-table {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.etbis-company-table strong {
+  color: var(--primary-deep);
+}
+
+.etbis-badges-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.etbis-tag {
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+
