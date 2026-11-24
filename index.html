@@ -6,9 +6,9 @@
   <title>Sarmal Ticaret | Hediyelik Eşya & Özel Tasarım Ürünler - PayTR Güvenli Ödeme</title>
   <meta name="description" content="Sarmal Ticaret ile büyüleyici kar küreleri, batmayan gemiler, çiçek setleri, gece lambaları ve kişiye özel hediyelikler. PayTR güvencesi ile 256-Bit SSL korumalı taksitli alışveriş!" />
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  
+
   <!-- Favicon -->
-  <link rel="icon" type="image/jpeg" href="sarmalticaretlogo.jpg" />
+  <link rel="icon" type="image/jpeg" href="/sarmalticaretlogo.jpg" />
 
   <!-- Google Fonts: Poppins & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Ana Stil Dosyası -->
-  <link rel="stylesheet" href="styles.css?v=3.1" />
+  <link rel="stylesheet" href="/styles.css?v=4.0" />
 </head>
 <body>
 
@@ -43,18 +43,18 @@
     </div>
   </header>
 
-  <!-- Canlı Geri Sayım & Aciliyet Bandı (FOMO Countdown) -->
+  <!-- Canlı Geri Sayım & Aciliyet Bandı (Aynı Gün Kargo 16:00) -->
   <aside class="same-day-countdown-bar" id="sameDayCountdownBar">
     <div style="display: flex; align-items: center; gap: 0.5rem;">
       <span class="countdown-pulse-dot"></span>
-      <span>⚡ <strong>AYNI GÜN ÜCRETSİZ KARGO:</strong> Saat 16:00'a kadar verilen siparişler bugün kargoda!</span>
+      <span id="sameDayCountdownLabel">⚡ <strong>AYNI GÜN KARGO:</strong> Saat 16:00'a kadar verilen siparişler aynı gün Yurtiçi Kargo'da!</span>
     </div>
     <div style="display: flex; align-items: center; gap: 0.4rem;">
       <span style="font-size: 0.78rem; opacity: 0.9;">Kalan Süre:</span>
       <div class="countdown-timer-digits" id="countdownTimerDigits">
-        <span class="countdown-digit-box" id="cdHours">00</span> sa
-        <span class="countdown-digit-box" id="cdMinutes">00</span> dk
-        <span class="countdown-digit-box" id="cdSeconds">00</span> sn
+        <span class="countdown-digit-box" id="cdHours">--</span> sa
+        <span class="countdown-digit-box" id="cdMinutes">--</span> dk
+        <span class="countdown-digit-box" id="cdSeconds">--</span> sn
       </div>
     </div>
   </aside>
@@ -64,14 +64,14 @@
        ====================================================================== -->
   <section class="main-header">
     <div class="container header-grid">
-      
+
       <!-- Sütun 1: Logo & Marka -->
       <div class="header-logo-area">
-        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Menüyü Aç" onclick="toggleMobileMenu(true)">
+        <button id="mobileMenuBtn" class="mobile-menu-btn" type="button" aria-label="Menüyü Aç">
           ☰
         </button>
-        <a href="javascript:void(0)" onclick="navigateToHome()" class="brand-logo">
-          <img src="sarmalticaretlogo.jpg" alt="Sarmal Ticaret Logo" class="brand-logo-img" />
+        <a href="/" onclick="event.preventDefault(); navigateToHome();" class="brand-logo">
+          <img src="/sarmalticaretlogo.jpg" alt="Sarmal Ticaret Logo" class="brand-logo-img" />
           <div class="brand-text">
             <span class="brand-name">Sarmal Ticaret</span>
             <span class="brand-slogan">Özel Hediye & Tasarım Reyonu</span>
@@ -79,38 +79,41 @@
         </a>
       </div>
 
-      <!-- Sütun 2: Arama Çubuğu (Geniş, Canlı Arama & XSS Korumalı Autocomplete) -->
+      <!-- Sütun 2: Canlı Arama Çubuğu (Live Search & Kategori Filtreli Autocomplete) -->
       <div class="header-search-area">
-        <form class="search-form" onsubmit="event.preventDefault();">
+        <form id="headerSearchForm" class="search-form" onsubmit="event.preventDefault();">
           <select id="searchCategorySelect" class="search-category-select" aria-label="Kategori Seç">
-            <option value="all">Tüm Reyonlar</option>
-            <option value="kar-kureleri" selected>Kar Küreleri & Cam Küreler</option>
+            <option value="all" selected>Tüm Reyonlar</option>
+            <option value="kar-kureleri">Kar Küreleri & Cam Küreler</option>
             <option value="batmayan-gemi">Batmayan Gemi & Akvaryum</option>
             <option value="cicek-buket">Çiçek & Buket Koleksiyonu</option>
             <option value="taki-mucevher">Takı & Sürpriz İnci Kolye</option>
             <option value="gece-lambalari">Gece Lambaları & Not Panosu</option>
             <option value="ozel-hediyelikler">Özel Hediye & Müzik Kutuları</option>
           </select>
-          <input
-            id="searchInput"
-            type="text"
-            class="search-input"
-            placeholder="Aradığınız hediyelik ürünü yazın (örn: Sokak Lambalı Kar Küresi, Batmayan Gemi, İnci Kolye...)"
-            autocomplete="off"
-            maxlength="100"
-          />
+          <div class="search-input-wrap">
+            <input
+              id="searchInput"
+              type="text"
+              class="search-input"
+              placeholder="Ürün veya kategori arayın (örn: Kar Küresi, Batmayan Gemi, Orkide, İnci Kolye...)"
+              autocomplete="off"
+              maxlength="100"
+              aria-label="Ürün veya kategori ara"
+            />
+            <button id="searchClearBtn" type="button" class="search-clear-btn" aria-label="Aramayı Temizle" style="display: none;">✕</button>
+          </div>
           <button type="submit" class="search-submit-btn" aria-label="Ara">
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </button>
         </form>
 
         <!-- Canlı Arama Autocomplete Sonuç Kutusu -->
-        <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+        <div id="searchResultsDropdown" class="search-results-dropdown" role="listbox" aria-label="Arama Sonuçları"></div>
       </div>
 
-      <!-- Sütun 3: Kullanıcı Hesabı, Favoriler & Sepet Butonları -->
+      <!-- Sütun 3: Kullanıcı Hesabı, Favoriler & Sepet Çekmecesi Butonları -->
       <div class="header-actions">
-        <!-- Kullanıcı Hesabı Butonu -->
         <button id="headerAuthBtn" type="button" class="action-btn" onclick="handleAuthClick()">
           <div class="action-icon">
             <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -121,7 +124,6 @@
           </div>
         </button>
 
-        <!-- Favoriler Butonu -->
         <button id="headerWishlistBtn" type="button" class="action-btn" onclick="navigateToPage('favoriler')">
           <div class="action-icon" style="position: relative;">
             <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
@@ -133,8 +135,8 @@
           </div>
         </button>
 
-        <!-- Dinamik Sepet Butonu -->
-        <button id="headerCartBtn" type="button" class="action-btn cart-action-btn" onclick="navigateToPage('sepet')">
+        <!-- Dinamik Sepet Çekmecesi Butonu -->
+        <button id="headerCartBtn" type="button" class="action-btn cart-action-btn" onclick="openCartDrawer()">
           <div class="action-icon" style="position: relative;">
             <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
             <span id="cartBadge" class="action-badge" style="display: none;">0</span>
@@ -152,9 +154,9 @@
   <!-- ======================================================================
        3. MEGA MENÜ & KATEGORİ NAVİGASYON ÇUBUĞU (MASAÜSTÜ)
        ====================================================================== -->
-  <nav class="category-nav-bar">
+  <nav class="category-nav-bar" aria-label="Ana Kategori Menüsü">
     <div class="container category-nav-inner">
-      
+
       <!-- Sol "Tüm Kategoriler" Mega Menü Açılır Alanı -->
       <div class="mega-menu-trigger-wrap">
         <button class="mega-menu-trigger-btn" type="button">
@@ -164,27 +166,27 @@
         </button>
 
         <div class="desktop-mega-dropdown">
-          <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')" class="mega-cat-item">
+          <a href="/kategori/kar-kureleri" onclick="event.preventDefault(); navigateToCategory('kar-kureleri')" class="mega-cat-item">
             <span><span class="mega-cat-icon">🔮</span> Kar Küreleri & 3D Cam Küreler</span>
             <span>›</span>
           </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('batmayan-gemi')" class="mega-cat-item">
+          <a href="/kategori/batmayan-gemi" onclick="event.preventDefault(); navigateToCategory('batmayan-gemi')" class="mega-cat-item">
             <span><span class="mega-cat-icon">🚢</span> Batmayan Gemi & Akvaryum</span>
             <span>›</span>
           </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('cicek-buket')" class="mega-cat-item">
+          <a href="/kategori/cicek-buket" onclick="event.preventDefault(); navigateToCategory('cicek-buket')" class="mega-cat-item">
             <span><span class="mega-cat-icon">💐</span> Çiçek & Buket Koleksiyonu</span>
             <span>›</span>
           </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('taki-mucevher')" class="mega-cat-item">
+          <a href="/kategori/taki-mucevher" onclick="event.preventDefault(); navigateToCategory('taki-mucevher')" class="mega-cat-item">
             <span><span class="mega-cat-icon">💎</span> Takı & Sürpriz İnci Kolye</span>
             <span>›</span>
           </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('gece-lambalari')" class="mega-cat-item">
+          <a href="/kategori/gece-lambalari" onclick="event.preventDefault(); navigateToCategory('gece-lambalari')" class="mega-cat-item">
             <span><span class="mega-cat-icon">💡</span> Dekoratif Gece Lambaları & Not Panosu</span>
             <span>›</span>
           </a>
-          <a href="javascript:void(0)" onclick="navigateToCategory('ozel-hediyelikler')" class="mega-cat-item">
+          <a href="/kategori/ozel-hediyelikler" onclick="event.preventDefault(); navigateToCategory('ozel-hediyelikler')" class="mega-cat-item">
             <span><span class="mega-cat-icon">🎁</span> Özel Hediye & Müzik Kutuları</span>
             <span>›</span>
           </a>
@@ -194,404 +196,87 @@
       <!-- Yatay Kategori Linkleri -->
       <ul class="horizontal-nav-links">
         <li class="nav-link-item deal">
-          <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')">
+          <a href="/kategori/kar-kureleri" onclick="event.preventDefault(); navigateToCategory('kar-kureleri')">
             <span>🔥</span> Günün Fırsatları
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')">
+          <a href="/kategori/kar-kureleri" onclick="event.preventDefault(); navigateToCategory('kar-kureleri')">
             <span>🔮</span> Kar Küreleri
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('batmayan-gemi')">
+          <a href="/kategori/batmayan-gemi" onclick="event.preventDefault(); navigateToCategory('batmayan-gemi')">
             <span>🚢</span> Batmayan Gemiler
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('cicek-buket')">
+          <a href="/kategori/cicek-buket" onclick="event.preventDefault(); navigateToCategory('cicek-buket')">
             <span>💐</span> Çiçek & Buket
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('taki-mucevher')">
+          <a href="/kategori/taki-mucevher" onclick="event.preventDefault(); navigateToCategory('taki-mucevher')">
             <span>💎</span> Takı & Kolye
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('gece-lambalari')">
+          <a href="/kategori/gece-lambalari" onclick="event.preventDefault(); navigateToCategory('gece-lambalari')">
             <span>💡</span> Gece Lambaları
           </a>
         </li>
         <li class="nav-link-item">
-          <a href="javascript:void(0)" onclick="navigateToCategory('ozel-hediyelikler')">
+          <a href="/kategori/ozel-hediyelikler" onclick="event.preventDefault(); navigateToCategory('ozel-hediyelikler')">
             <span>🎁</span> Özel Hediyeler
           </a>
         </li>
       </ul>
 
       <!-- Sağ Kampanya Rozeti -->
-      <a href="javascript:void(0)" onclick="navigateToCategory('kar-kureleri')" class="nav-badge-link">
-        <span>⚡</span> %40'a Varan Net İndirimler
+      <a href="/kategori/kar-kureleri" onclick="event.preventDefault(); navigateToCategory('kar-kureleri')" class="nav-badge-link">
+        <span>⚡</span> %35'e Varan Net İndirimler
       </a>
 
     </div>
   </nav>
 
   <!-- ======================================================================
-       FLASH DEALS GERİ SAYIM SAYACI BANDI
+       FLASH DEALS GERİ SAYIM SAYACI BANDI (ÜST SAYAÇLA SENKRONİZE)
        ====================================================================== -->
   <section class="flash-timer-band">
     <div class="container flash-timer-inner">
       <div class="flash-title-box">
         <span class="flash-badge">FIRSAT</span>
-        <span>⚡ Günün İndirimli Ürünlerinin Bitmesine Kalan Süre:</span>
+        <span id="flashTimerLabel">⚡ Günün İndirimli Ürünleri ve Aynı Gün Kargo Sınırına Kalan Süre:</span>
       </div>
-      <div class="countdown-box">
-        <span id="timerHours" class="countdown-unit">00</span>
+      <div class="countdown-box" aria-label="Geri sayım sayacı">
+        <span id="timerHours" class="countdown-unit">--</span>
         <span class="countdown-sep">:</span>
-        <span id="timerMinutes" class="countdown-unit">00</span>
+        <span id="timerMinutes" class="countdown-unit">--</span>
         <span class="countdown-sep">:</span>
-        <span id="timerSeconds" class="countdown-unit">00</span>
+        <span id="timerSeconds" class="countdown-unit">--</span>
       </div>
       <span style="font-size: 0.85rem; color: #c7d2fe;">🔒 <strong>PayTR Altyapısı</strong> ile 256-Bit SSL Korumalı Güvenli Ödeme</span>
     </div>
   </section>
 
   <!-- ======================================================================
-       ANA İÇERİK ALANI (HOME VIEW & CATEGORY VIEW)
+       TEKİL DİNAMİK ANA İÇERİK KONTEYNERİ (AYNI ANDA YALNIZCA 1 GÖRÜNÜM)
        ====================================================================== -->
-  <main>
-    
-    <!-- A. DEDICATED KATEGORİ SAYFASI GÖRÜNÜMÜ (CATEGORY VIEW) -->
-    <div id="categoryView">
-      <div class="container">
-        
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span id="catBreadcrumbCurrent" class="breadcrumb-current">Kategori Adı</span>
-        </nav>
+  <main id="appMain">
+    <div id="homeView" class="active">
 
-        <!-- Kategori Banner Header -->
-        <div class="cat-page-banner">
-          <div class="cat-banner-inner">
-            <span id="catBannerBadge" class="cat-banner-badge">REYON</span>
-            <h1 class="cat-banner-title">
-              <span id="catBannerIcon">🔮</span> <span id="catBannerTitle">Kategori Başlığı</span>
-            </h1>
-            <p id="catBannerDesc" class="cat-banner-desc">Kategori detaylı açıklaması</p>
-          </div>
-        </div>
-
-        <!-- 2 Sütunlu Sayfa Düzeni (Sidebar Filtreler + Ürün Grid) -->
-        <div class="cat-page-layout">
-          
-          <!-- Sol Sidebar -->
-          <aside class="cat-sidebar">
-            <div class="cat-sidebar-block">
-              <h4>Kategoriler</h4>
-              <ul id="catSidebarList" class="cat-sidebar-list"></ul>
-            </div>
-
-            <div class="cat-sidebar-block">
-              <h4>Fiyat Aralığı (TL)</h4>
-              <div class="sidebar-price-inputs">
-                <input id="catMinPriceInput" type="number" class="price-box-input" placeholder="Min" />
-                <span>-</span>
-                <input id="catMaxPriceInput" type="number" class="price-box-input" placeholder="Max" />
-              </div>
-              <button id="catApplyPriceBtn" type="button" class="sidebar-apply-btn">Fiyat Filtrele</button>
-              
-              <div class="sidebar-filter-chips">
-                <button type="button" class="filter-chip-btn" data-min="500" data-max="1000">500 - 1000 TL</button>
-                <button type="button" class="filter-chip-btn" data-min="1000" data-max="1500">1000 - 1500 TL</button>
-                <button type="button" class="filter-chip-btn" data-min="1500" data-max="">1500 TL ve Üzeri</button>
-              </div>
-            </div>
-
-            <div class="cat-sidebar-block">
-              <h4>Özel Seçenekler</h4>
-              <label class="sidebar-checkbox-label">
-                <input id="catDiscountCb" type="checkbox" />
-                <span>Sadece İndirimdekiler</span>
-              </label>
-            </div>
-
-            <button type="button" class="clear-filters-btn" onclick="resetCategoryFilters()">
-              🔄 Filtreleri Temizle
-            </button>
-          </aside>
-
-          <!-- Sağ Ürün Alanı -->
-          <section class="cat-products-main">
-            <div class="cat-top-bar">
-              <span id="catProductCount" class="cat-product-count">0 Ürün Listeleniyor</span>
-              
-              <select id="catSortSelect" class="sort-select" aria-label="Sıralama">
-                <option value="recommended">Önerilen Sıralama</option>
-                <option value="price-asc">Fiyat: Düşükten Yükseğe</option>
-                <option value="price-desc">Fiyat: Yüksekten Düşüğe</option>
-                <option value="discount">En Çok İndirim Alanlar</option>
-                <option value="reviews">En Çok Değerlendirilenler</option>
-                <option value="name-asc">İsim: A'dan Z'ye</option>
-              </select>
-            </div>
-
-            <div id="catProductsGrid" class="cat-products-grid"></div>
-          </section>
-
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         AYRI ÜRÜN DETAY SAYFASI GÖRÜNÜMÜ (PRODUCT DETAIL PAGE VIEW)
-         ====================================================================== -->
-    <div id="productDetailPageView" class="page-view-section">
-      <div class="container pdp-section">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav" style="margin-bottom: 1.5rem;">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-link" id="pdpBreadcrumbCategory" onclick="navigateToCategory('kar-kureleri')">Kategori</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current" id="pdpBreadcrumbTitle">Ürün Detayı</span>
-        </nav>
-
-        <!-- 2 Sütunlu Ürün Ana Alanı -->
-        <div class="pdp-grid">
-          
-          <!-- Sol Sütun: Galeri & Görsel -->
-          <div class="pdp-gallery-box">
-            <div class="pdp-main-image-wrap">
-              <span id="pdpBadgeTag" class="pdp-badge-tag">%25 İndirim</span>
-              <img id="pdpMainImg" class="pdp-main-image" src="/images/products/sokak_lambali_kar_kuresi.jpg" alt="Ürün Görseli" />
-            </div>
-            
-            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
-              <div style="width: 70px; height: 70px; border: 2px solid var(--primary); border-radius: 8px; overflow: hidden; cursor: pointer;">
-                <img id="pdpThumb1" src="/images/products/sokak_lambali_kar_kuresi.jpg" alt="Küçük Görsel" style="width: 100%; height: 100%; object-fit: cover;" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun: Bilgiler & Satın Alma -->
-          <div class="pdp-info-box">
-            <span id="pdpCategoryTag" class="pdp-category-link" onclick="navigateToCategory('kar-kureleri')">KAR KÜRELERİ</span>
-            <h1 id="pdpTitle" class="pdp-title">Sokak Lambalı Işıklı Kar Küresi</h1>
-            
-            <div class="pdp-meta-row">
-              <div class="pdp-stars">★★★★★</div>
-              <span id="pdpReviewsText" style="font-weight: 600; color: var(--text-muted);">(48 Değerlendirme)</span>
-              <span style="color: var(--border);">|</span>
-              <span id="pdpBarcodeText" style="color: var(--text-muted); font-size: 0.8rem;">Barkod: 869000100101</span>
-              <span style="color: var(--border);">|</span>
-              <span style="color: #16a34a; font-weight: 700;">✓ Orijinal Lisanslı Ürün</span>
-            </div>
-
-            <!-- Fiyat Kutusu -->
-            <div class="pdp-price-card">
-              <div id="pdpOldPrice" class="pdp-old-price">650,00 TL</div>
-              <div class="pdp-price-row">
-                <span id="pdpCurrentPrice" class="pdp-current-price">489,90 TL</span>
-                <span id="pdpDiscountBadge" class="pdp-discount-tag">%25 Kazanç</span>
-              </div>
-              <div class="pdp-stock-status">
-                <span>✓</span>
-                <span>Stokta Var - Saat 16:00 Öncesi Siparişlerde AYNI GÜN KARGODA</span>
-              </div>
-            </div>
-
-            <!-- Canlı Sosyal Kanıt & FOMO -->
-            <div class="quickview-social-proof" style="margin: 0 0 1.5rem 0;">
-              <div class="social-proof-line">
-                <span class="live-pulse-green"></span>
-                <span id="pdpLiveViewers">Bu hediyeyi şu an <strong>18 kişi</strong> inceliyor.</span>
-              </div>
-              <div class="social-proof-line">
-                <span>🔥</span>
-                <span id="pdpRecentOrders">Son 24 saatte <strong>8 adet</strong> sipariş verildi - Sınırlı Stok!</span>
-              </div>
-              <div class="social-proof-line">
-                <span>⚡</span>
-                <span>500 TL ve üzerine <strong>Ücretsiz Hızlı Kargo</strong></span>
-              </div>
-            </div>
-
-            <!-- Satın Alma Butonları & Adet -->
-            <div class="pdp-actions-row">
-              <div class="pdp-qty-selector">
-                <button type="button" class="pdp-qty-btn" onclick="changePdpQty(-1)">−</button>
-                <input id="pdpQtyInput" type="number" class="pdp-qty-input" value="1" min="1" max="99" readonly />
-                <button type="button" class="pdp-qty-btn" onclick="changePdpQty(1)">+</button>
-              </div>
-
-              <button id="pdpAddToCartBtn" type="button" class="pdp-add-cart-btn" onclick="handlePdpAddToCart()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                <span>Sepete Ekle</span>
-              </button>
-
-              <button id="pdpBuyNowBtn" type="button" class="pdp-buy-now-btn" onclick="handlePdpBuyNow()">
-                <span>⚡ Hemen Al</span>
-              </button>
-
-              <button id="pdpWishlistBtn" type="button" class="pdp-wishlist-btn" onclick="handlePdpWishlist()" title="Favorilere Ekle">
-                🤍
-              </button>
-            </div>
-
-            <!-- Güven & Kargo Rozetleri -->
-            <div class="pdp-trust-list">
-              <div class="pdp-trust-item">
-                <span style="font-size: 1.3rem;">🔒</span>
-                <div>
-                  <strong>PayTR 256-Bit SSL</strong>
-                  <span>3D Secure ile korumalı güvenli taksitli ödeme</span>
-                </div>
-              </div>
-              <div class="pdp-trust-item">
-                <span style="font-size: 1.3rem;">🎁</span>
-                <div>
-                  <strong>Özel Hediye Paketi</strong>
-                  <span>Saten kurdeleli koruyucu hediye kutusu & not kartı</span>
-                </div>
-              </div>
-              <div class="pdp-trust-item">
-                <span style="font-size: 1.3rem;">🚚</span>
-                <div>
-                  <strong>Aynı Gün Kargo</strong>
-                  <span>Yurtiçi Kargo güvencesiyle hızlı ve sigortalı teslimat</span>
-                </div>
-              </div>
-              <div class="pdp-trust-item">
-                <span style="font-size: 1.3rem;">🔄</span>
-                <div>
-                  <strong>14 Gün İade Garantisi</strong>
-                  <span>Koşulsuz iade ve anında değişim hakkı</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- Ürün Detay Sekmeleri (Tablar) -->
-        <div class="pdp-tabs-container">
-          <div class="pdp-tabs-nav">
-            <button type="button" class="pdp-tab-btn active" id="tabBtnDesc" onclick="switchPdpTab('desc')">Ürün Açıklaması</button>
-            <button type="button" class="pdp-tab-btn" id="tabBtnSpecs" onclick="switchPdpTab('specs')">Özellikler & Boyut</button>
-            <button type="button" class="pdp-tab-btn" id="tabBtnShipping" onclick="switchPdpTab('shipping')">Teslimat & İade</button>
-            <button type="button" class="pdp-tab-btn" id="tabBtnReviews" onclick="switchPdpTab('reviews')">Müşteri Yorumları (<span id="pdpTabReviewCount">48</span>)</button>
-          </div>
-
-          <div id="pdpTabDesc" class="pdp-tab-content active">
-            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--primary-deep); margin-bottom: 0.75rem;">Özel Tasarım Hediyelik Koleksiyonu</h3>
-            <p id="pdpLongDescription" style="margin-bottom: 1rem;">
-              Sarmal Ticaret'in özenle seçilen hediyelik ürün koleksiyonuna ait bu özel tasarım, sevdiklerinize unutulmaz ve kalıcı bir mutluluk yaşatmak için tasarlandı. Yüksek kaliteli malzeme yapısı, dayanıklı koruyucu ambalajı ve büyüleyici detaylarıyla doğum günü, yıl dönümü, sevgililer günü veya özel tebrikler için mükemmel bir hediye seçeneğidir.
-            </p>
-            <div style="background: var(--bg-page); padding: 1rem; border-radius: 8px; border: 1px solid var(--border);">
-              <strong>💡 Hediye Paketi & Notu:</strong> Sepet adımında "Şık Hediye Paketi İstiyorum" seçeneğini işaretleyerek sevdiklerinize özel saten kurdeleli kutu ve kişisel tebrik kartı ekleyebilirsiniz.
-            </div>
-          </div>
-
-          <div id="pdpTabSpecs" class="pdp-tab-content">
-            <table class="pdp-spec-table">
-              <tbody>
-                <tr>
-                  <th>Kategori</th>
-                  <td id="pdpSpecCategory">Kar Küreleri</td>
-                </tr>
-                <tr>
-                  <th>Ürün Kodu / Barkod</th>
-                  <td id="pdpSpecBarcode">869000100101</td>
-                </tr>
-                <tr>
-                  <th>Malzeme Yapısı</th>
-                  <td>Kristal Cam, Sert Reçine Taban & Paslanmaz Metal Mekanizma</td>
-                </tr>
-                <tr>
-                  <th>Garanti Durumu</th>
-                  <td>2 Yıl Sarmal Ticaret Garantili</td>
-                </tr>
-                <tr>
-                  <th>Kullanım Alanı</th>
-                  <td>Masaüstü, Kitaplık, Başucu Gece Lambası & Dekoratif Obje</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div id="pdpTabShipping" class="pdp-tab-content">
-            <h4 style="font-weight: 800; color: var(--primary-deep); margin-bottom: 0.5rem;">Kargo ve Teslimat Süreci:</h4>
-            <p>Hafta içi saat 16:00'a kadar verilen tüm siparişler aynı gün <strong>Yurtiçi Kargo</strong>'ya teslim edilir. Kargonuz yola çıktığında SMS ve e-posta ile takip numaranız iletilir. 500 TL ve üzeri tüm siparişlerde kargo tamamen ücretsizdir.</p>
-            <h4 style="font-weight: 800; color: var(--primary-deep); margin: 1rem 0 0.5rem;">14 Gün Koşulsuz İade:</h4>
-            <p>Teslimat tarihinden itibaren 14 gün içerisinde herhangi bir gerekçe göstermeksizin Yurtiçi Kargo anlaşma kodumuz (540912) ile ücretsiz iade edebilirsiniz.</p>
-          </div>
-
-          <div id="pdpTabReviews" class="pdp-tab-content">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-page); padding: 1.25rem; border-radius: 8px;">
-              <div style="font-size: 2.5rem; font-weight: 900; color: var(--primary-deep);">4.9</div>
-              <div>
-                <div style="color: #f59e0b; font-size: 1.1rem;">★★★★★</div>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">%98 Müşteri Memnuniyeti</div>
-              </div>
-            </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
-              <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
-                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem;">
-                  <span>Selin Y.</span>
-                  <span style="color: #16a34a; font-size: 0.8rem;">✓ Onaylı Alıcı</span>
-                </div>
-                <div style="color: #f59e0b; font-size: 0.8rem; margin: 2px 0;">★★★★★</div>
-                <p style="font-size: 0.88rem; color: var(--text-main); margin-top: 4px;">Paketleme inanılmaz özenliydi, kırılmasın diye hava kabarcıklı naylona kat kat sarmışlar. Sevgilime hediye aldım bayıldı, ışıkları ve melodisi çok romantik.</p>
-              </div>
-
-              <div style="border-bottom: 1px solid var(--border-light); padding-bottom: 0.75rem;">
-                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 0.9rem;">
-                  <span>Burak T.</span>
-                  <span style="color: #16a34a; font-size: 0.8rem;">✓ Onaylı Alıcı</span>
-                </div>
-                <div style="color: #f59e0b; font-size: 0.8rem; margin: 2px 0;">★★★★★</div>
-                <p style="font-size: 0.88rem; color: var(--text-main); margin-top: 4px;">Ertesi gün elime ulaştı, çok hızlı kargo. Hediye notunu da çok şık yazmışlar, teşekkür ederim.</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Benzer Ürünler / İlgili Koleksiyon -->
-        <div style="margin-top: 3rem;">
-          <div class="products-section-header" style="margin-bottom: 1.5rem;">
-            <div class="section-title-wrap">
-              <span class="section-title-icon">✨</span>
-              <h2 class="section-title">Bu Hediyeyi İnceleyenler Bunlara da Baktı</h2>
-            </div>
-          </div>
-          <div id="pdpRelatedProductsGrid" class="products-grid"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- B. ANA SAYFA GÖRÜNÜMÜ (HOME VIEW) -->
-    <div id="homeView">
-      
       <!-- Hero Slider -->
       <section class="hero-slider-section">
         <div class="container">
           <div class="hero-slider-container">
-            
+
             <div id="sliderTrack" class="slider-track">
               <!-- Slide 1 -->
               <div class="slide-item" style="background-image: url('/images/slides/slide1.jpg');">
                 <div class="slide-content">
                   <span class="slide-tag">✨ ÖZEL HEDİYE KOLEKSİYONU</span>
-                  <h1 class="slide-title">Büyüleyici Kar Küreleri & 3D Cam Kürelerde %35 İndirim</h1>
+                  <h1 class="slide-title">Büyüleyici Kar Küreleri & 3D Cam Kürelerde %30 İndirim</h1>
                   <p class="slide-desc">Nostaljik sokak lambalı kar küreleri, renk değiştiren samanyolu ve gezegen temalı 3D kristal cam küreler ile sevdiklerinize unutulmaz anlar yaşatın.</p>
                   <button type="button" class="slide-btn" onclick="navigateToCategory('kar-kureleri')">
                     Hemen Alışverişe Başla
@@ -618,9 +303,9 @@
                 <div class="slide-content">
                   <span class="slide-tag">🎟️ "SARMAL10" KUPON KODU</span>
                   <h2 class="slide-title">500 TL Üzerine Ücretsiz Kargo & Ekstra %10 İndirim</h2>
-                  <p class="slide-desc">Sepetinizde kupon kodu alanına SARMAL10 yazarak hediyelik siparişlerinizde PayTR güvencesiyle anında ek indirim kazanın.</p>
+                  <p class="slide-desc">Sepetinizde kupon kodu alanına SARMAL10 yazarak hediyelik siparişlerinizde PayTR güvencesiyle anında ek %10 indirim kazanın.</p>
                   <button type="button" class="slide-btn" onclick="navigateToCategory('ozel-hediyelikler')">
-                    Sepeti Doldur
+                    Hediyeleri Keşfet
                     <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                   </button>
                 </div>
@@ -789,7 +474,7 @@
             </div>
 
             <div class="brands-grid">
-              <div class="brand-badge-item" onclick="openCheckoutModal()">
+              <div class="brand-badge-item" onclick="openCartDrawer()">
                 <span class="brand-logo-text" style="color: #15803d; font-weight: 900;">PayTR</span>
                 <span class="brand-badge-desc">256-Bit SSL 3D Secure</span>
               </div>
@@ -862,7 +547,7 @@
 
             <div class="review-card">
               <div class="review-stars">★★★★★</div>
-              <p class="review-text">"İstiridye içinden çıkan inci kolye setini eşime yıldönümü hediyesi aldım. SARMAL10 kuponuyla ek indirim de uygulandı, eşim çok mutlu oldu."</p>
+              <p class="review-text">"İstiridye içinden çıkan inci kolye setini eşime yıldönümü hediyesi aldım. SARMAL10 kuponuyla ek %10 indirim de uygulandı, eşim çok mutlu oldu."</p>
               <div class="reviewer-meta">
                 <span class="reviewer-name">Emre S.</span>
                 <span class="reviewer-badge">✓ Onaylı Alıcı (İzmir)</span>
@@ -894,440 +579,19 @@
       </section>
 
     </div>
-
-    <!-- ======================================================================
-         C. DEDICATED SEPET SAYFASI GÖRÜNÜMÜ (CART PAGE VIEW)
-         ====================================================================== -->
-    <div id="cartPageView" class="page-view-section">
-      <div class="container">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current">Alışveriş Sepeti</span>
-        </nav>
-
-        <div class="page-header-box">
-          <h1 id="cartPageCountTitle" class="page-main-title">
-            <span>🛒</span> Alışveriş Sepetim
-          </h1>
-          <p class="page-subtitle">Siparişinizi PayTR altyapısıyla 256-Bit SSL güvencesinde kredi kartı veya havale ile anında tamamlayın.</p>
-        </div>
-
-        <!-- 500 TL Ücretsiz Kargo İlerleme Çubuğu -->
-        <div class="free-shipping-bar-wrap" style="margin-bottom: 2rem;">
-          <div id="cartPageFreeShippingText" class="free-shipping-text">
-            Ücretsiz Kargo için <strong>500,00 TL</strong> daha ekleyin!
-          </div>
-          <div class="shipping-progress-bg">
-            <div id="cartPageShippingFill" class="shipping-progress-fill"></div>
-          </div>
-        </div>
-
-        <!-- Boş Sepet Görünümü -->
-        <div id="cartPageEmptyState" class="page-empty-state" style="display: none;">
-          <div class="page-empty-icon">🛒</div>
-          <h3 class="page-empty-title">Sepetinizde Henüz Ürün Bulunmuyor</h3>
-          <p class="page-empty-desc">Büyüleyici hediye koleksiyonumuzu ve fırsatları hemen keşfetmeye başlayın.</p>
-          <button type="button" class="slide-btn" style="display: inline-flex; margin: 0 auto;" onclick="navigateToHome()">
-            Alışverişe Başla
-          </button>
-        </div>
-
-        <!-- Dolu Sepet Tablosu & Özet Kutusu -->
-        <div id="cartPageLayout" class="cart-page-layout">
-          <!-- Sol: Ürün Listesi Tablosu -->
-          <div class="cart-page-items-box">
-            <div class="cart-table-header">
-              <span>ÜRÜN BİLGİSİ</span>
-              <span>BİRİM FİYAT</span>
-              <span style="text-align: center;">ADET</span>
-              <span style="text-align: right;">TOPLAM</span>
-              <span></span>
-            </div>
-            <div id="cartPageItemsList"></div>
-            
-            <div style="padding: 1rem 1.5rem; background: var(--bg-page); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); flex-wrap: wrap; gap: 1rem;">
-              <button type="button" class="action-btn" style="border: 1px solid var(--border);" onclick="navigateToHome()">
-                ← Alışverişe Devam Et
-              </button>
-              <button type="button" class="remove-item-btn" style="color: #b91c1c; font-size: 0.85rem; font-weight: 700; width: auto; height: auto; padding: 0.4rem 0.75rem;" onclick="clearCart()">
-                🗑️ Sepeti Temizle
-              </button>
-            </div>
-          </div>
-
-          <!-- Sağ: Sipariş Özeti & Kupon & Tamamla -->
-          <div class="cart-summary-box">
-            <h3 class="cart-summary-title">Sipariş Özeti</h3>
-            
-            <!-- Hediye Paketi & Özel Hediye Notu Seçenekleri -->
-            <div class="gift-options-box">
-              <div class="gift-options-header">
-                <span>🎁</span>
-                <span>Bu Sipariş Bir Hediye mi?</span>
-                <span class="gift-badge-free">ÜCRETSİZ</span>
-              </div>
-              <div class="gift-options-checkbox-group">
-                <label class="gift-checkbox-label">
-                  <input type="checkbox" id="giftWrappingCb" onchange="toggleGiftWrapping(this.checked)" />
-                  <span>Şık Saten Kurdeleli Hediye Paketi İstiyorum</span>
-                </label>
-                <label class="gift-checkbox-label">
-                  <input type="checkbox" id="giftNoteCb" onchange="toggleGiftNote(this.checked)" />
-                  <span>Özel Hediye Kartı ve Mesaj Notu Ekle</span>
-                </label>
-              </div>
-              <div class="gift-note-wrapper" id="giftNoteWrapper">
-                <textarea
-                  id="giftNoteText"
-                  class="gift-note-textarea"
-                  placeholder="Sevdiklerinize iletmek istediğiniz özel mesajı buraya yazın... (Örn: Nice mutlu senelere birtanem ❤️)"
-                  maxlength="250"
-                  oninput="updateGiftNoteCount(this.value)"
-                ></textarea>
-                <div class="gift-note-meta">
-                  <span>✉️ Kart faturadan ayrı özel zarfta iletilir.</span>
-                  <span id="giftNoteCharCount">0 / 250</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Kupon Girişi -->
-            <form id="cartPageCouponForm" class="coupon-form">
-              <input
-                id="cartPageCouponInput"
-                type="text"
-                class="coupon-input"
-                placeholder="Kupon (SARMAL10)"
-                maxlength="20"
-              />
-              <button type="submit" class="coupon-btn">Uygula</button>
-            </form>
-            <div id="cartPageCouponApplied"></div>
-
-            <!-- Tutar Satırları -->
-            <div class="cart-subtotal-row">
-              <span>Ara Toplam:</span>
-              <strong id="cartPageSubtotal">0,00 TL</strong>
-            </div>
-            <div id="cartPageDiscountRow" class="cart-discount-row" style="display: none;">
-              <span>Kupon İndirimi:</span>
-              <strong id="cartPageDiscount" style="color: var(--success);">- 0,00 TL</strong>
-            </div>
-            <div class="cart-subtotal-row">
-              <span>Kargo:</span>
-              <strong style="color: var(--success);">500 TL Üzeri ÜCRETSİZ</strong>
-            </div>
-            
-            <div class="cart-total-row" style="border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem;">
-              <span>Ödenecek Tutar:</span>
-              <span id="cartPageGrandTotal" style="color: var(--primary); font-size: 1.5rem; font-weight: 800;">0,00 TL</span>
-            </div>
-
-            <button type="button" class="checkout-btn" onclick="openCheckoutModal()">
-              <span>Siparişi Tamamla</span>
-              <span>→</span>
-            </button>
-
-            <!-- Güvenlik & PayTR Rozeti -->
-            <div style="background: var(--primary-subtle); border: 1px solid var(--primary-border); border-radius: 8px; padding: 0.85rem; font-size: 0.8rem; line-height: 1.5; color: var(--primary-deep); text-align: center;">
-              🔒 <strong>PayTR 256-Bit SSL Güvenliği</strong><br>
-              💳 <strong>Tüm Banka Kartlarına</strong> Peşin Fiyatına Taksit İmkanı
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         D. DEDICATED FAVORİLER SAYFASI GÖRÜNÜMÜ (WISHLIST PAGE VIEW)
-         ====================================================================== -->
-    <div id="wishlistPageView" class="page-view-section">
-      <div class="container">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current">Favorilerim</span>
-        </nav>
-
-        <div class="page-header-box">
-          <h1 id="wishlistPageCountTitle" class="page-main-title">
-            <span>❤️</span> Favori Ürünlerim
-          </h1>
-          <p class="page-subtitle">Beğendiğiniz ve daha sonra satın almak istediğiniz tüm ürünler burada listelenir.</p>
-        </div>
-
-        <!-- Boş Durum -->
-        <div id="wishlistPageEmptyState" class="page-empty-state" style="display: none;">
-          <div class="page-empty-icon">🤍</div>
-          <h3 class="page-empty-title">Henüz Favori Ürününüz Yok</h3>
-          <p class="page-empty-desc">Ürünlerin üzerindeki kalp ikonuna tıklayarak beğendiğiniz ürünleri bu listeye ekleyebilirsiniz.</p>
-          <button type="button" class="slide-btn" style="display: inline-flex; margin: 0 auto;" onclick="navigateToHome()">
-            Ürünleri Keşfet
-          </button>
-        </div>
-
-        <!-- Favoriler Grid -->
-        <div id="wishlistPageGrid" class="wishlist-page-grid"></div>
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         E. DEDICATED GİRİŞ & KAYIT SAYFASI GÖRÜNÜMÜ (AUTH PAGE VIEW)
-         ====================================================================== -->
-    <div id="authPageView" class="page-view-section">
-      <div class="container">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current">Üyelik & Giriş</span>
-        </nav>
-
-        <div class="auth-page-wrap">
-          <div class="auth-card-box">
-            <!-- Üst Nav Sekmeleri (Giriş Yap vs Kayıt Ol) -->
-            <div class="auth-nav-tabs">
-              <button id="authTabLoginBtn" type="button" class="auth-nav-tab-btn active" onclick="switchAuthTab('login')">
-                Giriş Yap
-              </button>
-              <button id="authTabRegisterBtn" type="button" class="auth-nav-tab-btn" onclick="switchAuthTab('register')">
-                Kayıt Ol
-              </button>
-            </div>
-
-            <!-- Tab 1: Giriş Yap Formu -->
-            <div id="authLoginContent" class="auth-form-content active">
-              <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">👤</div>
-                <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-deep);">Sarmal Ticaret'e Giriş Yap</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Siparişlerinizi ve kargo durumunuzu kolayca takip edin.</p>
-              </div>
-
-              <form id="pageAuthLoginForm" style="display: flex; flex-direction: column; gap: 1.1rem;">
-                <div>
-                  <label class="checkout-label">E-Posta Adresi</label>
-                  <input
-                    id="pageAuthEmail"
-                    type="email"
-                    class="checkout-input"
-                    style="width: 100%;"
-                    placeholder="ornek@email.com"
-                    required
-                    maxlength="80"
-                  />
-                </div>
-                <div>
-                  <label class="checkout-label">Şifre</label>
-                  <input
-                    id="pageAuthPassword"
-                    type="password"
-                    class="checkout-input"
-                    style="width: 100%;"
-                    placeholder="••••••••"
-                    required
-                    minlength="6"
-                    maxlength="40"
-                  />
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
-                  <label class="sidebar-checkbox-label" style="margin: 0;">
-                    <input type="checkbox" checked />
-                    <span>Beni Hatırla</span>
-                  </label>
-                  <a href="javascript:void(0)" onclick="showToast('Şifre sıfırlama bağlantısı e-postanıza iletildi.');" style="color: var(--primary); text-decoration: underline;">
-                    Şifremi Unuttum
-                  </a>
-                </div>
-                <button type="submit" class="checkout-btn" style="margin-top: 0.5rem;">
-                  Giriş Yap →
-                </button>
-                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
-                  Hesabınız yok mu? <a href="javascript:void(0)" onclick="switchAuthTab('register')" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Anında Kayıt Olun</a>
-                </div>
-              </form>
-            </div>
-
-            <!-- Tab 2: Kayıt Ol Formu -->
-            <div id="authRegisterContent" class="auth-form-content">
-              <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 2.2rem; margin-bottom: 0.35rem;">✨</div>
-                <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--primary-deep);">Yeni Hesap Oluştur</h2>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Hızlıca üye olun, özel hediyelik fırsatlarından ve kuponlardan anında faydalanın.</p>
-              </div>
-
-              <form id="pageAuthRegisterForm" style="display: flex; flex-direction: column; gap: 1.1rem;">
-                <div>
-                  <label class="checkout-label">Adınız ve Soyadınız *</label>
-                  <input
-                    id="regName"
-                    type="text"
-                    class="checkout-input"
-                    style="width: 100%;"
-                    placeholder="Adınız Soyadınız"
-                    required
-                    maxlength="60"
-                  />
-                </div>
-                <div>
-                  <label class="checkout-label">E-Posta Adresi *</label>
-                  <input
-                    id="regEmail"
-                    type="email"
-                    class="checkout-input"
-                    style="width: 100%;"
-                    placeholder="ornek@email.com"
-                    required
-                    maxlength="80"
-                  />
-                </div>
-                <div>
-                  <label class="checkout-label">Telefon Numarası (Opsiyonel)</label>
-                  <input
-                    id="regPhone"
-                    type="tel"
-                    class="checkout-input"
-                    style="width: 100%;"
-                    placeholder="05XX XXX XX XX"
-                    maxlength="15"
-                  />
-                </div>
-                <div>
-                  <label class="checkout-label">Şifre Belirleyin *</label>
-                  <input
-                    id="regPassword"
-                    type="password"
-                    class="checkout-input"
-                    style="width: 100%;"
-                    placeholder="En az 6 karakter"
-                    required
-                    minlength="6"
-                    maxlength="40"
-                  />
-                </div>
-                <label class="sidebar-checkbox-label" style="font-size: 0.8rem; margin: 0;">
-                  <input type="checkbox" required checked />
-                  <span>
-                    <a href="javascript:void(0)" onclick="openPolicyModal('kvkk')" style="color: var(--primary); text-decoration: underline;">KVKK Metni</a> ve 
-                    <a href="javascript:void(0)" onclick="openPolicyModal('privacy')" style="color: var(--primary); text-decoration: underline;">Gizlilik Şartları</a>'nı kabul ediyorum.
-                  </span>
-                </label>
-                <button type="submit" class="checkout-btn" style="margin-top: 0.5rem;">
-                  Hesap Oluştur ve Başla ✓
-                </button>
-                <div style="text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
-                  Zaten hesabınız var mı? <a href="javascript:void(0)" onclick="switchAuthTab('login')" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Giriş Yapın</a>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         F. DEDICATED KULLANICI PROFİLİ VE SİPARİŞLER (PROFILE PAGE VIEW)
-         ====================================================================== -->
-    <div id="profilePageView" class="page-view-section">
-      <div class="container">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current">Hesabım & Siparişlerim</span>
-        </nav>
-
-        <div class="page-header-box">
-          <h1 class="page-main-title">
-            <span>👤</span> Kullanıcı Paneli
-          </h1>
-          <p class="page-subtitle">Hesap bilgilerinizi ve geçmiş siparişlerinizi yönetin.</p>
-        </div>
-
-        <div class="profile-page-layout">
-          <!-- Sol Kart -->
-          <div class="profile-card-sidebar">
-            <div id="profileUserAvatar" class="profile-avatar-circle">M</div>
-            <h3 id="profileUserName" class="profile-user-name">Kullanıcı Adı</h3>
-            <p id="profileUserEmail" class="profile-user-email">email@ornek.com</p>
-
-            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; text-align: left;">
-              <button type="button" class="action-btn" style="width: 100%; border: 1px solid var(--border);" onclick="navigateToPage('favoriler')">
-                ❤️ Favorilerim
-              </button>
-              <button type="button" class="action-btn" style="width: 100%; border: 1px solid var(--border);" onclick="navigateToPage('siparis-takip')">
-                📦 Canlı Kargo Takibi
-              </button>
-              <button type="button" class="remove-item-btn" style="width: 100%; border-radius: 8px; margin-top: 0.5rem; color: #b91c1c; font-weight: 700; padding: 0.5rem;" onclick="handleLogout()">
-                🚪 Çıkış Yap
-              </button>
-            </div>
-          </div>
-
-          <!-- Sağ: Sipariş Geçmişi -->
-          <div class="profile-orders-box">
-            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--primary-deep); margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
-              📦 Geçmiş Siparişlerim
-            </h3>
-            <div id="profileOrdersList"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ======================================================================
-         G. DEDICATED SİPARİŞ TAKİBİ SAYFASI (TRACKING PAGE VIEW)
-         ====================================================================== -->
-    <div id="trackingPageView" class="page-view-section">
-      <div class="container" style="max-width: 680px;">
-        <!-- Breadcrumb -->
-        <nav class="breadcrumb-nav">
-          <span class="breadcrumb-link" onclick="navigateToHome()">Ana Sayfa</span>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current">Sipariş & Kargo Takibi</span>
-        </nav>
-
-        <div class="page-header-box" style="text-align: center;">
-          <h1 class="page-main-title" style="justify-content: center;">
-            <span>📦</span> Canlı Sipariş & Kargo Takibi
-          </h1>
-          <p class="page-subtitle">Sipariş numaranızı girerek kargonuzun güncel durumunu anlık takip edin.</p>
-        </div>
-
-        <div style="background: #ffffff; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-card); padding: 2rem;">
-          <form id="pageTrackingForm" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-            <input
-              id="pageTrackingInput"
-              type="text"
-              placeholder="Örn: SRM-2026-981234"
-              class="newsletter-input"
-              style="border: 1px solid var(--border); font-size: 1rem;"
-              required
-              maxlength="30"
-            />
-            <button type="submit" class="newsletter-btn" style="padding: 0 1.75rem;">Sorgula</button>
-          </form>
-
-          <div id="pageTrackingResult"></div>
-        </div>
-      </div>
-    </div>
-
   </main>
 
   <!-- ======================================================================
-       ALT BİLGİ (FOOTER)
+       ALT BİLGİ (FOOTER) - PAYTR & ETBİS YASAL UYUMLULUK
        ====================================================================== -->
   <footer class="main-footer">
     <div class="container">
-      
+
       <div class="footer-grid">
         <!-- Sütun 1: Kurumsal Hakkımızda & İletişim -->
         <div class="footer-col footer-about">
           <h4>Sarmal Ticaret</h4>
-          <p>Sarmal Ticaret, yenilikçi hediye ürünleri, dekoratif konseptler, kar küreleri, batmayan gemiler ve özel hediyelikler sunan güvenilir e-ticaret platformudur.</p>
+          <p>Sarmal Ticaret, yenilikçi hediye ürünleri, dekoratif konseptler, kar küreleri, batmayan gemiler ve özel tasarım hediyelikler sunan güvenilir e-ticaret platformudur.</p>
           <div class="footer-contact-item">
             <span class="footer-contact-icon">📍</span>
             <span>İstanbul / Türkiye</span>
@@ -1340,6 +604,11 @@
             <span class="footer-contact-icon">✉️</span>
             <a href="mailto:destek@sarmalticaret.com" style="color: inherit;">destek@sarmalticaret.com</a>
           </div>
+          <div style="margin-top: 0.75rem;">
+            <button type="button" class="footer-link-btn" style="color: var(--primary); font-weight: 700;" onclick="openPolicyModal('about-contact')">
+              🏢 Hakkımızda & Kurumsal İletişim Bilgileri →
+            </button>
+          </div>
         </div>
 
         <!-- Sütun 2: Popüler Reyonlar -->
@@ -1351,34 +620,68 @@
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('cicek-buket')">💐 Çiçek & Buket Koleksiyonu</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('taki-mucevher')">💎 Takı & Sürpriz İnci Kolye</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('gece-lambalari')">💡 Dekoratif Gece Lambaları</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('ozel-hediyelikler')">🎁 Özel Hediye Kutuları</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="navigateToCategory('ozel-hediyelikler')">🎁 Özel Hediye & Müzik Kutuları</button></li>
           </ul>
         </div>
 
-        <!-- Sütun 3: Müşteri Hizmetleri & Yasal Sözleşmeler -->
+        <!-- Sütun 3: Yasal Bilgilendirme & Müşteri Hizmetleri -->
         <div class="footer-col">
-          <h4>Müşteri Hizmetleri</h4>
+          <h4>Yasal & Müşteri Hizmetleri</h4>
           <ul class="footer-links">
+            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('distance-contract')">📄 Mesafeli Satış Sözleşmesi</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('returns')">🔄 İptal ve İade Koşulları (14 Gün)</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('kvkk-privacy')">⚖️ KVKK Aydınlatma ve Gizlilik Politikası</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('about-contact')">🏢 Hakkımızda & İletişim</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToPage('siparis-takip')">📦 Sipariş & Kargo Takibi</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="navigateToPage('sepet')">🛒 Alışveriş Sepetim</button></li>
+            <li><button type="button" class="footer-link-btn" onclick="openCartDrawer()">🛒 Alışveriş Sepetim</button></li>
             <li><button type="button" class="footer-link-btn" onclick="navigateToPage('favoriler')">❤️ Favori Ürünlerim</button></li>
             <li><button type="button" class="footer-link-btn" onclick="handleAuthClick()">👤 Giriş Yap / Kayıt Ol</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('returns')">🔄 İade ve Değişim Şartları</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('distance-contract')">📄 Mesafeli Satış Sözleşmesi</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('privacy')">🔒 Gizlilik ve Güvenlik</button></li>
-            <li><button type="button" class="footer-link-btn" onclick="openPolicyModal('kvkk')">⚖️ KVKK Aydınlatma Metni</button></li>
           </ul>
         </div>
 
         <!-- Sütun 4: Güvenli Ödeme & PayTR Bilgileri -->
         <div class="footer-col">
-          <h4>Güvenli Ödeme & Taksit</h4>
+          <h4>Güvenli Ödeme & Kargo</h4>
           <p style="color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1rem;">
-            Ödemeleriniz <strong>PayTR</strong> altyapısı üzerinden 256-Bit SSL şifreleme ve 3D Secure güvencesiyle korunur. Kredi kartınızla peşin fiyatına taksitli veya Havale/EFT ile güvenle ödeyebilirsiniz.
+            Ödemeleriniz TCMB lisanslı <strong>PayTR</strong> altyapısı üzerinden 256-Bit SSL şifreleme ve 3D Secure güvencesiyle korunur. Kredi kartınızla taksitli veya Havale/EFT ile güvenle ödeyebilirsiniz.
           </p>
-          <div style="background: var(--bg-page); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
-            <div style="font-size: 0.8rem; font-weight: 700; color: #15803d;">🔒 PayTR 256-Bit SSL Sertifikalı</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Tüm işlemleriniz SMS onaylı 3D Secure ile korunur.</div>
+          <div style="background: var(--bg-page); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.75rem;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #15803d;">🔒 PayTR 256-Bit SSL & PCI-DSS</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Kart bilgileriniz sunucularımızda saklanmaz; 3D Secure SMS onayı ile işlenir.</div>
+          </div>
+          <div style="background: var(--bg-page); padding: 0.85rem; border-radius: 8px; border: 1px solid var(--border);">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-deep);">🚚 Yurtiçi Kargo Anlaşmalı</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">500 TL üzeri ücretsiz kargo • İade Anlaşma Kodu: <strong>540912</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kurumsal & Yasal Bilgilendirme Bloğu -->
+      <div class="etbis-legal-box">
+        <div class="etbis-qr-badge" title="Sarmal Ticaret Güvenli Alışveriş">
+          <span class="etbis-qr-icon">🔒</span>
+          <span>256-Bit SSL</span>
+          <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: 600;">PayTR Güvencesi</span>
+        </div>
+        <div class="etbis-company-table">
+          <div style="font-weight: 800; color: var(--primary-deep); font-size: 0.9rem; margin-bottom: 0.35rem;">
+            Kurumsal İletişim & Yasal Bilgilendirme
+          </div>
+          <div>
+            <strong>Mağaza:</strong> Sarmal Ticaret ve Hediyelik Eşya Hizmetleri &nbsp;|&nbsp;
+            <strong>Konum:</strong> İstanbul / Türkiye &nbsp;|&nbsp;
+            <strong>Anlaşmalı Kargo:</strong> Yurtiçi Kargo (İade Kodu: 540912)
+          </div>
+          <div>
+            <strong>Telefon & WhatsApp:</strong> <a href="tel:05378715517" style="color: var(--primary); font-weight: 700;">0537 871 55 17</a> &nbsp;|&nbsp;
+            <strong>E-Posta:</strong> <a href="mailto:destek@sarmalticaret.com" style="color: var(--primary); font-weight: 700;">destek@sarmalticaret.com</a> &nbsp;|&nbsp;
+            <strong>Web:</strong> www.sarmalticaret.com
+          </div>
+          <div class="etbis-badges-row">
+            <button type="button" class="etbis-tag etbis-tag-btn" onclick="openPolicyModal('distance-contract')">📄 Mesafeli Satış Sözleşmesi</button>
+            <button type="button" class="etbis-tag etbis-tag-btn" onclick="openPolicyModal('returns')">🔄 14 Gün İptal & İade</button>
+            <button type="button" class="etbis-tag etbis-tag-btn" onclick="openPolicyModal('kvkk-privacy')">⚖️ KVKK & Gizlilik</button>
+            <button type="button" class="etbis-tag etbis-tag-btn" onclick="openPolicyModal('about-contact')">🏢 Hakkımızda & İletişim</button>
           </div>
         </div>
       </div>
@@ -1392,6 +695,8 @@
           <span class="payment-badge">World</span>
           <span class="payment-badge">Maximum</span>
           <span class="payment-badge">Axess</span>
+          <span class="payment-badge">Paraf</span>
+          <span class="payment-badge">CardFinans</span>
           <span class="payment-badge">MasterCard</span>
           <span class="payment-badge">VISA</span>
           <span class="payment-badge">TROY</span>
@@ -1401,10 +706,10 @@
 
       <div class="footer-bottom">
         <div>
-          © 2026 <strong>Sarmal Ticaret</strong> - Tüm Hakları Saklıdır.
+          © 2026 <strong>Sarmal Ticaret (sarmalticaret.com)</strong> - Tüm Hakları Saklıdır.
         </div>
         <div>
-          Güvenli Alışveriş & PayTR Ödeme Platformu
+          Güvenli Alışveriş & PayTR 256-Bit SSL Ödeme Platformu
         </div>
       </div>
 
@@ -1412,10 +717,114 @@
   </footer>
 
   <!-- ======================================================================
+       SLIDE-OVER SEPET ÇEKMECESİ (SAĞDAN AÇILAN MODERN SEPET)
+       ====================================================================== -->
+  <div id="cartDrawerOverlay" class="cart-drawer-overlay" onclick="closeCartDrawer()"></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Alışveriş Sepeti Çekmecesi" role="dialog" aria-modal="true">
+    <div class="cart-drawer-header">
+      <div class="cart-drawer-title">
+        <span>🛒</span>
+        <span id="drawerCartTitle">Sepetim (0 Ürün)</span>
+      </div>
+      <button type="button" class="close-drawer-btn" aria-label="Sepeti Kapat" onclick="closeCartDrawer()">✕</button>
+    </div>
+
+    <!-- 500 TL Ücretsiz Kargo Dinamik İlerleme Çubuğu -->
+    <div id="drawerShippingBarWrap" class="free-shipping-bar-wrap">
+      <div id="drawerFreeShippingText" class="free-shipping-text">
+        Ücretsiz Kargo için <strong>500,00 TL</strong> daha ekleyin!
+      </div>
+      <div class="shipping-progress-bg">
+        <div id="drawerShippingFill" class="shipping-progress-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Sepet Ürün Listesi & Hediye Seçenekleri (Kaydırılabilir İçerik) -->
+    <div class="cart-drawer-scroll">
+      <div id="drawerCartItems" class="cart-items-list"></div>
+
+      <!-- Özel Hediye Paketi & Hediye Kartı Notu -->
+      <div id="drawerGiftSection" class="drawer-gift-wrap" style="display: none;">
+        <div class="gift-options-box" style="margin: 0; padding: 0.9rem;">
+          <div class="gift-options-header" style="margin-bottom: 0.55rem; font-size: 0.88rem;">
+            <span>🎁</span>
+            <span>Hediye Paketi & Kart Notu</span>
+            <span class="gift-badge-free">ÜCRETSİZ</span>
+          </div>
+          <label class="gift-checkbox-label" style="font-size: 0.84rem;">
+            <input type="checkbox" id="drawerGiftWrapCb" onchange="toggleGiftWrapping(this.checked)" />
+            <span>Özel Hediye Paketi İstiyorum</span>
+          </label>
+          <div id="drawerGiftNoteWrapper" class="gift-note-wrapper">
+            <label for="drawerGiftNoteText" style="display: block; font-size: 0.78rem; font-weight: 700; color: #92400e; margin-bottom: 0.35rem;">
+              Hediye Kartı Notunuz:
+            </label>
+            <textarea
+              id="drawerGiftNoteText"
+              class="gift-note-textarea"
+              style="min-height: 70px; font-size: 0.84rem;"
+              placeholder="Sevdiklerinize iletmek istediğiniz notu yazın... (Örn: Nice mutlu yıllara!)"
+              maxlength="250"
+              oninput="updateGiftNoteCount(this.value)"
+            ></textarea>
+            <div class="gift-note-meta">
+              <span>✉️ Faturadan ayrı zarfta iletilir</span>
+              <span id="drawerGiftNoteCharCount">0 / 250</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kupon Kodu (SARMAL10) -->
+    <div id="drawerCouponWrap" class="coupon-box-wrap" style="display: none;">
+      <form id="drawerCouponForm" class="coupon-form">
+        <input
+          id="drawerCouponInput"
+          type="text"
+          class="coupon-input"
+          placeholder="Kupon Kodu (örn: SARMAL10)"
+          maxlength="20"
+          aria-label="Kupon Kodu"
+        />
+        <button type="submit" class="coupon-btn">Uygula</button>
+      </form>
+      <div id="drawerCouponApplied"></div>
+    </div>
+
+    <!-- Sepet Özet & Checkout CTA -->
+    <div id="drawerCartFooter" class="cart-drawer-footer" style="display: none;">
+      <div class="cart-subtotal-row">
+        <span>Ara Toplam:</span>
+        <strong id="drawerSubtotal">0,00 TL</strong>
+      </div>
+      <div id="drawerDiscountRow" class="cart-discount-row" style="display: none;">
+        <span>Kupon İndirimi:</span>
+        <strong id="drawerDiscount">- 0,00 TL</strong>
+      </div>
+      <div class="cart-subtotal-row">
+        <span>Kargo:</span>
+        <strong id="drawerShippingCost" style="color: var(--success);">ÜCRETSİZ</strong>
+      </div>
+      <div class="cart-total-row">
+        <span>Toplam:</span>
+        <span id="drawerGrandTotal" style="color: var(--primary);">0,00 TL</span>
+      </div>
+      <button type="button" class="checkout-btn" onclick="closeCartDrawer(); openCheckoutModal();">
+        <span>🔒 Siparişi Tamamla</span>
+        <span>→</span>
+      </button>
+      <button type="button" class="drawer-view-full-cart-btn" onclick="closeCartDrawer(); navigateToPage('sepet');">
+        Tam Sepet Sayfasını Görüntüle
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
        MOBİL MENÜ ÇEKMECESİ (OFF-CANVAS DRAWER)
        ====================================================================== -->
   <div id="mobileDrawerOverlay" class="mobile-drawer-overlay" onclick="toggleMobileMenu(false)"></div>
-  <nav id="mobileDrawer" class="mobile-drawer">
+  <nav id="mobileDrawer" class="mobile-drawer" aria-label="Mobil Menü">
     <div class="mobile-drawer-header">
       <div class="mobile-drawer-title">Sarmal Ticaret Menü</div>
       <button id="closeMobileMenuBtn" class="mobile-drawer-close" type="button" aria-label="Kapat" onclick="toggleMobileMenu(false)">✕</button>
@@ -1451,7 +860,7 @@
 
       <div class="mobile-cat-group" style="margin-top: 1.5rem;">
         <div class="mobile-cat-heading">Hesap & Sepet</div>
-        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); navigateToPage('sepet');">
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); openCartDrawer();">
           <span>🛒 Alışveriş Sepetim</span>
           <span>›</span>
         </button>
@@ -1470,12 +879,16 @@
       </div>
 
       <div class="mobile-cat-group" style="margin-top: 1.5rem;">
-        <div class="mobile-cat-heading">Destek & İletişim</div>
+        <div class="mobile-cat-heading">Kurumsal & Destek</div>
+        <button type="button" class="mobile-cat-link" style="width: 100%; border: none; background: none; text-align: left;" onclick="toggleMobileMenu(false); openPolicyModal('about-contact');">
+          <span>🏢 Hakkımızda & İletişim</span>
+          <span>›</span>
+        </button>
         <a href="tel:05378715517" class="mobile-cat-link">
           <span>📞 Müşteri Hizmetleri</span>
           <span>0537 871 55 17</span>
         </a>
-        <a href="https://wa.me/905378715517" target="_blank" rel="noopener noreferrer" class="mobile-cat-link">
+        <a href="https://wa.me/905378715517?text=Merhaba%2C%20Sarmal%20Ticaret%20%C3%BCzerinden%20bir%20%C3%BCr%C3%BCn%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer" class="mobile-cat-link">
           <span>💬 WhatsApp Destek Hattı</span>
           <span>Canlı</span>
         </a>
@@ -1484,14 +897,14 @@
   </nav>
 
   <!-- ======================================================================
-       MODALLAR: CHECKOUT, SİPARİŞ TAKİP, POLİTİKALAR, QUICK VIEW & AUTH
+       MODALLAR: CHECKOUT & YASAL SÖZLEŞMELER & 3D SECURE
        ====================================================================== -->
 
   <!-- 1. ÇOK ADIMLI GELİŞMİŞ CHECKOUT MODALI -->
-  <div id="checkoutModal" class="modal-overlay">
+  <div id="checkoutModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Sipariş Tamamlama">
     <div class="modal-box" style="max-width: 650px;">
       <button class="modal-close-btn" type="button" aria-label="Kapat">✕</button>
-      
+
       <!-- Stepper Çubuğu -->
       <div class="checkout-steps-bar">
         <div class="checkout-step-item active" data-step="1">
@@ -1521,7 +934,7 @@
           <div class="checkout-form-grid">
             <div class="checkout-form-group">
               <label class="checkout-label">Adınız Soyadınız *</label>
-              <input id="custName" type="text" class="checkout-input" placeholder="Melih Yıldız" required maxlength="60" />
+              <input id="custName" type="text" class="checkout-input" placeholder="Adınız Soyadınız" required maxlength="60" />
             </div>
 
             <div class="checkout-form-group">
@@ -1564,7 +977,7 @@
 
             <div class="checkout-form-group full">
               <label class="checkout-label">Sipariş / Hediye Notu (Opsiyonel)</label>
-              <input id="custNote" type="text" class="checkout-input" placeholder="Örn: Hediye paketi yapılsın, zile basılmasın" maxlength="150" />
+              <input id="custNote" type="text" class="checkout-input" placeholder="Örn: Hediye paketi yapılsın, zile basılmasın" maxlength="250" />
             </div>
           </div>
 
@@ -1589,7 +1002,6 @@
           PayTR altyapısıyla 256-Bit SSL korumalı kredi kartı veya havale/nakit ile güvenli ödeme.
         </p>
 
-        <!-- Ödeme Sekmeleri -->
         <div class="payment-tabs">
           <button type="button" class="payment-tab-btn active" data-tab="creditcard" onclick="switchPaymentTab('creditcard')">
             💳 Kredi / Banka Kartı (PayTR 3D Secure)
@@ -1597,17 +1009,11 @@
           <button type="button" class="payment-tab-btn" data-tab="havale" onclick="switchPaymentTab('havale')">
             🏦 Havale / EFT & Kapıda Nakit
           </button>
-          <!-- Multinet yemek kartı pasife alındı (onay sonrası açılabilir)
-          <button type="button" class="payment-tab-btn" data-tab="mealcard" onclick="switchPaymentTab('mealcard')">
-            💳 Multinet Up Yemek Kartı
-          </button>
-          -->
         </div>
 
         <form id="checkoutStep2Form">
-          <!-- Tab 1: Kredi / Banka Kartı (PayTR Altyapısı - 256-Bit SSL 3D Secure) -->
+          <!-- Tab 1: Kredi / Banka Kartı (PayTR) -->
           <div id="payContentCreditCard" class="payment-tab-content active" data-tab="creditcard">
-            
             <div class="paytr-secure-iframe-box">
               <div class="paytr-iframe-header">
                 <div class="paytr-iframe-brand">
@@ -1652,7 +1058,7 @@
                     </div>
                   </div>
 
-                  <!-- PayTR Taksit Seçenekleri Tablosu & Seçici -->
+                  <!-- PayTR Taksit Seçenekleri Tablosu -->
                   <div style="margin-top: 1.25rem;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
                       <label class="checkout-label" style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--primary-deep);">
@@ -1660,51 +1066,38 @@
                       </label>
                       <span style="font-size: 0.75rem; color: #16a34a; font-weight: 700;">✓ Peşin Fiyatına Taksit İmkanı</span>
                     </div>
-                    <div id="paytrInstallmentContainer" class="installment-table-wrap" style="margin-top: 0; padding-top: 0; border-top: none;">
-                      <!-- Dinamik olarak JS tarafından calculateCartTotals().grandTotal'e göre render edilir -->
-                    </div>
+                    <div id="paytrInstallmentContainer" class="installment-table-wrap" style="margin-top: 0; padding-top: 0; border-top: none;"></div>
                     <input type="hidden" id="creditCardInstallment" value="Tek Çekim" />
                   </div>
                 </div>
-
               </div>
             </div>
-
           </div>
 
           <!-- Tab 2: Havale / EFT & Kapıda Nakit -->
           <div id="payContentHavale" class="payment-tab-content" data-tab="havale">
             <div style="background: var(--bg-page); padding: 1.25rem; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; border: 1px solid var(--border);">
               <strong style="color: var(--primary-deep); display: block; margin-bottom: 0.4rem; font-size: 0.95rem;">Garanti BBVA IBAN & Havale Bilgileri:</strong>
-              <div>Hesap Sahibi: <strong>Sarmal Ticaret ve Hediye Hizmetleri</strong></div>
+              <div>Hesap Sahibi: <strong>Sarmal Ticaret ve Hediyelik Eşya Hizmetleri</strong></div>
               <div>IBAN: <strong>TR45 0006 2000 1234 5678 9012 34</strong></div>
               <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border);">
                 <strong style="color: var(--primary-deep);">Kapıda Nakit / Kredi Kartı Ödeme:</strong>
                 <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 2px;">Kargo görevlisine kapıda nakit veya tek çekim kredi kartı ile güvenle ödeyebilirsiniz.</div>
               </div>
               <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.8rem;">
-                * Havale/EFT açıklama kısmına Adınızı ve Sipariş Numaranızı yazmanız yeterlidir. Dekontunuz onaylandıktan sonra kargonuz derhal hazırlanır.
+                * Havale/EFT açıklama kısmına Adınızı ve Sipariş Numaranızı yazmanız yeterlidir.
               </p>
             </div>
           </div>
-
-          <!-- GEÇİCİ OLARAK PASİFE ALINAN MULTİNET YEMEK KARTI TABI (SİLİNMEYEN YEDEK)
-          <div id="payContentMealCard" class="payment-tab-content" data-tab="mealcard" style="display:none;">
-            <div class="checkout-form-grid">
-              <input id="multinetCardNumber" type="text" class="checkout-input" placeholder="4506 XXXX XXXX XXXX" />
-              <input id="multinetExpiry" type="text" class="checkout-input" placeholder="12/28" />
-              <input id="multinetCvv" type="password" class="checkout-input" placeholder="***" />
-            </div>
-          </div>
-          -->
 
           <!-- Sözleşme Onay Kutusu -->
           <div style="margin-top: 1.25rem;">
             <label class="sidebar-checkbox-label" style="font-size: 0.8rem;">
               <input id="checkoutAgreementCb" type="checkbox" required checked />
               <span>
-                <a href="javascript:void(0)" onclick="openPolicyModal('distance-contract')" style="color: var(--primary); text-decoration: underline;">Mesafeli Satış Sözleşmesi</a> ve 
-                <a href="javascript:void(0)" onclick="openPolicyModal('returns')" style="color: var(--primary); text-decoration: underline;">İade Şartları</a>'nı okudum, onaylıyorum.
+                <a href="javascript:void(0)" onclick="openPolicyModal('distance-contract')" style="color: var(--primary); text-decoration: underline;">Mesafeli Satış Sözleşmesi</a>,
+                <a href="javascript:void(0)" onclick="openPolicyModal('returns')" style="color: var(--primary); text-decoration: underline;">İptal & İade Koşulları</a> ve
+                <a href="javascript:void(0)" onclick="openPolicyModal('kvkk-privacy')" style="color: var(--primary); text-decoration: underline;">KVKK Aydınlatma Metni</a>'ni okudum, onaylıyorum.
               </span>
             </label>
           </div>
@@ -1737,8 +1130,8 @@
             <div>Ödeme Yöntemi: <strong id="successPaymentMethod">-</strong></div>
             <div>Toplam Tutar: <strong id="successTotalAmount" style="color: var(--primary); font-size: 1.1rem;">-</strong></div>
             <div>Teslimat Adresi: <strong id="successDeliveryAddress">-</strong></div>
-            <div>Tahmini Teslimat: <strong style="color: var(--success);">2 İş Günü İçerisinde Kargoda (Yurtiçi Kargo)</strong></div>
-            
+            <div>Tahmini Teslimat: <strong style="color: var(--success);">Aynı Gün / En Geç 2 İş Günü (Yurtiçi Kargo)</strong></div>
+
             <div id="successGiftWrapPreview" style="display: none; background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px dashed #f59e0b; border-radius: 8px; padding: 0.9rem 1.15rem; margin-top: 0.75rem; text-align: left;">
               <div style="font-weight: 800; color: #92400e; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
                 <span>🎁</span> Özel Hediye Hazırlığı:
@@ -1748,10 +1141,10 @@
           </div>
 
           <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a id="successWhatsappLink" href="https://wa.me/905378715517" target="_blank" class="action-btn" style="background: #25d366; color: #ffffff; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.85rem 1.25rem;">
+            <a id="successWhatsappLink" href="https://wa.me/905378715517" target="_blank" rel="noopener noreferrer" class="action-btn" style="background: #25d366; color: #ffffff; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.85rem 1.25rem;">
               <span>💬</span> WhatsApp ile Siparişi Teyit Et
             </a>
-            <button type="button" class="checkout-btn" style="max-width: 220px;" onclick="closeAllModals(); openOrderTrackingModal();">
+            <button type="button" class="checkout-btn" style="max-width: 220px;" onclick="closeAllModals(); navigateToPage('siparis-takip');">
               📦 Siparişi Takip Et
             </button>
             <button type="button" class="action-btn" style="border: 1px solid var(--border); padding: 0.85rem 1.25rem;" onclick="closeAllModals(); navigateToHome();">
@@ -1764,134 +1157,24 @@
     </div>
   </div>
 
-  <!-- 2. SİPARİŞ TAKİP MODALI -->
-  <div id="orderTrackingModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 520px;">
+  <!-- 2. YASAL SÖZLEŞMELER, POLİTİKALAR & HAKKIMIZDA MODALI -->
+  <div id="policyModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Yasal Bilgilendirme">
+    <div class="modal-box" style="max-width: 720px;">
       <button class="modal-close-btn" type="button" aria-label="Kapat">✕</button>
-      <div style="text-align: center; margin-bottom: 1.5rem;">
-        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>
-        <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--primary-deep);">Canlı Sipariş & Kargo Takibi</h3>
-        <p style="font-size: 0.88rem; color: var(--text-muted);">Sipariş numaranızı veya SMS ile iletilen takip kodunu girin.</p>
+      <div class="policy-modal-tabs" id="policyModalTabs">
+        <button type="button" class="policy-tab-pill" data-policy="distance-contract" onclick="openPolicyModal('distance-contract')">Mesafeli Satış</button>
+        <button type="button" class="policy-tab-pill" data-policy="returns" onclick="openPolicyModal('returns')">İptal & İade</button>
+        <button type="button" class="policy-tab-pill" data-policy="kvkk-privacy" onclick="openPolicyModal('kvkk-privacy')">KVKK & Gizlilik</button>
+        <button type="button" class="policy-tab-pill" data-policy="about-contact" onclick="openPolicyModal('about-contact')">Hakkımızda & İletişim</button>
       </div>
-      <form id="trackingSearchForm" style="display: flex; gap: 0.5rem;">
-        <input
-          id="trackingInput"
-          type="text"
-          placeholder="Örn: SRM-2026-9812"
-          class="newsletter-input"
-          style="border: 1px solid var(--border);"
-          required
-          maxlength="30"
-        />
-        <button type="submit" class="newsletter-btn">Sorgula</button>
-      </form>
-      <div id="trackingResult"></div>
-    </div>
-  </div>
-
-  <!-- 3. YASAL SÖZLEŞMELER & POLİTİKALAR MODALI -->
-  <div id="policyModal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 640px;">
-      <button class="modal-close-btn" type="button" aria-label="Kapat">✕</button>
       <h3 id="policyModalTitle" style="font-size: 1.35rem; font-weight: 800; color: var(--primary-deep); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
-        Politika Başlığı
+        Yasal Bilgilendirme
       </h3>
       <div id="policyModalBody" class="legal-modal-body"></div>
     </div>
   </div>
 
-  <!-- 4. QUICK VIEW MODAL (TAKSİT TABLOSU ENTEGRE) -->
-  <div id="quickViewModal" class="modal-overlay">
-    <div class="modal-box">
-      <button class="modal-close-btn" type="button" aria-label="Kapat">✕</button>
-      <div id="quickViewContent"></div>
-    </div>
-  </div>
-
-  <!-- BİLDİRİM TOASTI -->
-  <div id="toastNotice" class="toast-notice">
-    <span>✓</span>
-    <span id="toastMessage">Ürün sepete eklendi!</span>
-  </div>
-
-  <!-- YÜZEN BUTONLAR (WHATSAPP & GERİ DÖNÜŞ) -->
-  <div class="floating-actions">
-    <button id="backToTopBtn" class="back-to-top-btn" type="button" aria-label="Yukarı Çık">
-      ▲
-    </button>
-
-    <a
-      href="https://wa.me/905378715517?text=Merhaba,%20Sarmal%20Ticaret'ten%20hediyelik%20ürünler,%20taksit%20seçenekleri%20ve%20siparişim%20hakkında%20bilgi%20almak%20istiyorum."
-      target="_blank"
-      rel="noopener noreferrer"
-      class="whatsapp-float-btn"
-      aria-label="WhatsApp Destek"
-    >
-      <div class="whatsapp-pulse"></div>
-      <span class="whatsapp-tooltip">Canlı Destek & WhatsApp</span>
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12.031 2C6.495 2 2 6.495 2 12.031c0 1.954.563 3.778 1.534 5.318L2 22l4.821-1.492c1.488.887 3.224 1.411 5.21 1.411 5.536 0 10.031-4.495 10.031-10.031C22.062 6.495 17.567 2 12.031 2zm5.795 14.18c-.244.686-1.42 1.258-1.955 1.298-.517.039-1.187.185-3.83-0.89-2.257-.918-3.714-3.21-3.826-3.36-.112-.15-0.91-1.21-0.91-2.308 0-1.097.575-1.637.78-1.86.205-.224.448-.28.597-.28.15 0 .299.002.43.01.139.008.326-.053.51.39.187.448.643 1.57.7 1.687.056.112.093.243.019.392-.075.15-.112.243-.224.373-.112.131-.235.292-.336.393-.112.112-.229.234-.098.459.131.224.582.96 1.25 1.554.858.765 1.58.999 1.804 1.11.224.112.355.093.486-.056.131-.15.56-0.654.71-0.878.15-.224.299-.187.504-.112.205.075 1.306.616 1.53.728.224.112.373.168.43.261.056.094.056.542-.188 1.228z"/>
-      </svg>
-    </a>
-  </div>
-
-  <!-- ======================================================================
-       MOBİL ALT SABİT NAVİGASYON BARI (STICKY BOTTOM NAV - REYONPLUS STİLİ)
-       ====================================================================== -->
-  <nav id="mobileBottomNav" class="mobile-bottom-nav">
-    <button type="button" class="bottom-nav-item active" id="bottomNavHome" onclick="navigateToHome()">
-      <div class="bottom-nav-icon">
-        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-      </div>
-      <span class="bottom-nav-label">Ana Sayfa</span>
-    </button>
-
-    <button type="button" class="bottom-nav-item" id="bottomNavCategories" onclick="toggleMobileMenu(true)">
-      <div class="bottom-nav-icon">
-        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
-      </div>
-      <span class="bottom-nav-label">Reyonlar</span>
-    </button>
-
-    <button type="button" class="bottom-nav-item" id="bottomNavCart" onclick="navigateToPage('sepet')">
-      <div class="bottom-nav-icon" style="position: relative;">
-        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-        <span id="bottomNavCartBadge" class="bottom-nav-badge" style="display: none;">0</span>
-      </div>
-      <span class="bottom-nav-label">Sepetim</span>
-    </button>
-
-    <button type="button" class="bottom-nav-item" id="bottomNavWishlist" onclick="navigateToPage('favoriler')">
-      <div class="bottom-nav-icon" style="position: relative;">
-        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-        <span id="bottomNavWishlistBadge" class="bottom-nav-badge" style="display: none;">0</span>
-      </div>
-      <span class="bottom-nav-label">Favoriler</span>
-    </button>
-
-    <button type="button" class="bottom-nav-item" id="bottomNavAuth" onclick="handleAuthClick()">
-      <div class="bottom-nav-icon">
-        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-      </div>
-      <span id="bottomNavAuthLabel" class="bottom-nav-label">Giriş Yap</span>
-    </button>
-  </nav>
-
-  <!-- Canlı Satış Toast Pop-up Bildirimi (FOMO) -->
-  <div id="liveSalesToast" class="live-sales-toast" aria-live="polite">
-    <img id="liveSalesImg" class="live-sales-img" src="/images/products/sokak_lambali_kar_kuresi.jpg" alt="Ürün" />
-    <div class="live-sales-body">
-      <div class="live-sales-buyer">
-        <span class="live-pulse-green"></span>
-        <span id="liveSalesBuyerName">Ayşe K. (İzmir)</span>
-      </div>
-      <div class="live-sales-product" id="liveSalesProductTitle">Sokak Lambalı Işıklı Kar Küresi</div>
-      <div class="live-sales-time" id="liveSalesTimeText">Az önce hediye siparişi verdi • 3 dk önce</div>
-    </div>
-    <button type="button" class="live-sales-close" onclick="closeLiveSalesToast()" aria-label="Kapat">×</button>
-  </div>
-
-  <!-- PayTR 3D Secure SMS Doğrulama Simülasyon Modalı -->
+  <!-- PayTR 3D Secure SMS Doğrulama Modalı -->
   <div id="paytr3dModal" class="modal-backdrop" style="display: none;">
     <div class="modal-box" style="max-width: 440px; padding: 1.5rem; text-align: center;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1rem;">
@@ -1918,8 +1201,92 @@
     </div>
   </div>
 
+  <!-- BİLDİRİM TOASTI -->
+  <div id="toastNotice" class="toast-notice">
+    <span>✓</span>
+    <span id="toastMessage">Ürün sepete eklendi!</span>
+  </div>
+
+  <!-- YÜZEN BUTONLAR (WHATSAPP & YUKARI ÇIK) -->
+  <div class="floating-actions">
+    <button id="backToTopBtn" class="back-to-top-btn" type="button" aria-label="Yukarı Çık">
+      ▲
+    </button>
+
+    <a
+      id="whatsappFloatBtn"
+      href="https://wa.me/905378715517?text=Merhaba%2C%20Sarmal%20Ticaret%20%C3%BCzerinden%20bir%20%C3%BCr%C3%BCn%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum."
+      target="_blank"
+      rel="noopener noreferrer"
+      class="whatsapp-float-btn"
+      aria-label="WhatsApp Destek (0537 871 55 17)"
+    >
+      <div class="whatsapp-pulse"></div>
+      <span class="whatsapp-tooltip">WhatsApp Destek • 0537 871 55 17</span>
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.031 2C6.495 2 2 6.495 2 12.031c0 1.954.563 3.778 1.534 5.318L2 22l4.821-1.492c1.488.887 3.224 1.411 5.21 1.411 5.536 0 10.031-4.495 10.031-10.031C22.062 6.495 17.567 2 12.031 2zm5.795 14.18c-.244.686-1.42 1.258-1.955 1.298-.517.039-1.187.185-3.83-0.89-2.257-.918-3.714-3.21-3.826-3.36-.112-.15-0.91-1.21-0.91-2.308 0-1.097.575-1.637.78-1.86.205-.224.448-.28.597-.28.15 0 .299.002.43.01.139.008.326-.053.51.39.187.448.643 1.57.7 1.687.056.112.093.243.019.392-.075.15-.112.243-.224.373-.112.131-.235.292-.336.393-.112.112-.229.234-.098.459.131.224.582.96 1.25 1.554.858.765 1.58.999 1.804 1.11.224.112.355.093.486-.056.131-.15.56-0.654.71-0.878.15-.224.299-.187.504-.112.205.075 1.306.616 1.53.728.224.112.373.168.43.261.056.094.056.542-.188 1.228z"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- ======================================================================
+       MOBİL ALT SABİT NAVİGASYON BARI
+       ====================================================================== -->
+  <nav id="mobileBottomNav" class="mobile-bottom-nav" aria-label="Mobil Alt Navigasyon">
+    <button type="button" class="bottom-nav-item active" id="bottomNavHome" onclick="navigateToHome()">
+      <div class="bottom-nav-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      </div>
+      <span class="bottom-nav-label">Ana Sayfa</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavCategories" onclick="toggleMobileMenu(true)">
+      <div class="bottom-nav-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+      </div>
+      <span class="bottom-nav-label">Reyonlar</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavCart" onclick="openCartDrawer()">
+      <div class="bottom-nav-icon" style="position: relative;">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        <span id="bottomNavCartBadge" class="bottom-nav-badge" style="display: none;">0</span>
+      </div>
+      <span class="bottom-nav-label">Sepetim</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavWishlist" onclick="navigateToPage('favoriler')">
+      <div class="bottom-nav-icon" style="position: relative;">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span id="bottomNavWishlistBadge" class="bottom-nav-badge" style="display: none;">0</span>
+      </div>
+      <span class="bottom-nav-label">Favoriler</span>
+    </button>
+
+    <button type="button" class="bottom-nav-item" id="bottomNavAuth" onclick="handleAuthClick()">
+      <div class="bottom-nav-icon">
+        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
+      <span id="bottomNavAuthLabel" class="bottom-nav-label">Giriş Yap</span>
+    </button>
+  </nav>
+
+  <!-- Canlı Satış Toast Pop-up Bildirimi -->
+  <div id="liveSalesToast" class="live-sales-toast" aria-live="polite">
+    <img id="liveSalesImg" class="live-sales-img" src="https://cdn.dsmcdn.com/ty1822/prod/QC_ENRICHMENT/20260207/01/798dd167-5361-3924-b38d-14b7bdc89c01/1_org_zoom.jpg" alt="Sipariş Ürünü" />
+    <div class="live-sales-body">
+      <div class="live-sales-buyer">
+        <span class="live-pulse-green"></span>
+        <span id="liveSalesBuyerName">Ayşe K. (İzmir)</span>
+      </div>
+      <div class="live-sales-product" id="liveSalesProductTitle">Sokak Lambalı Işıklı Kar Küresi</div>
+      <div class="live-sales-time" id="liveSalesTimeText">Az önce hediye siparişi verdi • 3 dk önce</div>
+    </div>
+    <button type="button" class="live-sales-close" onclick="closeLiveSalesToast()" aria-label="Kapat">×</button>
+  </div>
+
   <!-- Ana JavaScript Dosyası -->
-  <script type="module" src="/main.js?v=3.1"></script>
+  <script type="module" src="/main.js?v=4.0"></script>
 
 </body>
 </html>

@@ -2550,9 +2550,9 @@ img {
 
   .top-announcement {
     font-size: 0.72rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    line-height: 1.35;
+    justify-content: center;
   }
 
   .brand-logo-img {
@@ -2834,6 +2834,13 @@ img {
 .filter-chip-btn:hover {
   border-color: var(--primary-border);
   color: var(--primary);
+}
+
+.filter-chip-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
 }
 
 /* Checkbox Filtreleri */
@@ -4345,3 +4352,258 @@ img {
 
 
 
+
+/* ==========================================================================
+   23. PRODUCTION UX ENHANCEMENTS (SEARCH, CART DRAWER, PDP GALLERY, LEGAL)
+   ========================================================================== */
+
+/* Canlı Arama Temizle Butonu & Kategori Eşleşmeleri */
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.search-input-wrap .search-input {
+  width: 100%;
+  padding-right: 2.2rem;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.search-clear-btn:hover {
+  background: var(--primary-subtle);
+  color: var(--primary);
+}
+
+.search-categories-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  background: #fafafa;
+}
+
+.search-category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  background: var(--primary-subtle);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-full);
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-category-pill:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.search-result-prices {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2px;
+}
+
+.search-result-old-price {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+
+/* Slide-Over Sepet Çekmecesi İyileştirmeleri */
+.cart-drawer-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-drawer-scroll .cart-items-list {
+  flex: 0 0 auto;
+  overflow-y: visible;
+}
+
+.drawer-gift-wrap {
+  padding: 0 1.25rem 1rem;
+}
+
+.drawer-view-full-cart-btn {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.55rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--primary-deep);
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.drawer-view-full-cart-btn:hover {
+  background: var(--primary-subtle);
+  border-color: var(--primary-border);
+  color: var(--primary);
+}
+
+/* PDP Çoklu Galeri Küçük Görselleri */
+.pdp-thumbs-row {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.pdp-thumb-item {
+  width: 72px;
+  height: 72px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #ffffff;
+  padding: 0;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.pdp-thumb-item:hover {
+  border-color: var(--primary-border);
+  transform: translateY(-2px);
+}
+
+.pdp-thumb-item.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.pdp-thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Yasal Modal Sekmeleri & Kurumsal Künye Tablosu */
+.policy-modal-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding-right: 2rem;
+}
+
+.policy-tab-pill {
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--bg-page);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.policy-tab-pill:hover {
+  border-color: var(--primary-border);
+  color: var(--primary);
+}
+
+.policy-tab-pill.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.corporate-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.25rem;
+  font-size: 0.86rem;
+}
+
+.corporate-info-table th,
+.corporate-info-table td {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.corporate-info-table th {
+  width: 36%;
+  background: var(--bg-page);
+  color: var(--primary-deep);
+  font-weight: 700;
+}
+
+.etbis-tag-btn {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.etbis-tag-btn:hover {
+  background: var(--primary-subtle);
+  border-color: var(--primary-border);
+  color: var(--primary);
+}
+
+/* PayTR 3D Secure Modal Backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(4px);
+  z-index: 11000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Mobilde Floating WhatsApp & Back-to-Top Butonlarının Alt Barla Çakışmaması */
+@media (max-width: 768px) {
+  .floating-actions {
+    bottom: 82px;
+    right: 14px;
+  }
+
+  .live-sales-toast {
+    bottom: 82px;
+    left: 12px;
+    right: 76px;
+    max-width: none;
+  }
+
+  .cart-drawer {
+    max-width: 100%;
+  }
+}
